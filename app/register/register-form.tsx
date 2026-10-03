@@ -1,16 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
 import { registerAction } from "@/lib/actions/auth";
-import { initialState } from "@/lib/actions/state";
 import { FieldError, FormMessage } from "@/components/form-bits";
 import { SubmitButton } from "@/components/submit-button";
 import { input, label } from "@/components/ui";
+import { useFormAction } from "@/lib/use-form-action";
+
 
 export function RegisterForm() {
-  const [state, action] = useActionState(registerAction, initialState);
+  const [state, onSubmit, pending] = useFormAction(registerAction);
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <div>
         <label htmlFor="name" className={label}>Full name</label>
         <input id="name" name="name" autoComplete="name" placeholder="Ama Mensah" defaultValue={state.values?.name} className={input} />
@@ -27,7 +27,7 @@ export function RegisterForm() {
         <FieldError message={state.errors?.password} />
       </div>
       <FormMessage message={state.errors?.form} />
-      <SubmitButton variant="cta" pendingText="Creating account…">Create account</SubmitButton>
+      <SubmitButton pending={pending} variant="cta" pendingText="Creating account…">Create account</SubmitButton>
     </form>
   );
 }

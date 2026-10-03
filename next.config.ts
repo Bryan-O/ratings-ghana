@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Version-skew protection: lets Next.js detect when a browser tab was loaded from an
+  // older deployment and reload it, instead of calling Server Actions that no longer exist.
+  // Vercel sets VERCEL_DEPLOYMENT_ID on every deployment; undefined locally.
+  deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
   images: {
     // Seed photos, locally stored uploads (dev), and Vercel Blob uploads (production).
     localPatterns: [

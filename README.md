@@ -67,4 +67,6 @@ npm run dev                      # http://localhost:3000
 4. Seed businesses and the admin with a strong password, **without demo data**:
    `DATABASE_URL=... SEED_ADMIN_PASSWORD=... SEED_DEMO_DATA=false npm run db:seed`.
 
+**Recommended:** turn on **Skew Protection** in Vercel (Project → Settings → Advanced). Each deploy changes the app's internal form-handler IDs, so a browser tab opened before a deploy can't submit forms afterwards. The app detects this and asks the user to reload, but Skew Protection lets old tabs keep working. `next.config.ts` already sets `deploymentId` from `VERCEL_DEPLOYMENT_ID`.
+
 In production the app refuses to fall back to the console SMS or email outbox (or local photo storage), so a missing key fails loudly instead of silently skipping verification.

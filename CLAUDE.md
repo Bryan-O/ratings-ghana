@@ -101,6 +101,11 @@ prisma/
 ```
 
 - All writes go through **server actions in `lib/actions/*`**, validated with zod. There is no DB access from client components.
+- **Forms:**
+  - client forms submit with `useFormAction(action)` from `lib/use-form-action.ts` (`<form onSubmit={onSubmit}>` plus `<SubmitButton pending={pending}>`), **not** `<form action={...}>` with `useActionState`;
+  - reason: React auto-resets `<form action>` forms after each submit, snapping selects and radios back to their initial values while the UI still shows the user's choice, which silently submits the wrong data;
+  - the hook also wraps actions with `withRecovery` (`lib/actions/safe-action.ts`), so a stale deployment ("Server Action not found") or a network failure shows a message with a Reload button instead of failing silently.
+- Form server actions are wrapped in `guard()` (`lib/actions/guard.ts`), which logs unexpected errors and returns a visible form error.
 - Use server components by default. Add `"use client"` only for interactive pieces (star input, forms, mobile menu).
 
 ## Trust and safety rules (must not regress)

@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { submitReviewAction } from "@/lib/actions/reviews";
-import { initialState } from "@/lib/actions/state";
 import { StarIcon } from "@/components/icons";
 import { FieldError, FormMessage } from "@/components/form-bits";
 import { SubmitButton } from "@/components/submit-button";
 import { input, label, textarea } from "@/components/ui";
+import { useFormAction } from "@/lib/use-form-action";
+
 
 const LABELS = ["Terrible", "Poor", "Okay", "Good", "Excellent"];
 
@@ -16,14 +17,14 @@ type Props = {
 };
 
 export function ReviewForm({ businessId, existing }: Props) {
-  const [state, action] = useActionState(submitReviewAction, initialState);
+  const [state, onSubmit, pending] = useFormAction(submitReviewAction);
   const v = state.values;
   const [rating, setRating] = useState<number>(Number(v?.rating) || existing?.rating || 0);
   const [hover, setHover] = useState(0);
   const shown = hover || rating;
 
   return (
-    <form action={action} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <input type="hidden" name="businessId" value={businessId} />
 
       <fieldset onMouseLeave={() => setHover(0)}>
@@ -71,7 +72,7 @@ export function ReviewForm({ businessId, existing }: Props) {
       </div>
 
       <FormMessage ok={state.ok} message={state.errors?.form ?? state.message} />
-      <SubmitButton variant="cta" pendingText="Posting…">{existing ? "Update review" : "Post review"}</SubmitButton>
+      <SubmitButton pending={pending} variant="cta" pendingText="Posting…">{existing ? "Update review" : "Post review"}</SubmitButton>
     </form>
   );
 }

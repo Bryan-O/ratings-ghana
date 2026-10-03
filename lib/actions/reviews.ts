@@ -8,6 +8,7 @@ import { recomputeBusinessRating } from "@/lib/ratings-db";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { fieldErrors, reportSchema, reviewSchema } from "@/lib/validation";
 import { formValues, type ActionState } from "@/lib/actions/state";
+import { guard } from "@/lib/actions/guard";
 
 const STEP_MESSAGES = {
   login: "Log in to write a review.",
@@ -15,7 +16,11 @@ const STEP_MESSAGES = {
   "verify-phone": "Verify your phone number before writing a review.",
 } as const;
 
-export async function submitReviewAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function submitReviewAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("submitReview", _submitReview)(prev, formData);
+}
+
+async function _submitReview(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const values = formValues(formData, ["rating", "title", "body"]);
   const user = await getCurrentUser();
   const step = nextVerificationStep(user);
@@ -65,7 +70,11 @@ export async function submitReviewAction(_prev: ActionState, formData: FormData)
   return { ok: true, message: existing ? "Your review has been updated." : "Thanks! Your review is live." };
 }
 
-export async function reportReviewAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function reportReviewAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("reportReview", _reportReview)(prev, formData);
+}
+
+async function _reportReview(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user?.emailVerified) return { errors: { form: "Log in to report a review." } };
 

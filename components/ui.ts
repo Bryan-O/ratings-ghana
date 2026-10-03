@@ -18,11 +18,11 @@ export const btn = {
   smDanger: `${base} h-10 bg-red-700 px-4 text-sm text-white hover:bg-red-800`,
 };
 
-export const input =
-  "h-12 w-full rounded-xl border border-line-strong bg-white px-4 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15";
+const invalid = "aria-[invalid=true]:border-red-600 aria-[invalid=true]:ring-4 aria-[invalid=true]:ring-red-600/10";
 
-export const textarea =
-  "w-full rounded-xl border border-line-strong bg-white px-4 py-3 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15";
+export const input = `h-12 w-full rounded-xl border border-line-strong bg-white px-4 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15 ${invalid}`;
+
+export const textarea = `w-full rounded-xl border border-line-strong bg-white px-4 py-3 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15 ${invalid}`;
 
 export const label = "mb-1.5 block text-sm font-semibold text-ink";
 

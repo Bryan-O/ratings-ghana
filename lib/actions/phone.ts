@@ -16,10 +16,15 @@ import { isUniqueViolation } from "@/lib/prisma-errors";
 import { getCurrentUser } from "@/lib/session";
 import { sendSms } from "@/lib/sms";
 import { safeNext, type ActionState } from "@/lib/actions/state";
+import { guard } from "@/lib/actions/guard";
 
 const TAKEN = "This number is already linked to another RatingsGhana account.";
 
-export async function sendPhoneOtpAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function sendPhoneOtpAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("sendPhoneOtp", _sendPhoneOtp)(prev, formData);
+}
+
+async function _sendPhoneOtp(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/verify-phone");
   if (!user.emailVerified) return { errors: { form: "Verify your email address first." } };
@@ -55,7 +60,11 @@ export async function sendPhoneOtpAction(_prev: ActionState, formData: FormData)
   return { ok: true, data: { step: "code", maskedPhone: maskGhanaPhone(phone) } };
 }
 
-export async function verifyPhoneOtpAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function verifyPhoneOtpAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("verifyPhoneOtp", _verifyPhoneOtp)(prev, formData);
+}
+
+async function _verifyPhoneOtp(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/verify-phone");
   const next = safeNext(formData.get("next"));

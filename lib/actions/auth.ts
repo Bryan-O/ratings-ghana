@@ -9,6 +9,7 @@ import { appUrl, sendVerificationEmail } from "@/lib/email";
 import { generateToken, hashToken } from "@/lib/tokens";
 import { fieldErrors, loginSchema, registerSchema } from "@/lib/validation";
 import { formValues, safeNext, type ActionState } from "@/lib/actions/state";
+import { guard } from "@/lib/actions/guard";
 
 const EMAIL_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_VERIFICATION_EMAILS_PER_HOUR = 3;
@@ -27,7 +28,11 @@ async function issueEmailVerification(userId: string, email: string): Promise<bo
   return true;
 }
 
-export async function registerAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function registerAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("register", _register)(prev, formData);
+}
+
+async function _register(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const values = formValues(formData, ["name", "email"]);
   const parsed = registerSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
@@ -52,7 +57,11 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
   redirect(`/register/check-email?email=${encodeURIComponent(email)}`);
 }
 
-export async function resendVerificationAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function resendVerificationAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("resendVerification", _resendVerification)(prev, formData);
+}
+
+async function _resendVerification(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const user = email ? await prisma.user.findUnique({ where: { email } }) : null;
   if (user && !user.emailVerified && user.passwordHash) {
@@ -63,7 +72,11 @@ export async function resendVerificationAction(_prev: ActionState, formData: For
   return { ok: true, message: "If that account needs verifying, we've sent a new link." };
 }
 
-export async function loginAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function loginAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("login", _login)(prev, formData);
+}
+
+async function _login(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const values = formValues(formData, ["email"]);
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };

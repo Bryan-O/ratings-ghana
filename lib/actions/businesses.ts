@@ -5,6 +5,7 @@ import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { slugify } from "@/lib/slug";
 import { businessSchema, fieldErrors } from "@/lib/validation";
 import { formValues, type ActionState } from "@/lib/actions/state";
+import { guard } from "@/lib/actions/guard";
 
 const MAX_PENDING_PER_USER = 5;
 const FIELDS = ["name", "type", "category", "description", "address", "city", "region", "website", "phone"];
@@ -18,7 +19,11 @@ async function uniqueSlug(base: string): Promise<string> {
   return `${root}-${Date.now()}`;
 }
 
-export async function suggestBusinessAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function suggestBusinessAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("suggestBusiness", _suggestBusiness)(prev, formData);
+}
+
+async function _suggestBusiness(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const values = formValues(formData, FIELDS);
   const user = await getCurrentUser();
   if (!user || nextVerificationStep(user)) {

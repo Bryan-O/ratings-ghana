@@ -45,7 +45,7 @@ export const businessSchema = z
   .object({
     name: z.string().trim().min(2, "Enter the business name").max(100),
     type: z.enum(["PHYSICAL", "ONLINE"]),
-    category: z.enum(CATEGORIES),
+    category: z.enum(CATEGORIES, { error: "Choose a category" }),
     description: z.string().trim().min(20, "Describe the business in at least 20 characters").max(2000),
     address: optionalText(200),
     city: optionalText(80),

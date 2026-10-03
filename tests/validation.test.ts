@@ -32,6 +32,23 @@ describe("businessSchema", () => {
     const paths = r.error!.issues.map((i) => i.path.join("."));
     expect(paths).toEqual(expect.arrayContaining(["address", "city"]));
   });
+  it("requires a category", () => {
+    const r = businessSchema.safeParse({ ...base, category: "", type: "ONLINE", website: "https://www.instagram.com/drezzupsneakers/?hl=en" });
+    expect(r.success).toBe(false);
+    expect(r.error!.issues.find((i) => i.path[0] === "category")?.message).toBe("Choose a category");
+  });
+
+  it("accepts an Instagram page as an online business's website", () => {
+    const r = businessSchema.safeParse({
+      name: "Drezzup Sneakers",
+      type: "ONLINE",
+      category: "Fashion",
+      description: "We sell modern sneakers and accessories",
+      website: "https://www.instagram.com/drezzupsneakers/?hl=en",
+    });
+    expect(r.success).toBe(true);
+  });
+
   it("requires a website for online businesses", () => {
     expect(businessSchema.safeParse({ ...base, type: "ONLINE", website: "" }).success).toBe(false);
     expect(businessSchema.safeParse({ ...base, type: "ONLINE", website: "https://shop.example.com", region: "" }).success).toBe(true);

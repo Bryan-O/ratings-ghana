@@ -83,6 +83,19 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await page.reload();
   await expect(page.getByText(`${before + 1} verified reviews`)).toBeVisible();
   await expect(page.getByRole("heading", { name: `Updated: ${title}`, exact: true })).toBeVisible();
+
+  // Changing the rating survives a failed submit (regression: React's form reset used to
+  // snap the hidden radios back, silently re-submitting the old rating).
+  await page.getByLabel("2 stars — Poor").check({ force: true });
+  await page.getByRole("textbox", { name: "Your review" }).fill("Too short");
+  await page.getByRole("button", { name: "Update review" }).click();
+  await expect(page.getByText(/at least 30 characters/)).toBeVisible();
+  await page.getByRole("textbox", { name: "Your review" }).fill("Service has slipped lately — we waited forty minutes and the soup was cold.");
+  await page.getByRole("button", { name: "Update review" }).click();
+  await expect(page.getByText("Your review has been updated.")).toBeVisible();
+  await page.reload();
+  const mine = page.locator("article").filter({ hasText: "(you)" });
+  await expect(mine.getByRole("img", { name: "2 out of 5 stars" })).toBeVisible();
 });
 
 test("a phone number can only back one account", async ({ page, browser }) => {
@@ -117,6 +130,7 @@ test("suggested businesses stay hidden until an admin approves them", async ({ p
 
   await page.goto("/businesses/new");
   await page.getByLabel("Business name").fill(name);
+  await page.getByLabel("Category").selectOption("Restaurant");
   await page.getByLabel("Description").fill("Waakye with shito, gari, spaghetti and egg every morning.");
   await page.getByLabel("Address or landmark").fill("Near the Madina market");
   await page.getByLabel("Town / city").fill("Madina");

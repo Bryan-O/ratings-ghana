@@ -8,6 +8,7 @@ import { ImageError, MAX_UPLOAD_BYTES, processImage } from "@/lib/images";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { deleteStoredImage, storeImage } from "@/lib/storage";
 import type { ActionState } from "@/lib/actions/state";
+import { guard } from "@/lib/actions/guard";
 
 const uploadSchema = z.object({
   businessId: z.string().min(1),
@@ -21,7 +22,11 @@ const uploadSchema = z.object({
 });
 
 /** Upload one photo (one per request keeps us under the platform body-size limit). */
-export async function uploadPhotoAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+export async function uploadPhotoAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("uploadPhoto", _uploadPhoto)(prev, formData);
+}
+
+async function _uploadPhoto(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user || nextVerificationStep(user)) {
     return { errors: { form: "Verify your account before adding photos." } };
