@@ -1,37 +1,44 @@
 import Link from "next/link";
 import type { Business } from "@/lib/generated/prisma/client";
 import { BusinessImage } from "@/components/business-image";
-import { StarIcon } from "@/components/icons";
+import { GlobeIcon, LocationIcon } from "@/components/icons";
+import { RatingBadge } from "@/components/stars";
 
-/** Figma "Frame 21" business card. */
+function whereLabel(b: Business) {
+  if (b.type === "ONLINE") {
+    try {
+      return b.website ? new URL(b.website).hostname.replace(/^www\./, "") : "Online";
+    } catch {
+      return "Online";
+    }
+  }
+  return [b.address, b.city].filter(Boolean).join(", ");
+}
+
 export function BusinessCard({ business: b }: { business: Business }) {
-  const where = b.type === "ONLINE" ? (b.website ? new URL(b.website).hostname.replace(/^www\./, "") : "Online") : [b.address, b.city].filter(Boolean).join(", ");
   return (
     <Link
       href={`/businesses/${b.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[32px] bg-white transition hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-line bg-white transition-[border-color,box-shadow] duration-200 hover:border-brand-light hover:shadow-[0_12px_32px_-12px_rgba(76,29,149,0.25)]"
     >
-      <div className="relative h-[200px] overflow-hidden rounded-[32px] bg-btn sm:h-[245px]">
-        <BusinessImage src={b.images[0]} name={b.name} className="rounded-[32px] transition group-hover:scale-[1.02]" />
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <BusinessImage src={b.images[0]} name={b.name} category={b.category} />
+        <span className="absolute top-3 left-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-brand-deep shadow-sm">
+          {b.category}
+        </span>
+        {b.type === "ONLINE" && (
+          <span className="absolute top-3 right-3 rounded-full bg-brand-night/85 px-3 py-1 text-xs font-bold text-white">Online</span>
+        )}
       </div>
-      <div className="flex flex-1 flex-col gap-[5px] px-6 pt-3.5 pb-5">
-        <h2 className="text-xl font-semibold text-ink sm:text-2xl">{b.name}</h2>
-        <p className="flex items-center gap-1.5 text-base font-medium text-ink">
-          {b.reviewCount > 0 ? (
-            <>
-              {b.avgRating.toFixed(1)} <StarIcon size={18} /> ({b.reviewCount})
-            </>
-          ) : (
-            <span className="text-muted">No reviews yet</span>
-          )}
+      <div className="flex flex-1 flex-col gap-2 p-5">
+        <h2 className="font-display text-lg leading-snug font-semibold text-ink transition-colors duration-200 group-hover:text-brand">
+          {b.name}
+        </h2>
+        <RatingBadge avg={b.avgRating} count={b.reviewCount} />
+        <p className="mt-auto flex items-start gap-1.5 pt-1 text-sm text-muted">
+          {b.type === "ONLINE" ? <GlobeIcon size={16} className="mt-0.5 shrink-0" /> : <LocationIcon size={16} className="mt-0.5 shrink-0" />}
+          <span className="line-clamp-2">{whereLabel(b)}</span>
         </p>
-        <p className="max-w-[260px] text-[15px] font-semibold text-ink underline">{where}</p>
-        <div className="mt-auto flex gap-2 pt-6">
-          <span className="rounded-full border border-ink px-3 py-1 text-sm font-medium text-ink">{b.category}</span>
-          {b.type === "ONLINE" && (
-            <span className="rounded-full border border-ink bg-ink px-3 py-1 text-sm font-medium text-white">Online</span>
-          )}
-        </div>
       </div>
     </Link>
   );

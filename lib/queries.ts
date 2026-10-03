@@ -71,3 +71,32 @@ export function getPublishedReviews(businessId: string) {
 export function getUserReview(userId: string, businessId: string) {
   return prisma.review.findUnique({ where: { userId_businessId: { userId, businessId } } });
 }
+
+export async function getCategoryCounts() {
+  const rows = await prisma.business.groupBy({
+    by: ["category"],
+    where: { status: "APPROVED" },
+    _count: { _all: true },
+  });
+  return new Map(rows.map((r) => [r.category, r._count._all]));
+}
+
+export function getRecentReviews(take: number) {
+  return prisma.review.findMany({
+    where: { status: "PUBLISHED", business: { status: "APPROVED" } },
+    orderBy: { createdAt: "desc" },
+    take,
+    include: {
+      user: { select: { name: true } },
+      business: { select: { name: true, slug: true, category: true } },
+    },
+  });
+}
+
+export async function getSiteStats() {
+  const [businesses, reviews] = await Promise.all([
+    prisma.business.count({ where: { status: "APPROVED" } }),
+    prisma.review.count({ where: { status: "PUBLISHED" } }),
+  ]);
+  return { businesses, reviews };
+}

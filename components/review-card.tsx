@@ -1,5 +1,7 @@
+import { BadgeCheckIcon } from "@/components/icons";
 import { Stars } from "@/components/stars";
 import { ReportReview } from "@/components/report-review";
+import { displayName, formatDate, initials } from "@/lib/format";
 
 type Props = {
   review: { id: string; rating: number; title: string; body: string; createdAt: Date; user: { name: string | null } };
@@ -7,26 +9,27 @@ type Props = {
   isMine: boolean;
 };
 
-/** Displayed as "First name" only, to protect reviewer privacy. */
-function displayName(name: string | null) {
-  return name?.trim().split(/\s+/)[0] || "Verified reviewer";
-}
-
-/** Figma "Review Ticker" card. */
 export function ReviewCard({ review: r, canReport, isMine }: Props) {
-  const date = r.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Africa/Accra" });
   return (
-    <article className="rounded-[12px] border border-[#d9d9d9] bg-white p-4">
-      <header className="flex items-start justify-between gap-3 text-xs">
-        <p className="font-semibold text-ink">
-          {displayName(r.user.name)}
-          {isMine && <span className="ml-1.5 font-normal text-muted">(you)</span>}
-        </p>
-        <time dateTime={r.createdAt.toISOString()} className="shrink-0 text-muted">{date}</time>
+    <article className={`rounded-2xl border bg-white p-5 sm:p-6 ${isMine ? "border-brand-light ring-2 ring-brand-soft" : "border-line"}`}>
+      <header className="flex items-start gap-3">
+        <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand font-display text-lg font-bold text-white">
+          {initials(r.user.name)}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="flex flex-wrap items-center gap-x-2 font-semibold text-ink">
+            {displayName(r.user.name)}
+            {isMine && <span className="text-sm font-normal text-muted">(you)</span>}
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-cta">
+              <BadgeCheckIcon size={14} /> Verified
+            </span>
+          </p>
+          <time dateTime={r.createdAt.toISOString()} className="text-sm text-muted">{formatDate(r.createdAt)}</time>
+        </div>
+        <Stars rating={r.rating} size={18} className="shrink-0" />
       </header>
-      <Stars rating={r.rating} size={20} className="mt-2" />
-      <h3 className="mt-2 text-sm font-semibold text-ink">{r.title}</h3>
-      <p className="mt-1.5 text-sm leading-snug whitespace-pre-line text-ink">{r.body}</p>
+      <h3 className="mt-4 font-display text-lg font-semibold">{r.title}</h3>
+      <p className="mt-1.5 whitespace-pre-line text-body">{r.body}</p>
       {canReport && <ReportReview reviewId={r.id} />}
     </article>
   );

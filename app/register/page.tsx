@@ -21,32 +21,31 @@ export default async function RegisterPage({ searchParams }: { searchParams: SP 
 
   return (
     <AuthCard
-      title="Sign up for RatingsGhana"
+      title="Create your account"
+      subtitle="Join thousands of Ghanaians sharing honest experiences."
       footer={
         <>
           Already on RatingsGhana?{" "}
-          <Link href={`/login${nextQs ? `?${nextQs}` : ""}`} className="font-semibold text-ink">
-            Login
+          <Link href={`/login${nextQs ? `?${nextQs}` : ""}`} className="font-semibold text-brand hover:text-brand-hover">
+            Log in
           </Link>
         </>
       }
     >
-      <Terms />
-      <div className="mt-6 flex flex-col gap-4">
-        {emailStep ? (
-          <RegisterForm />
-        ) : (
-          <>
-            <GoogleButton next={next} />
-            <Link href={`/register?method=email${nextQs ? `&${nextQs}` : ""}`} className={socialBtn}>
-              <MailIcon /> <span className="flex-1 pr-8 text-center">Continue with email</span>
-            </Link>
-          </>
-        )}
-      </div>
-      <p className="mt-6 text-center text-xs text-muted">
+      {emailStep ? (
+        <RegisterForm />
+      ) : (
+        <div className="flex flex-col gap-3">
+          <GoogleButton next={next} />
+          <Link href={`/register?method=email${nextQs ? `&${nextQs}` : ""}`} className={socialBtn}>
+            <MailIcon /> Continue with email
+          </Link>
+        </div>
+      )}
+      <p className="mt-6 rounded-xl bg-brand-soft px-4 py-3 text-sm text-brand-deep">
         To keep reviews genuine, you&apos;ll also verify a Ghana phone number before posting your first review.
       </p>
+      <Terms />
     </AuthCard>
   );
 }

@@ -1,24 +1,23 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { btn } from "@/components/ui";
 
 export function SubmitButton({
   children,
   pendingText,
+  variant = "primary",
   className = "",
 }: {
   children: React.ReactNode;
   pendingText?: string;
+  variant?: "primary" | "cta";
   className?: string;
 }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      aria-disabled={pending}
-      className={`flex h-[45px] w-full items-center justify-center rounded-[4px] bg-btn-dark px-3 text-sm font-semibold text-white hover:bg-black disabled:opacity-60 ${className}`}
-    >
+    <button type="submit" disabled={pending} aria-disabled={pending} className={`${btn[variant]} w-full ${className}`}>
+      {pending && <span aria-hidden className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
       {pending ? (pendingText ?? "Please wait…") : children}
     </button>
   );

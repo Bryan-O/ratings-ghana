@@ -9,7 +9,7 @@ export function GoogleButton({ next }: { next?: string }) {
     <form action={googleSignInAction}>
       <input type="hidden" name="next" value={next ?? "/"} />
       <button type="submit" className={socialBtn}>
-        <GoogleIcon /> <span className="flex-1 pr-8">Continue with Google</span>
+        <GoogleIcon /> Continue with Google
       </button>
     </form>
   );

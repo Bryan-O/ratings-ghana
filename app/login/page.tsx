@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { AuthCard, OrDivider, Terms } from "@/components/auth-card";
+import { AuthCard, Notice, OrDivider, Terms } from "@/components/auth-card";
 import { GoogleButton } from "@/components/google-button";
 import { LoginForm } from "@/app/login/login-form";
 import { googleEnabled } from "@/lib/auth";
@@ -28,33 +28,26 @@ export default async function LoginPage({ searchParams }: { searchParams: SP }) 
 
   return (
     <AuthCard
-      title="Sign in to RatingsGhana"
+      title="Welcome back"
+      subtitle="Log in to RatingsGhana to write and manage your reviews."
       footer={
         <>
           New to RatingsGhana?{" "}
-          <Link href={`/register${sp.next ? `?next=${encodeURIComponent(next)}` : ""}`} className="font-semibold text-ink">
-            Sign up
+          <Link href={`/register${sp.next ? `?next=${encodeURIComponent(next)}` : ""}`} className="font-semibold text-brand hover:text-brand-hover">
+            Create an account
           </Link>
         </>
       }
     >
-      <Terms />
-      {notice && (
-        <p role="status" className={`mt-4 rounded-[4px] px-3 py-2 text-sm ${notice.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-          {notice.text}
-        </p>
-      )}
+      {notice && <Notice ok={notice.ok}>{notice.text}</Notice>}
       {googleEnabled && (
         <>
-          <div className="mt-5">
-            <GoogleButton next={next} />
-          </div>
+          <GoogleButton next={next} />
           <OrDivider />
         </>
       )}
-      <div className={googleEnabled ? "" : "mt-5"}>
-        <LoginForm next={next} />
-      </div>
+      <LoginForm next={next} />
+      <Terms />
     </AuthCard>
   );
 }

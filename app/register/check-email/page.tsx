@@ -13,17 +13,19 @@ export default async function CheckEmailPage({ searchParams }: { searchParams: P
       footer={
         <>
           Verified already?{" "}
-          <Link href="/login" className="font-semibold text-ink">Log in</Link>
+          <Link href="/login" className="font-semibold text-brand hover:text-brand-hover">Log in</Link>
         </>
       }
     >
-      <div className="flex flex-col items-center gap-3 text-center text-sm text-ink">
-        <MailIcon size={32} />
-        <p>
-          We sent a verification link to {email ? <strong className="break-all">{email}</strong> : "your email address"}. Click it to
-          activate your account. The link expires in 24 hours.
+      <div className="flex flex-col items-center gap-4 text-center">
+        <span className="flex size-16 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+          <MailIcon size={30} />
+        </span>
+        <p className="text-body">
+          We sent a verification link to {email ? <strong className="break-all text-ink">{email}</strong> : "your email address"}. Click it to
+          activate your account — it expires in 24 hours.
         </p>
-        <p className="text-muted">Can&apos;t find it? Check your spam folder.</p>
+        <p className="text-sm text-muted">Can&apos;t find it? Check your spam folder.</p>
       </div>
     </AuthCard>
   );

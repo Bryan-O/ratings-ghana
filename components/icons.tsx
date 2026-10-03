@@ -1,86 +1,150 @@
-// Inline equivalents of the Iconify icons used in the Figma file.
+// Inline SVG icons in the Lucide style (24×24, 2px stroke) so the set stays consistent.
 type IconProps = { className?: string; size?: number };
+
+function Stroke({ className, size = 20, children }: IconProps & { children: React.ReactNode }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      {children}
+    </svg>
+  );
+}
 
 export function StarIcon({ className, size = 18, filled = true }: IconProps & { filled?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={className}>
       <path
-        d="M12 17.27 6.62 20.5a.75.75 0 0 1-1.12-.81l1.43-6.12-4.75-4.12a.75.75 0 0 1 .43-1.31l6.26-.53 2.44-5.78a.75.75 0 0 1 1.38 0l2.44 5.78 6.26.53a.75.75 0 0 1 .43 1.31l-4.75 4.12 1.43 6.12a.75.75 0 0 1-1.12.81z"
+        d="M12 2.8l2.83 5.73 6.32.92-4.57 4.46 1.08 6.3L12 17.24l-5.66 2.97 1.08-6.3-4.57-4.46 6.32-.92z"
         fill={filled ? "currentColor" : "none"}
         stroke="currentColor"
-        strokeWidth={filled ? 0 : 1.5}
+        strokeWidth={filled ? 0 : 1.6}
         strokeLinejoin="round"
       />
     </svg>
   );
 }
 
-export function SearchIcon({ className, size = 18 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden className={className}>
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
-}
+export const SearchIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </Stroke>
+);
 
-export function ChevronDownIcon({ className, size = 16 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <path d="m7 10 5 5 5-5" />
-    </svg>
-  );
-}
+export const ChevronDownIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="m6 9 6 6 6-6" />
+  </Stroke>
+);
 
-export function LocationIcon({ className, size = 18 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={className}>
-      <path fill="currentColor" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5.16 6.32 11.5 6.6 11.77a1.25 1.25 0 0 0 1.8 0c.28-.27 6.6-6.61 6.6-11.77A7.5 7.5 0 0 0 12 2m0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5" />
-    </svg>
-  );
-}
+export const ArrowRightIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </Stroke>
+);
 
-export function PhoneIcon({ className, size = 18 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={className}>
-      <path fill="currentColor" d="m7.4 2.6 1.6 3.7a1.5 1.5 0 0 1-.4 1.7L7 9.4a11 11 0 0 0 7.6 7.6l1.4-1.6a1.5 1.5 0 0 1 1.7-.4l3.7 1.6a1.5 1.5 0 0 1 .8 1.9l-.9 2.4A2 2 0 0 1 19.4 22C10 21.5 2.5 14 2 4.6A2 2 0 0 1 3.1 2.7L5.5 1.8a1.5 1.5 0 0 1 1.9.8" />
-    </svg>
-  );
-}
+export const LocationIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0" />
+    <circle cx="12" cy="10" r="3" />
+  </Stroke>
+);
 
-export function GlobeIcon({ className, size = 18 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden className={className}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3" />
-    </svg>
-  );
-}
+export const PhoneIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2" />
+  </Stroke>
+);
 
-export function MenuIcon({ className, size = 24 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden className={className}>
-      <path d="M4 7h16M4 12h16M4 17h16" />
-    </svg>
-  );
-}
+export const GlobeIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10" />
+  </Stroke>
+);
 
-export function CloseIcon({ className, size = 24 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden className={className}>
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
-}
+export const MenuIcon = (p: IconProps) => (
+  <Stroke size={24} {...p}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </Stroke>
+);
 
-export function MailIcon({ className, size = 22 }: IconProps) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round" aria-hidden className={className}>
-      <rect x="3" y="5" width="18" height="14" rx="1.5" />
-      <path d="m3.5 6 8.5 7 8.5-7" />
-    </svg>
-  );
-}
+export const CloseIcon = (p: IconProps) => (
+  <Stroke size={24} {...p}>
+    <path d="M18 6 6 18M6 6l12 12" />
+  </Stroke>
+);
+
+export const MailIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 7-10 6L2 7" />
+  </Stroke>
+);
+
+export const CheckIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M20 6 9 17l-5-5" />
+  </Stroke>
+);
+
+export const ShieldCheckIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z" />
+    <path d="m9 12 2 2 4-4" />
+  </Stroke>
+);
+
+export const BadgeCheckIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76" />
+    <path d="m9 12 2 2 4-4" />
+  </Stroke>
+);
+
+export const SmartphoneIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <rect x="5" y="2" width="14" height="20" rx="2" />
+    <path d="M12 18h.01" />
+  </Stroke>
+);
+
+export const FlagIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7" />
+  </Stroke>
+);
+
+export const PlusIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Stroke>
+);
+
+export const UserIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M20 21a8 8 0 0 0-16 0" />
+  </Stroke>
+);
+
+export const StoreIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="m2 7 1.6-3.2A2 2 0 0 1 5.4 3h13.2a2 2 0 0 1 1.8 1.1L22 7" />
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <path d="M2 7h20v2a3 3 0 0 1-5.5 1.6A3 3 0 0 1 12 12a3 3 0 0 1-4.5-1.4A3 3 0 0 1 2 9z" />
+  </Stroke>
+);
 
 export function GoogleIcon({ className, size = 20 }: IconProps) {
   return (
@@ -93,21 +157,107 @@ export function GoogleIcon({ className, size = 20 }: IconProps) {
   );
 }
 
-export function UserCircleIcon({ className, size = 56 }: IconProps) {
+/** Brand mark: white star in a rounded purple square. */
+export function LogoMark({ className = "", size = 32 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 56 56" aria-hidden className={className}>
-      <circle cx="28" cy="28" r="28" fill="#e6e6e6" />
-      <circle cx="28" cy="21" r="8" fill="#1e1e1e" />
-      <path d="M12 44c2.5-7 9-10.5 16-10.5S41.5 37 44 44a24 24 0 0 1-32 0" fill="#1e1e1e" />
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className={className}>
+      <rect width="32" height="32" rx="9" fill="currentColor" />
+      <path fill="#fff" d="M16 7l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L16 20.4l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z" />
     </svg>
   );
 }
 
-export function ShieldCheckIcon({ className, size = 16 }: IconProps) {
+// --- Category icons ---
+
+const CATEGORY_PATHS: Record<string, React.ReactNode> = {
+  Restaurant: (
+    <>
+      <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20" />
+      <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+    </>
+  ),
+  "Fast Food": (
+    <>
+      <path d="M4 11a8 6 0 0 1 16 0z" />
+      <path d="M3 15h18M5 19h14a1 1 0 0 0 1-1v-1H4v1a1 1 0 0 0 1 1" />
+    </>
+  ),
+  Hotel: (
+    <>
+      <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9" />
+    </>
+  ),
+  "Bar & Lounge": (
+    <>
+      <path d="M8 22h8M12 11v11M5 3h14l-1.5 5.5a5.7 5.7 0 0 1-11 0z" />
+    </>
+  ),
+  "Online Store": (
+    <>
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </>
+  ),
+  Electronics: (
+    <>
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+    </>
+  ),
+  Fashion: (
+    <>
+      <path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.2a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.4-2.2" />
+    </>
+  ),
+  "Beauty & Salon": (
+    <>
+      <circle cx="6" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
+    </>
+  ),
+  Telecom: (
+    <>
+      <path d="M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 4v16" />
+    </>
+  ),
+  "Bank & Fintech": (
+    <>
+      <path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z" />
+    </>
+  ),
+  "Transport & Delivery": (
+    <>
+      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2M15 18H9M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14" />
+      <circle cx="17" cy="18" r="2" />
+      <circle cx="7" cy="18" r="2" />
+    </>
+  ),
+  Health: (
+    <>
+      <path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z" />
+      <path d="M3.2 12H9l.5-1 2 4.5 2-7 1.5 3.5h5.3" />
+    </>
+  ),
+  Education: (
+    <>
+      <path d="M22 10 12 5 2 10l10 5z" />
+      <path d="M6 12v5c3 2 9 2 12 0v-5" />
+    </>
+  ),
+};
+
+export function CategoryIcon({ category, className, size = 22 }: IconProps & { category: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={className}>
-      <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z" />
-      <path d="m8.8 12.2 2.3 2.3 4.2-4.6" />
-    </svg>
+    <Stroke className={className} size={size}>
+      {CATEGORY_PATHS[category] ?? (
+        <>
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+        </>
+      )}
+    </Stroke>
   );
 }

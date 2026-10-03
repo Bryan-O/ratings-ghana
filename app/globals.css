@@ -1,33 +1,73 @@
 @import "tailwindcss";
 
+/*
+ * RatingsGhana design system — "Trust purple marketplace"
+ * (ui-ux-pro-max: Marketplace/Directory pattern, Vibrant & Block-based style).
+ */
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
-  /* Tokens from the RatingsGhana Figma file */
-  --color-ink: #1e1e1e;
-  --color-ink-strong: #222222;
-  --color-btn: #2e2e2e;
-  --color-btn-dark: #121212;
-  --color-muted: #818181;
-  --color-subtle: #888888;
-  --color-placeholder: #9b9b9b;
-  --color-hairline: #b6b6b6;
-  --color-faint: #bababa;
-  --color-page: #f3f3f3;
-  --color-backdrop: #333333;
-  --color-star: #1e1e1e;
+  /* Brand */
+  --color-brand: #7c3aed;
+  --color-brand-hover: #6d28d9;
+  --color-brand-deep: #4c1d95;
+  --color-brand-night: #2e1065;
+  --color-brand-light: #a78bfa;
+  --color-brand-soft: #ede9fe;
+  --color-brand-wash: #faf5ff;
+
+  /* Action (darkened from #22C55E so white text passes WCAG AA) */
+  --color-cta: #15803d;
+  --color-cta-hover: #166534;
+  --color-cta-soft: #dcfce7;
+
+  /* Neutrals */
+  --color-ink: #1e1433;
+  --color-body: #3b3450;
+  --color-muted: #5e5873;
+  --color-line: #e7defa;
+  --color-line-strong: #cfc2ef;
+
+  /* Ratings */
+  --color-star: #f59e0b;
+  --color-star-empty: #ddd6fe;
 }
 
-body {
-  background: #ffffff;
-  color: var(--color-ink);
+/* Base styles live in the base layer so Tailwind utilities can override them. */
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--color-brand-wash);
+    color: var(--color-body);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-ink);
+  }
+
+  ::selection {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-deep);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
 }
 
-/* Masonry review wall (Figma "Review Ticker") */
-.masonry {
-  column-gap: 1rem;
-}
-.masonry > * {
-  break-inside: avoid;
-  margin-bottom: 1rem;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

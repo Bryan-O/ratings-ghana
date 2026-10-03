@@ -1,36 +1,46 @@
-import { SearchIcon } from "@/components/icons";
+import { LocationIcon, SearchIcon } from "@/components/icons";
 
-/** Figma search field: business name | location | black search button. Submits to /businesses. */
-export function SearchBar({ q = "", location = "", className = "" }: { q?: string; location?: string; className?: string }) {
+type Props = { q?: string; location?: string; className?: string; size?: "lg" | "md" };
+
+/** Business name + location search. Submits to /businesses. */
+export function SearchBar({ q = "", location = "", className = "", size = "md" }: Props) {
+  const h = size === "lg" ? "sm:h-16" : "sm:h-14";
   return (
     <form
       action="/businesses"
       role="search"
-      className={`flex h-12 w-full max-w-[629px] items-center rounded-[4px] border-2 border-btn bg-white pr-[7px] ${className}`}
+      className={`flex w-full flex-col gap-2 rounded-2xl border border-line bg-white p-2 shadow-[0_8px_30px_-12px_rgba(76,29,149,0.25)] sm:flex-row sm:items-center sm:gap-0 ${className}`}
     >
-      <label className="sr-only" htmlFor="search-q">Business name</label>
-      <input
-        id="search-q"
-        name="q"
-        defaultValue={q}
-        placeholder="Search business name"
-        className="h-full min-w-0 flex-[1.2] bg-transparent px-4 text-base outline-none placeholder:text-placeholder"
-      />
-      <span aria-hidden className="h-[30px] w-0.5 shrink-0 bg-[#d9d9d9]" />
-      <label className="sr-only" htmlFor="search-location">Location</label>
-      <input
-        id="search-location"
-        name="location"
-        defaultValue={location}
-        placeholder="Location"
-        className="h-full min-w-0 flex-1 bg-transparent px-4 text-base outline-none placeholder:text-placeholder"
-      />
+      <div className={`flex h-12 flex-[1.3] items-center gap-2 px-3 ${h}`}>
+        <SearchIcon size={20} className="shrink-0 text-brand" />
+        <label className="sr-only" htmlFor="search-q">Business name</label>
+        <input
+          id="search-q"
+          name="q"
+          defaultValue={q}
+          placeholder="Search waakye, salons, Jumia…"
+          className="h-full w-full min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted/80"
+        />
+      </div>
+      <span aria-hidden className="hidden h-8 w-px bg-line-strong sm:block" />
+      <div className={`flex h-12 flex-1 items-center gap-2 border-t border-line px-3 sm:border-t-0 ${h}`}>
+        <LocationIcon size={20} className="shrink-0 text-brand" />
+        <label className="sr-only" htmlFor="search-location">Location</label>
+        <input
+          id="search-location"
+          name="location"
+          defaultValue={location}
+          placeholder="City or area"
+          className="h-full w-full min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted/80"
+        />
+      </div>
       <button
         type="submit"
         aria-label="Search"
-        className="flex size-[33px] shrink-0 items-center justify-center rounded-[4px] border border-black/50 bg-[#040404] text-white hover:bg-btn"
+        className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-cta px-6 font-semibold text-white transition-colors duration-200 hover:bg-cta-hover ${size === "lg" ? "sm:h-12" : "sm:h-10"}`}
       >
-        <SearchIcon />
+        <SearchIcon size={18} />
+        <span>Search</span>
       </button>
     </form>
   );

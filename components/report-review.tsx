@@ -4,27 +4,31 @@ import { useActionState } from "react";
 import { reportReviewAction } from "@/lib/actions/reviews";
 import { initialState } from "@/lib/actions/state";
 import { REPORT_REASONS } from "@/lib/constants";
+import { FlagIcon } from "@/components/icons";
+import { btn } from "@/components/ui";
 
 export function ReportReview({ reviewId }: { reviewId: string }) {
   const [state, action, pending] = useActionState(reportReviewAction, initialState);
 
-  if (state.ok) return <p className="mt-3 text-xs text-muted">{state.message}</p>;
+  if (state.ok) return <p className="mt-4 text-sm text-muted">{state.message}</p>;
 
   return (
-    <details className="mt-3 text-xs">
-      <summary className="cursor-pointer text-muted hover:text-ink">Report</summary>
-      <form action={action} className="mt-2 flex flex-col gap-2">
+    <details className="group mt-4 text-sm">
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg py-1 font-medium text-muted transition-colors duration-200 hover:text-red-700">
+        <FlagIcon size={14} /> Report
+      </summary>
+      <form action={action} className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-brand-wash p-3">
         <input type="hidden" name="reviewId" value={reviewId} />
         <label className="sr-only" htmlFor={`reason-${reviewId}`}>Reason</label>
-        <select id={`reason-${reviewId}`} name="reason" className="rounded-[4px] border border-[#d9d9d9] p-1.5" defaultValue={REPORT_REASONS[0]}>
+        <select id={`reason-${reviewId}`} name="reason" defaultValue={REPORT_REASONS[0]} className="h-10 cursor-pointer rounded-lg border border-line-strong bg-white px-3 text-ink">
           {REPORT_REASONS.map((r) => (
             <option key={r}>{r}</option>
           ))}
         </select>
-        <button type="submit" disabled={pending} className="self-start rounded-[4px] bg-btn px-3 py-1.5 font-semibold text-white disabled:opacity-60">
+        <button type="submit" disabled={pending} className={btn.smDanger}>
           {pending ? "Sending…" : "Send report"}
         </button>
-        {state.errors?.form && <p className="text-red-700">{state.errors.form}</p>}
+        {state.errors?.form && <p className="w-full text-red-700">{state.errors.form}</p>}
       </form>
     </details>
   );

@@ -2,11 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { BusinessImage } from "@/components/business-image";
 import { Stars } from "@/components/stars";
-import { GlobeIcon, LocationIcon, PhoneIcon } from "@/components/icons";
+import { CategoryIcon, GlobeIcon, LocationIcon, PhoneIcon, ShieldCheckIcon } from "@/components/icons";
 import { ReviewCard } from "@/components/review-card";
 import { ReviewForm } from "@/components/review-form";
+import { btn, card, container } from "@/components/ui";
 import { formatGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
 import { getBusinessBySlug, getPublishedReviews, getUserReview } from "@/lib/queries";
 import { ratingDistribution } from "@/lib/ratings";
@@ -31,148 +34,184 @@ export default async function BusinessPage({ params }: Props) {
   const step = nextVerificationStep(user);
   const dist = ratingDistribution(reviews.map((r) => r.rating));
   const imgs = business.images;
-  const mapsQuery = encodeURIComponent([business.name, business.address, business.city, "Ghana"].filter(Boolean).join(", "));
+  const where = [business.address, business.city].filter(Boolean).join(", ");
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([business.name, business.address, business.city, "Ghana"].filter(Boolean).join(", "))}`;
   const phoneE164 = business.phone ? normalizeGhanaPhone(business.phone) : null;
+  const isSubmitter = user?.id === business.submittedById;
 
   return (
     <>
-      <SiteHeader
-        title={business.name}
-        crumbs={[
-          { label: "Home", href: "/" },
-          { label: business.category, href: `/businesses?category=${encodeURIComponent(business.category)}` },
-          { label: business.name },
-        ]}
-      />
-      <main className="mx-auto w-full max-w-[1512px] flex-1 bg-page px-4 py-5 lg:px-[34px]">
-        {/* Gallery: large left, one wide + two small on the right (Figma frames 35–38) */}
-        <section aria-label="Photos" className="grid gap-4 lg:grid-cols-[689px_403px] lg:gap-x-[19px]">
-          <div className="relative h-[240px] overflow-hidden rounded-[12px] bg-btn sm:h-[449px]">
-            <BusinessImage src={imgs[0]} name={business.name} sizes="(max-width: 1024px) 100vw, 689px" priority />
-          </div>
-          <div className="hidden gap-2 lg:grid lg:grid-rows-[251px_181px]">
-            <div className="relative overflow-hidden rounded-[12px] bg-btn">
-              <BusinessImage src={imgs[1]} name={business.name} sizes="403px" />
-            </div>
-            <div className="grid grid-cols-2 gap-[21px]">
-              <div className="relative overflow-hidden rounded-[12px] bg-btn">
-                <BusinessImage src={imgs[2]} name={business.name} sizes="191px" />
-              </div>
-              <div className="relative overflow-hidden rounded-[12px] bg-btn">
-                <BusinessImage src={imgs[3]} name={business.name} sizes="191px" />
-              </div>
-            </div>
-          </div>
-        </section>
+      <SiteHeader />
 
-        <section className="mt-5 grid gap-6 lg:grid-cols-[296px_minmax(0,1fr)] lg:gap-[30px]">
-          {/* Location and Contact (Figma frame 45) */}
-          <aside className="flex flex-col gap-[15px] self-start rounded-[4px] border-2 border-subtle bg-white px-4 py-8">
-            <h2 className="text-base font-medium text-black">{business.type === "ONLINE" ? "Website and Contact" : "Location and Contact"}</h2>
-            {business.type === "PHYSICAL" && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-[116px] items-center justify-center rounded-[12px] bg-[#2f4a3a] bg-[radial-gradient(circle_at_30%_40%,#6f8f5a_0,transparent_45%),radial-gradient(circle_at_75%_70%,#3d6b8c_0,transparent_40%)] text-sm font-semibold text-white hover:opacity-90"
-              >
-                Open in Google Maps ↗
-              </a>
-            )}
-            {business.address && (
-              <p className="flex items-start gap-1 text-[15px] font-medium text-black">
-                <LocationIcon className="mt-0.5 shrink-0" />
-                <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noopener noreferrer" className="underline">
-                  {[business.address, business.city].filter(Boolean).join(", ")}
-                </a>
-              </p>
-            )}
-            {business.website && (
-              <p className="flex items-start gap-1 text-[15px] font-medium text-black">
-                <GlobeIcon className="mt-0.5 shrink-0" />
-                <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className="break-all underline">
-                  {business.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
-                </a>
-              </p>
-            )}
-            {business.phone && (
-              <p className="flex items-center gap-1.5 text-[15px] font-medium text-black">
-                <PhoneIcon className="shrink-0" />
-                <a href={`tel:${phoneE164 ?? business.phone}`}>{phoneE164 ? formatGhanaPhone(phoneE164) : business.phone}</a>
-              </p>
-            )}
+      {/* Business header */}
+      <section className="border-b border-line bg-white">
+        <div className={`${container} py-8`}>
+          <Breadcrumb
+            crumbs={[
+              { label: "Home", href: "/" },
+              { label: business.category, href: `/businesses?category=${encodeURIComponent(business.category)}` },
+              { label: business.name },
+            ]}
+          />
+          <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand-deep">
+                  <CategoryIcon category={business.category} size={16} /> {business.category}
+                </span>
+                <span className="rounded-full border border-line-strong px-3 py-1 text-sm font-semibold text-ink">
+                  {business.type === "ONLINE" ? "Online business" : "Physical location"}
+                </span>
+              </div>
+              <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl">{business.name}</h1>
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="inline-flex items-center gap-2">
+                  <Stars rating={business.avgRating} size={22} />
+                  <span className="font-display text-xl font-bold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>
+                </span>
+                <span className="text-muted">
+                  {business.reviewCount} verified review{business.reviewCount === 1 ? "" : "s"}
+                </span>
+                {where && (
+                  <span className="inline-flex items-center gap-1.5 text-muted">
+                    <LocationIcon size={16} /> {where}
+                  </span>
+                )}
+              </div>
+            </div>
+            <a href="#write-review" className={`${btn.cta} self-start lg:self-auto`}>
+              {myReview ? "Edit your review" : "Write a review"}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <main className={`${container} flex-1 py-8`}>
+        {/* Gallery */}
+        {imgs.length > 0 ? (
+          <section aria-label="Photos" className="grid h-[260px] grid-cols-4 grid-rows-2 gap-3 sm:h-[420px]">
+            {imgs.slice(0, 5).map((src, i) => (
+              <div key={src} className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-4 row-span-2 sm:col-span-2" : "hidden sm:block"}`}>
+                <BusinessImage src={src} name={business.name} sizes={i === 0 ? "(max-width: 640px) 100vw, 50vw" : "25vw"} priority={i === 0} />
+              </div>
+            ))}
+          </section>
+        ) : (
+          <section aria-label="Photos" className="relative h-44 overflow-hidden rounded-3xl sm:h-64">
+            <BusinessImage name={business.name} category={business.category} />
+          </section>
+        )}
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
+          {/* About */}
+          <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="about-heading">
+            <h2 id="about-heading" className="font-display text-xl font-semibold">About</h2>
+            <p className="mt-3 whitespace-pre-line text-body">{business.description}</p>
+          </section>
+
+          {/* Sidebar: write a review + contact (after About on mobile, right column on desktop) */}
+          <aside className="flex flex-col gap-6 lg:col-start-2 lg:row-span-3 lg:row-start-1">
+            <section id="write-review" className={`${card} p-6 lg:sticky lg:top-24`} aria-labelledby="write-heading">
+              <h2 id="write-heading" className="font-display text-xl font-semibold">{myReview ? "Your review" : "Give a review here"}</h2>
+              <div className="mt-4">
+                {step === null && user ? (
+                  isSubmitter ? (
+                    <p className="text-muted">You added this business, so you can&apos;t review it.</p>
+                  ) : (
+                    <ReviewForm
+                      businessId={business.id}
+                      existing={myReview ? { rating: myReview.rating, title: myReview.title, body: myReview.body } : undefined}
+                    />
+                  )
+                ) : (
+                  <VerificationPrompt step={step} slug={business.slug} />
+                )}
+              </div>
+            </section>
+
+            <section className={`${card} p-6`} aria-labelledby="contact-heading">
+              <h2 id="contact-heading" className="font-display text-xl font-semibold">
+                {business.type === "ONLINE" ? "Website & contact" : "Location & contact"}
+              </h2>
+              <ul className="mt-4 space-y-3 text-[15px]">
+                {business.address && (
+                  <li className="flex items-start gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><LocationIcon size={18} /></span>
+                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="pt-1.5 font-medium text-ink hover:text-brand">
+                      {where} <span className="text-sm text-brand">· Open in Maps ↗</span>
+                    </a>
+                  </li>
+                )}
+                {business.website && (
+                  <li className="flex items-start gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><GlobeIcon size={18} /></span>
+                    <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className="pt-1.5 font-medium break-all text-ink hover:text-brand">
+                      {business.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                    </a>
+                  </li>
+                )}
+                {business.phone && (
+                  <li className="flex items-start gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><PhoneIcon size={18} /></span>
+                    <a href={`tel:${phoneE164 ?? business.phone}`} className="pt-1.5 font-medium text-ink hover:text-brand">
+                      {phoneE164 ? formatGhanaPhone(phoneE164) : business.phone}
+                    </a>
+                  </li>
+                )}
+              </ul>
+            </section>
           </aside>
 
-          <div className="max-w-[700px]">
-            <h2 className="text-2xl font-medium text-black">About</h2>
-            <p className="mt-1 text-lg leading-snug whitespace-pre-line text-black lg:text-xl">{business.description}</p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-6 rounded-[12px] bg-white p-5">
-              <div>
-                <p className="text-4xl font-semibold">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</p>
-                <Stars rating={business.avgRating} size={18} />
-                <p className="mt-1 text-sm text-muted">
-                  {business.reviewCount} verified review{business.reviewCount === 1 ? "" : "s"}
-                </p>
+          {/* Rating breakdown */}
+          <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="ratings-heading">
+            <h2 id="ratings-heading" className="font-display text-xl font-semibold">Rating breakdown</h2>
+            <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
+              <div className="flex shrink-0 flex-col items-center rounded-2xl bg-brand-soft px-8 py-5">
+                <p className="font-display text-5xl font-bold text-brand-deep">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</p>
+                <Stars rating={business.avgRating} size={16} className="mt-1" />
+                <p className="mt-1 text-sm text-brand-deep">out of 5</p>
               </div>
-              <dl className="min-w-[220px] flex-1 space-y-1">
+              <dl className="flex-1 space-y-2">
                 {[5, 4, 3, 2, 1].map((star) => {
                   const n = dist[star - 1];
                   const pct = reviews.length ? Math.round((n / reviews.length) * 100) : 0;
                   return (
-                    <div key={star} className="flex items-center gap-2 text-sm">
-                      <dt className="w-10 shrink-0">{star} star</dt>
-                      <dd className="flex flex-1 items-center gap-2">
-                        <span className="h-2 flex-1 overflow-hidden rounded-full bg-[#e6e6e6]">
-                          <span className="block h-full rounded-full bg-ink" style={{ width: `${pct}%` }} />
+                    <div key={star} className="flex items-center gap-3 text-sm">
+                      <dt className="w-12 shrink-0 font-semibold text-ink">{star} star</dt>
+                      <dd className="flex flex-1 items-center gap-3">
+                        <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-brand-soft">
+                          <span className="block h-full rounded-full bg-star" style={{ width: `${pct}%` }} />
                         </span>
-                        <span className="w-6 text-right text-muted">{n}</span>
+                        <span className="w-8 text-right text-muted">{n}</span>
                       </dd>
                     </div>
                   );
                 })}
               </dl>
             </div>
-          </div>
-        </section>
+            <p className="mt-5 flex items-center gap-2 text-sm text-muted">
+              <ShieldCheckIcon size={16} className="text-cta" /> Only phone-verified reviewers can rate. One review per person.
+            </p>
+          </section>
 
-        <section className="mt-12 grid gap-8 lg:grid-cols-[421px_minmax(0,1fr)] lg:gap-10" aria-labelledby="reviews-heading">
-          <div className="lg:sticky lg:top-6 lg:self-start" id="write-review">
-            <h2 className="mb-3 text-2xl font-semibold text-ink">{myReview ? "Your review" : "Give a review here"}</h2>
-            {step === null && user ? (
-              user.id === business.submittedById ? (
-                <p className="rounded-[4px] bg-white p-4 text-sm">You added this business, so you can&apos;t review it.</p>
-              ) : (
-                <ReviewForm
-                  businessId={business.id}
-                  existing={myReview ? { rating: myReview.rating, title: myReview.title, body: myReview.body } : undefined}
-                />
-              )
-            ) : (
-              <VerificationPrompt step={step} slug={business.slug} />
-            )}
-          </div>
-
-          <div>
-            <h2 id="reviews-heading" className="sr-only">Reviews</h2>
+          {/* Reviews */}
+          <section className="lg:col-start-1" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading" className="font-display text-2xl font-bold">Reviews ({reviews.length})</h2>
             {reviews.length === 0 ? (
-              <p className="rounded-[12px] bg-white p-6 text-muted">No reviews yet. Be the first to share your experience.</p>
+              <p className={`${card} mt-4 p-6 text-muted`}>No reviews yet. Be the first to share your experience.</p>
             ) : (
-              <ul className="masonry columns-1 sm:columns-2 xl:columns-3">
+              <ul className="mt-4 space-y-4">
                 {reviews.map((r) => (
                   <li key={r.id}>
-                    <ReviewCard
-                      review={r}
-                      canReport={Boolean(user?.emailVerified) && user?.id !== r.userId}
-                      isMine={user?.id === r.userId}
-                    />
+                    <ReviewCard review={r} canReport={Boolean(user?.emailVerified) && user?.id !== r.userId} isMine={user?.id === r.userId} />
                   </li>
                 ))}
               </ul>
             )}
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
+      <SiteFooter />
     </>
   );
 }
@@ -180,7 +219,7 @@ export default async function BusinessPage({ params }: Props) {
 function VerificationPrompt({ step, slug }: { step: ReturnType<typeof nextVerificationStep>; slug: string }) {
   const next = encodeURIComponent(`/businesses/${slug}#write-review`);
   const copy = {
-    login: { text: "Log in or create an account to write a review.", href: `/login?next=${next}`, cta: "Log in to review" },
+    login: { text: "Log in or create an account to share your experience.", href: `/login?next=${next}`, cta: "Log in to review" },
     "verify-email": { text: "Verify your email address to write a review.", href: "/login", cta: "Verify email" },
     "verify-phone": {
       text: "To keep reviews genuine, every reviewer verifies a Ghana phone number. It takes a minute.",
@@ -190,9 +229,9 @@ function VerificationPrompt({ step, slug }: { step: ReturnType<typeof nextVerifi
   } as const;
   const c = copy[step ?? "login"];
   return (
-    <div className="rounded-[4px] bg-white p-5">
-      <p className="text-sm text-ink">{c.text}</p>
-      <Link href={c.href} className="mt-4 flex h-[45px] items-center justify-center rounded-[4px] bg-btn-dark text-sm font-semibold text-white hover:bg-black">
+    <div>
+      <p className="text-muted">{c.text}</p>
+      <Link href={c.href} className={`${btn.primary} mt-4 w-full`}>
         {c.cta}
       </Link>
     </div>

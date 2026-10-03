@@ -16,10 +16,23 @@ MVP scope:
 - search;
 - star ratings and written reviews.
 
-## Design source of truth
+## Design system ("Trust purple marketplace")
 
-Figma file: `7369kBlLR6ZW71vrRPGJvq` ("RatingsGhana").
-https://www.figma.com/design/7369kBlLR6ZW71vrRPGJvq/RatingsGhana
+The UI was redesigned with the ui-ux-pro-max skill. It uses the Marketplace/Directory pattern (search-first hero, categories, featured listings, trust section, CTA) in a vibrant, block-based style. **The tokens below, not the Figma file, are now the visual source of truth.**
+
+- **Tokens** are defined in `app/globals.css` (`@theme`). Use the token classes (`bg-brand`, `text-ink`, `bg-cta`, `border-line`, `text-star` …), never raw hex values.
+  - brand `#7C3AED` (hover `#6D28D9`, deep `#4C1D95`, night `#2E1065`), light `#A78BFA`, soft `#EDE9FE`, wash `#FAF5FF` (page bg)
+  - CTA green `#15803D`, darkened from the recommended `#22C55E` so white text passes WCAG AA; hover `#166534`
+  - text: ink `#1E1433` (headings), body `#3B3450`, muted `#5E5873`; borders `#E7DEFA` / `#CFC2EF`; stars amber `#F59E0B`
+- **Type:** Lexend for headings (`font-display`), Source Sans 3 for body (`font-sans`), via `next/font/google` in `app/layout.tsx`.
+- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `container`, `chip`). Reuse them instead of re-styling controls.
+- **Icons** are Lucide-style inline SVGs in `components/icons.tsx` (24×24, 2px stroke). The file includes `CategoryIcon` and `LogoMark`. Never use emoji as icons.
+- **Layout:** sticky purple top bar (`SiteHeader`), optional white title band (`title`/`crumbs`/`subtitle`/children props), `SiteFooter` on content pages, and the split-screen `AuthCard` for auth flows. Content width is `max-w-7xl`.
+- **Rules:** `cursor-pointer` and a 200ms colour/shadow transition on everything interactive. No scale-on-hover layout shift. Visible focus rings. Touch targets of at least 44px. `prefers-reduced-motion` is respected in `globals.css`. No horizontal scroll at 375px.
+- **Placeholders:** businesses without photos show a branded gradient tile (`BusinessImage`) with the category icon and initials.
+- **Base CSS:** keep global element styles inside `@layer base`. Unlayered CSS overrides Tailwind utilities.
+
+Figma file `7369kBlLR6ZW71vrRPGJvq` ("RatingsGhana") is the original wireframe. Use it for page inventory and content, not visuals:
 
 | Page | Route | Desktop frame | Mobile frame |
 |---|---|---|---|
@@ -28,13 +41,8 @@ https://www.figma.com/design/7369kBlLR6ZW71vrRPGJvq/RatingsGhana
 | Business details | `/businesses/[slug]` | `82:174` | `225:286` |
 | Register | `/register` | `195:196` | `225:287`, email step `244:124` |
 | Login | `/login` | `214:244` | `225:288` |
-| Mobile nav menu | (header) | — | `240:133` |
 
-- Before building or changing UI, pull the frame with the Figma MCP (`get_design_context`, `get_screenshot`).
-- Desktop frames are **1512px** wide; mobile frames are **390px**.
-- Typeface is **Inter**. The palette is neutral: near-black primary buttons, outlined secondary buttons, light grey page background, rounded image corners.
-- The design copy says "Yelp's Terms of Service". **Never ship "Yelp" text**; use "RatingsGhana's".
-- Pages with no Figma frame (`/verify-phone`, `/businesses/new`, `/admin`) reuse the same visual language: the auth-card style for forms, the header and breadcrumb style for pages.
+Never ship "Yelp" text (the wireframe copy contains it).
 
 ## Stack
 
@@ -112,12 +120,12 @@ prisma/
 ## Conventions
 
 - Tailwind utility classes only; no CSS modules or styled-components.
-- Responsive and mobile-first; layouts must match both the 390px and 1512px Figma frames.
+- Responsive and mobile-first; check 390px and 1440px.
 - Use accessible markup: labelled inputs, alt text on images, and keyboard-operable star input.
 - Keep components small and colocate page-only components under their route.
 
 ## Before pushing
 
 1. `npm run lint`, `npm test` and `npm run build` must all pass.
-2. For UI changes, screenshot the page at 1512px and 390px with Playwright and compare it against the matching Figma frame.
+2. For UI changes, screenshot the page at 1440px and 390px with Playwright. Check it against the design system above, including that there's no horizontal overflow.
 3. For changes touching auth, reviews or businesses, re-check the trust and safety rules above.

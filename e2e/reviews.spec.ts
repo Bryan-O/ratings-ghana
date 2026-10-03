@@ -63,13 +63,13 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await expect(page.getByRole("heading", { name: "Give a review here" })).toBeVisible();
 
   // Validation: no stars.
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByRole("button", { name: "Post review" }).click();
   await expect(page.getByText("Choose a star rating")).toBeVisible();
 
   await page.getByLabel("5 stars — Excellent").check({ force: true });
-  await page.getByPlaceholder("TITLE").fill(title);
-  await page.getByPlaceholder(/Share details/).fill("Soft fufu, rich light soup and the goat meat was tender. Friendly service too.");
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByLabel("Title").fill(title);
+  await page.getByLabel("Your review").fill("Soft fufu, rich light soup and the goat meat was tender. Friendly service too.");
+  await page.getByRole("button", { name: "Post review" }).click();
   await expect(page.getByText("Thanks! Your review is live.")).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
@@ -77,7 +77,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
 
   // Editing updates rather than duplicating.
   await expect(page.getByRole("heading", { name: "Your review" })).toBeVisible();
-  await page.getByPlaceholder("TITLE").fill(`Updated: ${title}`);
+  await page.getByLabel("Title").fill(`Updated: ${title}`);
   await page.getByRole("button", { name: "Update review" }).click();
   await expect(page.getByText("Your review has been updated.")).toBeVisible();
   await page.reload();
