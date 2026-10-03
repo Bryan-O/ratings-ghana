@@ -50,3 +50,6 @@ next-env.d.ts
 /playwright-report
 .dev-outbox.log
 !.env.example
+
+# local photo uploads (dev)
+/.uploads

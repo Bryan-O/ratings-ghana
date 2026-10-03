@@ -100,3 +100,26 @@ export async function getSiteStats() {
   ]);
   return { businesses, reviews };
 }
+
+export function getApprovedPhotos(businessId: string) {
+  return prisma.businessPhoto.findMany({
+    where: { businessId, status: "APPROVED" },
+    orderBy: { reviewedAt: "asc" },
+    include: { uploader: { select: { name: true } } },
+  });
+}
+
+export function countMyPendingPhotos(userId: string, businessId: string) {
+  return prisma.businessPhoto.count({ where: { uploaderId: userId, businessId, status: "PENDING" } });
+}
+
+export function getPendingPhotos() {
+  return prisma.businessPhoto.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: "asc" },
+    include: {
+      business: { select: { name: true, slug: true } },
+      uploader: { select: { name: true, email: true } },
+    },
+  });
+}

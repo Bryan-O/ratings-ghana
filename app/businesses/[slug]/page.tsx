@@ -6,12 +6,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { BusinessImage } from "@/components/business-image";
 import { Stars } from "@/components/stars";
-import { CategoryIcon, GlobeIcon, LocationIcon, PhoneIcon, ShieldCheckIcon } from "@/components/icons";
+import { CategoryIcon, GlobeIcon, LocationIcon, PhoneIcon, PlusIcon, ShieldCheckIcon } from "@/components/icons";
+import { PhotoUpload } from "@/components/photo-upload";
 import { ReviewCard } from "@/components/review-card";
 import { ReviewForm } from "@/components/review-form";
 import { btn, card, container } from "@/components/ui";
 import { formatGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
-import { getBusinessBySlug, getPublishedReviews, getUserReview } from "@/lib/queries";
+import { countMyPendingPhotos, getBusinessBySlug, getPublishedReviews, getUserReview } from "@/lib/queries";
 import { ratingDistribution } from "@/lib/ratings";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 
@@ -30,7 +31,9 @@ export default async function BusinessPage({ params }: Props) {
   if (!business || business.status !== "APPROVED") notFound();
 
   const [reviews, user] = await Promise.all([getPublishedReviews(business.id), getCurrentUser()]);
-  const myReview = user ? await getUserReview(user.id, business.id) : null;
+  const [myReview, myPendingPhotos] = user
+    ? await Promise.all([getUserReview(user.id, business.id), countMyPendingPhotos(user.id, business.id)])
+    : [null, 0];
   const step = nextVerificationStep(user);
   const dist = ratingDistribution(reviews.map((r) => r.rating));
   const imgs = business.images;
@@ -101,6 +104,23 @@ export default async function BusinessPage({ params }: Props) {
             <BusinessImage name={business.name} category={business.category} />
           </section>
         )}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted">
+            {imgs.length === 0 ? (
+              "No photos yet — be the first to add one."
+            ) : (
+              <>
+                {imgs.length} photo{imgs.length === 1 ? "" : "s"} ·{" "}
+                <Link href={`/businesses/${business.slug}/photos`} className="font-semibold text-brand hover:text-brand-hover">
+                  See all photos
+                </Link>
+              </>
+            )}
+          </p>
+          <a href="#add-photos" className={btn.smOutline}>
+            <PlusIcon size={16} /> Add photos
+          </a>
+        </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
           {/* About */}
@@ -111,7 +131,7 @@ export default async function BusinessPage({ params }: Props) {
 
           {/* Sidebar: write a review + contact (after About on mobile, right column on desktop) */}
           <aside className="flex flex-col gap-6 lg:col-start-2 lg:row-span-3 lg:row-start-1">
-            <section id="write-review" className={`${card} p-6 lg:sticky lg:top-24`} aria-labelledby="write-heading">
+            <section id="write-review" className={`${card} p-6`} aria-labelledby="write-heading">
               <h2 id="write-heading" className="font-display text-xl font-semibold">{myReview ? "Your review" : "Give a review here"}</h2>
               <div className="mt-4">
                 {step === null && user ? (
@@ -124,7 +144,7 @@ export default async function BusinessPage({ params }: Props) {
                     />
                   )
                 ) : (
-                  <VerificationPrompt step={step} slug={business.slug} />
+                  <VerificationPrompt step={step} slug={business.slug} purpose="review" />
                 )}
               </div>
             </section>
@@ -159,6 +179,21 @@ export default async function BusinessPage({ params }: Props) {
                   </li>
                 )}
               </ul>
+            </section>
+
+            <section id="add-photos" className={`${card} p-6`} aria-labelledby="photos-heading">
+              <h2 id="photos-heading" className="font-display text-xl font-semibold">Add photos</h2>
+              <p className="mt-1 mb-4 text-sm text-muted">Been here? Share photos of the place, food, products or service.</p>
+              {myPendingPhotos > 0 && (
+                <p className="mb-4 rounded-xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand-deep" role="status">
+                  You have {myPendingPhotos} photo{myPendingPhotos === 1 ? "" : "s"} awaiting review.
+                </p>
+              )}
+              {step === null && user ? (
+                <PhotoUpload businessId={business.id} />
+              ) : (
+                <VerificationPrompt step={step} slug={business.slug} purpose="photos" />
+              )}
             </section>
           </aside>
 
@@ -216,13 +251,26 @@ export default async function BusinessPage({ params }: Props) {
   );
 }
 
-function VerificationPrompt({ step, slug }: { step: ReturnType<typeof nextVerificationStep>; slug: string }) {
-  const next = encodeURIComponent(`/businesses/${slug}#write-review`);
+function VerificationPrompt({
+  step,
+  slug,
+  purpose,
+}: {
+  step: ReturnType<typeof nextVerificationStep>;
+  slug: string;
+  purpose: "review" | "photos";
+}) {
+  const next = encodeURIComponent(`/businesses/${slug}#${purpose === "review" ? "write-review" : "add-photos"}`);
+  const what = purpose === "review" ? "write a review" : "add photos";
   const copy = {
-    login: { text: "Log in or create an account to share your experience.", href: `/login?next=${next}`, cta: "Log in to review" },
-    "verify-email": { text: "Verify your email address to write a review.", href: "/login", cta: "Verify email" },
+    login: {
+      text: purpose === "review" ? "Log in or create an account to share your experience." : "Log in or create an account to add photos.",
+      href: `/login?next=${next}`,
+      cta: purpose === "review" ? "Log in to review" : "Log in to add photos",
+    },
+    "verify-email": { text: `Verify your email address to ${what}.`, href: "/login", cta: "Verify email" },
     "verify-phone": {
-      text: "To keep reviews genuine, every reviewer verifies a Ghana phone number. It takes a minute.",
+      text: `To keep RatingsGhana genuine, everyone who contributes verifies a Ghana phone number. Verify yours to ${what}.`,
       href: `/verify-phone?next=${next}`,
       cta: "Verify phone number",
     },

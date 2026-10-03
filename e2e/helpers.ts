@@ -62,4 +62,6 @@ export async function verifyPhone(page: Page, phone: { national: string; e164: s
   const [, code] = await waitForOutbox(phone.e164, /code is (\d{6})/);
   await page.getByLabel(/Enter the 6-digit code/).fill(code);
   await page.getByRole("button", { name: "Verify" }).click();
+  // Wait for the redirect so the verification is saved before the test moves on.
+  await page.waitForURL((u) => !u.pathname.startsWith("/verify-phone"));
 }

@@ -28,6 +28,12 @@ enum ReviewStatus {
   HIDDEN
 }
 
+enum PhotoStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id              String    @id @default(cuid())
   name            String?
@@ -47,6 +53,7 @@ model User {
   reports             Report[]
   phoneOtps           PhoneOtp[]
   submittedBusinesses Business[] @relation("SubmittedBy")
+  photos              BusinessPhoto[]
 }
 
 // --- Email verification ---
@@ -105,6 +112,7 @@ model Business {
 
   submittedBy User?    @relation("SubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
   reviews     Review[]
+  photos      BusinessPhoto[]
 
   @@index([status, avgRating])
   @@index([city])
@@ -143,4 +151,29 @@ model Report {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([reviewId, userId])
+}
+
+// --- Community photos ---
+
+// Uploaded by verified users; shown only once an admin approves them.
+// Approved URLs are also appended to Business.images (denormalised display list).
+model BusinessPhoto {
+  id         String      @id @default(cuid())
+  businessId String
+  uploaderId String
+  url        String
+  storageKey String
+  width      Int
+  height     Int
+  caption    String?
+  status     PhotoStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  reviewedAt DateTime?
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  uploader User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, status, createdAt])
+  @@index([uploaderId, createdAt])
+  @@index([status, createdAt])
 }

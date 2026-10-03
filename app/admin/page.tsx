@@ -1,10 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { btn, card, container } from "@/components/ui";
 import { approveBusinessAction, dismissReportsAction, hideReviewAction, rejectBusinessAction } from "@/lib/actions/admin";
+import { approvePhotoAction, removePhotoAction } from "@/lib/actions/photos";
+import { getPendingPhotos } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 
@@ -16,7 +19,7 @@ export default async function AdminPage() {
   const user = await getCurrentUser();
   if (user?.role !== "ADMIN") notFound();
 
-  const [pending, reported] = await Promise.all([
+  const [pending, reported, photos] = await Promise.all([
     prisma.business.findMany({
       where: { status: "PENDING" },
       orderBy: { createdAt: "asc" },
@@ -31,12 +34,44 @@ export default async function AdminPage() {
       },
       orderBy: { updatedAt: "desc" },
     }),
+    getPendingPhotos(),
   ]);
 
   return (
     <>
-      <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and handle reported reviews." />
+      <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and photos, and handle reported reviews." />
       <main className={`${container} flex-1 py-10`}>
+        <section className="mb-12" aria-labelledby="pending-photos">
+          <h2 id="pending-photos" className="font-display text-xl font-semibold">Pending photos ({photos.length})</h2>
+          {photos.length === 0 && <p className="mt-3 text-muted">No photos waiting for review.</p>}
+          <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {photos.map((p) => (
+              <li key={p.id} className={`${card} overflow-hidden`}>
+                <a href={p.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[4/3] bg-brand-soft">
+                  <Image src={p.url} alt={p.caption ?? `Photo for ${p.business.name}`} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover" />
+                </a>
+                <div className="p-4 text-sm">
+                  <p className="font-semibold text-ink">
+                    <Link href={`/businesses/${p.business.slug}`} className="text-brand underline">{p.business.name}</Link>
+                  </p>
+                  {p.caption && <p className="mt-1 text-body">“{p.caption}”</p>}
+                  <p className="mt-1 text-muted">By {p.uploader.name ?? "unknown"} ({p.uploader.email}) · {p.width}×{p.height}</p>
+                  <div className="mt-3 flex gap-2">
+                    <form action={approvePhotoAction}>
+                      <input type="hidden" name="id" value={p.id} />
+                      <button className={btn.smPrimary}>Approve</button>
+                    </form>
+                    <form action={removePhotoAction}>
+                      <input type="hidden" name="id" value={p.id} />
+                      <button className={btn.smOutline}>Reject</button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section>
           <h2 className="font-display text-xl font-semibold">Pending businesses ({pending.length})</h2>
           {pending.length === 0 && <p className="mt-3 text-muted">Nothing waiting for approval.</p>}

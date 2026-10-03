@@ -45,7 +45,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
   // Logged in but no phone → asked to verify before reviewing.
   await page.goto("/businesses/rakho-fufu");
   const before = Number(await page.getByText(/verified reviews?$/).textContent().then((t) => t!.split(" ")[0]));
-  await page.getByRole("link", { name: "Verify phone number" }).click();
+  await page.getByRole("link", { name: "Verify phone number" }).first().click();
   await expect(page).toHaveURL(/\/verify-phone/);
 
   // Wrong code is rejected.

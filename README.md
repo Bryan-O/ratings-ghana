@@ -38,7 +38,7 @@ npm run dev                      # http://localhost:3000
 - admin `admin@ratingsghana.local` / `ChangeMe123!`, which opens `/admin`;
 - demo reviewers `john@example.com` … / `Password123`.
 
-**Business photos:** put images in `public/images/businesses/<slug>/` (e.g. `ikes-cafe-and-grill/1.jpg`) and re-run `npm run db:seed`. Businesses without photos show a neutral placeholder tile.
+**Business photos:** verified users (email + phone) upload photos from a business page under **Add photos**. Each photo goes to `/admin` for approval before it appears. Uploads are resized and converted to WebP, and all metadata (including GPS location) is stripped. In development they're stored in `.uploads/`. You can also put photos you have the rights to in `public/images/businesses/<slug>/` and re-run `npm run db:seed`. Businesses without photos show a branded placeholder tile.
 
 ## Scripts
 
@@ -62,8 +62,9 @@ npm run dev                      # http://localhost:3000
    - `RESEND_API_KEY` and `EMAIL_FROM` (from a verified Resend domain)
    - `SMS_PROVIDER=arkesel`, `ARKESEL_API_KEY` and `ARKESEL_SENDER_ID` (register the sender ID with Arkesel)
    - optionally `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`
+   - for photo uploads: in Vercel go to **Storage → Create → Blob**, connect the store to the project (this sets `BLOB_READ_WRITE_TOKEN`), and set `STORAGE_PROVIDER=vercel-blob`
 3. Run migrations against Neon: `DATABASE_URL=... npx prisma migrate deploy`.
 4. Seed businesses and the admin with a strong password, **without demo data**:
    `DATABASE_URL=... SEED_ADMIN_PASSWORD=... SEED_DEMO_DATA=false npm run db:seed`.
 
-In production the app refuses to fall back to the console SMS or email outbox, so a missing key fails loudly instead of silently skipping verification.
+In production the app refuses to fall back to the console SMS or email outbox (or local photo storage), so a missing key fails loudly instead of silently skipping verification.

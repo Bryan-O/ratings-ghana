@@ -71,7 +71,8 @@ npm run db:seed        # businesses + admin; demo reviews when SEED_DEMO_DATA=tr
 - **Playwright:** use the preinstalled Chromium by setting `PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium`.
 - **Dev outbox:** OTP codes and verification links land in `.dev-outbox.log`, which the e2e tests read.
 - **Prisma 7:** the client is generated to `lib/generated/prisma` (gitignored) and must be imported from `@/lib/generated/prisma/client`. Config lives in `prisma.config.ts`, which also holds the seed command.
-- **Figma assets:** `www.figma.com` (the Figma asset host) may be blocked by the session network policy. Business photos go in `public/images/businesses/<slug>/`, and the seed picks them up.
+- **Photos:** community uploads go through `lib/actions/photos.ts`. They're stored by `lib/storage.ts` in `.uploads/` locally (served by `app/uploads/[...key]/route.ts`) and on Vercel Blob in production. Photos we have rights to can also go in `public/images/businesses/<slug>/`, which the seed picks up.
+  - **Never copy photos from Google, Google Maps, social media or other websites.** They're copyrighted, and showing them would be infringement.
 
 ## Architecture
 
@@ -87,6 +88,8 @@ lib/
   otp.ts             OTP generation/HMAC/expiry rules
   phone.ts           Ghana phone normalisation/validation (E.164 +233)
   sms.ts             SMS provider adapter (console | arkesel)
+  storage.ts         photo storage adapter (local | vercel-blob)
+  images.ts          upload validation (magic bytes) + sharp re-encode to WebP, strips EXIF/GPS
   email.ts           email sending (Resend)
   validation.ts      zod schemas
   actions/           server actions — ALL mutations live here (auth, phone, reviews, businesses, admin)
@@ -109,6 +112,12 @@ prisma/
 5. User-suggested businesses are `PENDING` and invisible to the public until an admin approves them.
 6. Admin pages and actions check `role === "ADMIN"` **server-side**.
 7. Reviews per user are rate-limited, and reviews can be reported into the admin queue.
+8. **Photo uploads:**
+   - they require a fully verified user and an approved business, plus the uploader's confirmation that they took the photo or have permission to share it;
+   - they are rate-limited to 20 a day;
+   - they're validated by magic bytes and re-encoded with sharp, which strips EXIF/GPS metadata;
+   - they start `PENDING` and only reach `Business.images` when an admin approves them, in the same transaction;
+   - rejecting or removing a photo pulls it from `Business.images` and deletes the stored file.
 
 ## External services and secrets
 

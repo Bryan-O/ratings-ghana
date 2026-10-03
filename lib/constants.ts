@@ -44,3 +44,4 @@ export const REPORT_REASONS = [
 
 export const REVIEWS_PER_DAY_LIMIT = 10;
 export const PAGE_SIZE = 12;
+export const PHOTO_UPLOADS_PER_DAY = 20;
