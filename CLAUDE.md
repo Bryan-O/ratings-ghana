@@ -92,7 +92,10 @@ lib/
   images.ts          upload validation (magic bytes) + sharp re-encode to WebP, strips EXIF/GPS
   email.ts           email sending (Resend)
   validation.ts      zod schemas
-  actions/           server actions — ALL mutations live here (auth, phone, reviews, businesses, admin)
+  duplicates.ts      duplicate-listing detection (name tokens, website/social handle keys)
+  business-slug.ts   uniqueSlug() for business URLs
+  use-form-action.ts client hook all forms submit through (no auto-reset, recovery messages)
+  actions/           server actions — ALL mutations live here (auth, phone, reviews, businesses, photos, admin)
 tests/               Vitest unit tests
 e2e/                 Playwright end-to-end tests
 prisma/
@@ -106,6 +109,10 @@ prisma/
   - reason: React auto-resets `<form action>` forms after each submit, snapping selects and radios back to their initial values while the UI still shows the user's choice, which silently submits the wrong data;
   - the hook also wraps actions with `withRecovery` (`lib/actions/safe-action.ts`), so a stale deployment ("Server Action not found") or a network failure shows a message with a Reload button instead of failing silently.
 - Form server actions are wrapped in `guard()` (`lib/actions/guard.ts`), which logs unexpected errors and returns a visible form error.
+- **Admin moderation** (`/admin`, `app/admin/*`):
+  - `getModerationQueue()` in `lib/queries.ts` returns pending listings with the submitter's track record and likely duplicates;
+  - duplicates come from `lib/duplicates.ts`, which matches identifying name words and the same website or social handle;
+  - admins can edit a pending listing (`BusinessEditor` → `updatePendingBusinessAction`, which regenerates the slug if the name or city changes) and then "Save & approve".
 - Use server components by default. Add `"use client"` only for interactive pieces (star input, forms, mobile menu).
 
 ## Trust and safety rules (must not regress)
@@ -115,6 +122,8 @@ prisma/
 3. **One review per user per business**, enforced by a unique DB constraint; users edit rather than duplicate.
 4. `Business.avgRating` / `reviewCount` are recomputed **in the same transaction** as any review write.
 5. User-suggested businesses are `PENDING` and invisible to the public until an admin approves them.
+   - Only `PENDING` listings can be approved, rejected or edited (`lib/actions/admin.ts`).
+   - Rejection requires a reason from `REJECTION_REASONS` (plus an optional note), stored in `Business.rejectionReason` and shown to the submitter on `/my-submissions`.
 6. Admin pages and actions check `role === "ADMIN"` **server-side**.
 7. Reviews per user are rate-limited, and reviews can be reported into the admin queue.
 8. **Photo uploads:**

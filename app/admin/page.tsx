@@ -5,9 +5,10 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { btn, card, container } from "@/components/ui";
-import { approveBusinessAction, dismissReportsAction, hideReviewAction, rejectBusinessAction } from "@/lib/actions/admin";
+import { dismissReportsAction, hideReviewAction } from "@/lib/actions/admin";
+import { PendingBusiness } from "@/app/admin/pending-business";
 import { approvePhotoAction, removePhotoAction } from "@/lib/actions/photos";
-import { getPendingPhotos } from "@/lib/queries";
+import { getModerationQueue, getPendingPhotos } from "@/lib/queries";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 
@@ -20,11 +21,7 @@ export default async function AdminPage() {
   if (user?.role !== "ADMIN") notFound();
 
   const [pending, reported, photos] = await Promise.all([
-    prisma.business.findMany({
-      where: { status: "PENDING" },
-      orderBy: { createdAt: "asc" },
-      include: { submittedBy: { select: { name: true, email: true } } },
-    }),
+    getModerationQueue(),
     prisma.review.findMany({
       where: { status: "PUBLISHED", reports: { some: { resolvedAt: null } } },
       include: {
@@ -74,32 +71,12 @@ export default async function AdminPage() {
 
         <section>
           <h2 className="font-display text-xl font-semibold">Pending businesses ({pending.length})</h2>
+          <p className="mt-1 text-sm text-muted">Oldest first. Check the link and look for duplicates before approving.</p>
           {pending.length === 0 && <p className="mt-3 text-muted">Nothing waiting for approval.</p>}
           <ul className="mt-4 flex flex-col gap-4">
             {pending.map((b) => (
-              <li key={b.id} className={`${card} p-5`}>
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="font-semibold">
-                      {b.name} <span className="text-sm font-normal text-muted">· {b.category} · {b.type === "ONLINE" ? "Online" : "Physical"}</span>
-                    </p>
-                    <p className="mt-1 text-sm">{b.description}</p>
-                    <p className="mt-1 text-sm text-muted">
-                      {[b.address, b.city, b.region].filter(Boolean).join(", ")} {b.website && <>· {b.website}</>} {b.phone && <>· {b.phone}</>}
-                    </p>
-                    <p className="mt-1 text-xs text-muted">Suggested by {b.submittedBy?.name ?? "unknown"} ({b.submittedBy?.email})</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <form action={approveBusinessAction}>
-                      <input type="hidden" name="id" value={b.id} />
-                      <button className={btn.smPrimary}>Approve</button>
-                    </form>
-                    <form action={rejectBusinessAction}>
-                      <input type="hidden" name="id" value={b.id} />
-                      <button className={btn.smOutline}>Reject</button>
-                    </form>
-                  </div>
-                </div>
+              <li key={b.id}>
+                <PendingBusiness b={b} />
               </li>
             ))}
           </ul>

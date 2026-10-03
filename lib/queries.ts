@@ -1,6 +1,7 @@
 import "server-only";
 import { PAGE_SIZE } from "@/lib/constants";
 import { prisma } from "@/lib/db";
+import { nameTokens, rankDuplicates, websiteKey } from "@/lib/duplicates";
 import type { Prisma } from "@/lib/generated/prisma/client";
 
 export type BusinessSearch = {
@@ -122,4 +123,61 @@ export function getPendingPhotos() {
       uploader: { select: { name: true, email: true } },
     },
   });
+}
+
+/**
+ * Pending businesses for the admin queue, each with its submitter's track record
+ * and likely duplicates among existing (non-rejected) listings.
+ */
+export async function getModerationQueue() {
+  const pending = await prisma.business.findMany({
+    where: { status: "PENDING" },
+    orderBy: { createdAt: "asc" },
+    include: {
+      submittedBy: { select: { id: true, name: true, email: true, createdAt: true, phoneVerifiedAt: true } },
+    },
+  });
+  if (pending.length === 0) return [];
+
+  const submitterIds = [...new Set(pending.map((b) => b.submittedById).filter((x): x is string => Boolean(x)))];
+  const history = await prisma.business.groupBy({
+    by: ["submittedById", "status"],
+    where: { submittedById: { in: submitterIds } },
+    _count: { _all: true },
+  });
+  const statsFor = (userId: string | null) => {
+    const rows = history.filter((h) => h.submittedById === userId);
+    const n = (s: string) => rows.find((r) => r.status === s)?._count._all ?? 0;
+    return { approved: n("APPROVED"), rejected: n("REJECTED"), pending: n("PENDING") };
+  };
+
+  return Promise.all(
+    pending.map(async (b) => {
+      const tokens = nameTokens(b.name).filter((t) => t.length >= 3);
+      const key = websiteKey(b.website);
+      const or: Prisma.BusinessWhereInput[] = tokens.map((t) => ({ name: { contains: t, mode: "insensitive" as const } }));
+      if (key) or.push({ website: { contains: key.split("/").pop()!, mode: "insensitive" } });
+      const candidates = or.length
+        ? await prisma.business.findMany({
+            where: { id: { not: b.id }, status: { not: "REJECTED" }, OR: or },
+            select: { id: true, name: true, slug: true, status: true, website: true, city: true },
+            take: 25,
+          })
+        : [];
+      return { ...b, submitterStats: statsFor(b.submittedById), duplicates: rankDuplicates(b, candidates) };
+    }),
+  );
+}
+
+/** Everything a user has suggested, newest first (for "My submissions"). */
+export function getMySubmissions(userId: string) {
+  return prisma.business.findMany({
+    where: { submittedById: userId },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, name: true, slug: true, category: true, type: true, status: true, rejectionReason: true, createdAt: true, reviewedAt: true },
+  });
+}
+
+export function countMySubmissions(userId: string) {
+  return prisma.business.count({ where: { submittedById: userId } });
 }

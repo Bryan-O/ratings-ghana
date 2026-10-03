@@ -51,7 +51,7 @@ test("verified users upload photos that appear only after admin approval", async
   await admin.goto("/admin");
   const item = admin.getByRole("listitem").filter({ hasText: caption });
   await expect(item).toContainText("Abena");
-  await item.getByRole("button", { name: "Approve" }).click();
+  await item.getByRole("button", { name: "Approve", exact: true }).click();
   await expect(admin.getByRole("listitem").filter({ hasText: caption })).toHaveCount(0);
 
   // Now visible with credit, and used as the business cover photo.

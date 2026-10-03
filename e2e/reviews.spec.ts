@@ -150,7 +150,7 @@ test("suggested businesses stay hidden until an admin approves them", async ({ p
   await login(admin, "admin@ratingsghana.local", process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!");
   await admin.goto("/admin");
   const item = admin.getByRole("listitem").filter({ hasText: name });
-  await item.getByRole("button", { name: "Approve" }).click();
+  await item.getByRole("button", { name: "Approve", exact: true }).click();
   await expect(admin.getByRole("listitem").filter({ hasText: name })).toHaveCount(0);
   await ctx.close();
 

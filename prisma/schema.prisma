@@ -104,6 +104,9 @@ model Business {
   phone         String?
   images        String[]
   status        BusinessStatus @default(PENDING)
+  // Moderation: when an admin approved/rejected it, and the reason shown to the submitter.
+  reviewedAt      DateTime?
+  rejectionReason String?
   submittedById String?
   avgRating     Float          @default(0)
   reviewCount   Int            @default(0)
@@ -117,6 +120,7 @@ model Business {
   @@index([status, avgRating])
   @@index([city])
   @@index([category])
+  @@index([submittedById, status])
 }
 
 model Review {

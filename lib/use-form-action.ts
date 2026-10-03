@@ -24,7 +24,9 @@ export function useFormAction(
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
-    const formData = new FormData(event.currentTarget);
+    // Include the clicked submit button (e.g. name="intent" value="approve").
+    const submitter = (event.nativeEvent as SubmitEvent).submitter;
+    const formData = new FormData(event.currentTarget, submitter?.getAttribute("name") ? submitter : null);
     startTransition(() => dispatch(formData));
   }
 

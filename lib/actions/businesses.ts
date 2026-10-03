@@ -1,5 +1,6 @@
 "use server";
 
+import { uniqueSlug } from "@/lib/business-slug";
 import { prisma } from "@/lib/db";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { slugify } from "@/lib/slug";
@@ -9,15 +10,6 @@ import { guard } from "@/lib/actions/guard";
 
 const MAX_PENDING_PER_USER = 5;
 const FIELDS = ["name", "type", "category", "description", "address", "city", "region", "website", "phone"];
-
-async function uniqueSlug(base: string): Promise<string> {
-  const root = base || "business";
-  for (let i = 1; i < 100; i++) {
-    const slug = i === 1 ? root : `${root}-${i}`;
-    if (!(await prisma.business.findUnique({ where: { slug }, select: { id: true } }))) return slug;
-  }
-  return `${root}-${Date.now()}`;
-}
 
 export async function suggestBusinessAction(prev: ActionState, formData: FormData): Promise<ActionState> {
   return guard("suggestBusiness", _suggestBusiness)(prev, formData);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOutAction } from "@/lib/actions/auth";
+import { countMySubmissions } from "@/lib/queries";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
 import { MobileMenu } from "@/components/mobile-menu";
@@ -22,10 +23,13 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
   const user = await getCurrentUser();
   const step = nextVerificationStep(user);
 
+  const submissions = user ? await countMySubmissions(user.id) : 0;
+
   const links = [
     { href: "/businesses", label: "Businesses" },
     { href: "/businesses", label: "Write a review" },
     ...(user ? [{ href: "/businesses/new", label: "Add a business" }] : []),
+    ...(submissions > 0 ? [{ href: "/my-submissions", label: "My submissions" }] : []),
     ...(user?.role === "ADMIN" ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 

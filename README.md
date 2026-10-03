@@ -34,6 +34,8 @@ npm run dev                      # http://localhost:3000
 
 **Dev outbox:** with `SMS_PROVIDER=console` and no `RESEND_API_KEY`, verification codes and email links are printed to the server console. They are also appended to `.dev-outbox.log`.
 
+**Moderation:** admins approve or reject suggested businesses and photos at `/admin`. Each pending business shows clickable links, when it was submitted, the submitter's history, and possible duplicates. Admins can edit details before approving. Rejections need a reason, which the submitter sees on `/my-submissions`.
+
 **Seeded accounts:**
 - admin `admin@ratingsghana.local` / `ChangeMe123!`, which opens `/admin`;
 - demo reviewers `john@example.com` … / `Password123`.

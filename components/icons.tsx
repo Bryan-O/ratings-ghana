@@ -261,3 +261,17 @@ export function CategoryIcon({ category, className, size = 22 }: IconProps & { c
     </Stroke>
   );
 }
+
+export const AlertIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3" />
+    <path d="M12 9v4M12 17h.01" />
+  </Stroke>
+);
+
+export const ClockIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </Stroke>
+);

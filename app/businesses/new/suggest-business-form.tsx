@@ -44,7 +44,11 @@ export function SuggestBusinessForm() {
       <div className={`${card} flex flex-col items-center p-10 text-center`}>
         <span className="flex size-14 items-center justify-center rounded-full bg-cta-soft text-cta"><CheckIcon size={28} /></span>
         <p className="mt-5 font-display text-xl font-semibold text-ink">{state.message}</p>
-        <Link href="/businesses" className={`${btn.primary} mt-6`}>Back to businesses</Link>
+        <p className="mt-2 text-muted">You can follow its status on My submissions.</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/my-submissions" className={btn.primary}>My submissions</Link>
+          <Link href="/businesses" className={btn.outline}>Back to businesses</Link>
+        </div>
       </div>
     );
   }

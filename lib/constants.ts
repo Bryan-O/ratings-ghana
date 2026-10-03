@@ -45,3 +45,13 @@ export const REPORT_REASONS = [
 export const REVIEWS_PER_DAY_LIMIT = 10;
 export const PAGE_SIZE = 12;
 export const PHOTO_UPLOADS_PER_DAY = 20;
+
+/** Shown to the person who suggested a business when an admin rejects it. */
+export const REJECTION_REASONS = [
+  "We couldn't verify that this business exists",
+  "This business is already listed",
+  "It doesn't appear to be a business in Ghana",
+  "The details are incomplete or incorrect",
+  "Spam or inappropriate content",
+  "Other",
+] as const;
