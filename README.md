@@ -36,6 +36,8 @@ npm run dev                      # http://localhost:3000
 
 **Moderation:** admins approve or reject suggested businesses and photos at `/admin`. Each pending business shows clickable links, when it was submitted, the submitter's history, and possible duplicates. Admins can edit details before approving. Rejections need a reason, which the submitter sees on `/my-submissions`.
 
+**Tester feedback:** a floating **Feedback** button on every page lets anyone, logged in or not, send a bug report, idea or "this was confusing" note. Messages are stored in the database with the page they came from and the browser/device. Admins read them at `/admin/feedback`, mark them resolved, and can **Download CSV** for Excel or Google Sheets. Set `FEEDBACK_ENABLED=false` to hide the button after the test phase.
+
 **Seeded accounts:**
 - admin `admin@ratingsghana.local` / `ChangeMe123!`, which opens `/admin`;
 - demo reviewers `john@example.com` … / `Password123`.

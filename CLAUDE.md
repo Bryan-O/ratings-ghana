@@ -113,6 +113,11 @@ prisma/
   - `getModerationQueue()` in `lib/queries.ts` returns pending listings with the submitter's track record and likely duplicates;
   - duplicates come from `lib/duplicates.ts`, which matches identifying name words and the same website or social handle;
   - admins can edit a pending listing (`BusinessEditor` → `updatePendingBusinessAction`, which regenerates the slug if the name or city changes) and then "Save & approve".
+- **Tester feedback:**
+  - `components/feedback-widget.tsx` (floating button + native `<dialog>`, mounted in `app/layout.tsx`) submits to `submitFeedbackAction` (`lib/actions/feedback.ts`);
+  - anonymous submissions are allowed and rate-limited (10/hour per salted IP hash or user), with a honeypot field;
+  - admins use `/admin/feedback` (filter, resolve) and `/admin/feedback/export` (CSV with formula-injection-safe cells);
+  - set `FEEDBACK_ENABLED=false` to hide the button.
 - Use server components by default. Add `"use client"` only for interactive pieces (star input, forms, mobile menu).
 
 ## Trust and safety rules (must not regress)

@@ -8,7 +8,8 @@ import { btn, card, container } from "@/components/ui";
 import { dismissReportsAction, hideReviewAction } from "@/lib/actions/admin";
 import { PendingBusiness } from "@/app/admin/pending-business";
 import { approvePhotoAction, removePhotoAction } from "@/lib/actions/photos";
-import { getModerationQueue, getPendingPhotos } from "@/lib/queries";
+import { getFeedbackCounts, getModerationQueue, getPendingPhotos } from "@/lib/queries";
+import { MessageIcon } from "@/components/icons";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 
@@ -20,7 +21,7 @@ export default async function AdminPage() {
   const user = await getCurrentUser();
   if (user?.role !== "ADMIN") notFound();
 
-  const [pending, reported, photos] = await Promise.all([
+  const [pending, reported, photos, feedback] = await Promise.all([
     getModerationQueue(),
     prisma.review.findMany({
       where: { status: "PUBLISHED", reports: { some: { resolvedAt: null } } },
@@ -32,12 +33,24 @@ export default async function AdminPage() {
       orderBy: { updatedAt: "desc" },
     }),
     getPendingPhotos(),
+    getFeedbackCounts(),
   ]);
 
   return (
     <>
       <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and photos, and handle reported reviews." />
       <main className={`${container} flex-1 py-10`}>
+        <Link
+          href="/admin/feedback"
+          className={`${card} mb-10 flex items-center gap-4 p-5 transition-colors duration-200 hover:border-brand-light`}
+        >
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-white"><MessageIcon size={22} /></span>
+          <span className="flex-1">
+            <span className="block font-display text-lg font-semibold text-ink">Tester feedback</span>
+            <span className="text-sm text-muted">{feedback.NEW} new · {feedback.ALL} total</span>
+          </span>
+          <span className="font-semibold text-brand">View →</span>
+        </Link>
         <section className="mb-12" aria-labelledby="pending-photos">
           <h2 id="pending-photos" className="font-display text-xl font-semibold">Pending photos ({photos.length})</h2>
           {photos.length === 0 && <p className="mt-3 text-muted">No photos waiting for review.</p>}

@@ -28,6 +28,18 @@ enum ReviewStatus {
   HIDDEN
 }
 
+enum FeedbackType {
+  BUG
+  CONFUSING
+  IDEA
+  OTHER
+}
+
+enum FeedbackStatus {
+  NEW
+  RESOLVED
+}
+
 enum PhotoStatus {
   PENDING
   APPROVED
@@ -54,6 +66,7 @@ model User {
   phoneOtps           PhoneOtp[]
   submittedBusinesses Business[] @relation("SubmittedBy")
   photos              BusinessPhoto[]
+  feedback            Feedback[]
 }
 
 // --- Email verification ---
@@ -180,4 +193,30 @@ model BusinessPhoto {
   @@index([businessId, status, createdAt])
   @@index([uploaderId, createdAt])
   @@index([status, createdAt])
+}
+
+// --- Tester feedback ---
+
+// Sent from the floating Feedback button; anyone can send it, logged in or not.
+model Feedback {
+  id         String         @id @default(cuid())
+  type       FeedbackType
+  message    String         @db.Text
+  // Page the person was on, e.g. "/businesses/rakho-fufu".
+  path       String
+  userAgent  String?
+  viewport   String?
+  // Optional contact email (logged-out testers); logged-in senders are linked via userId.
+  email      String?
+  userId     String?
+  // Salted hash of the sender's IP, only used for rate limiting.
+  ipHash     String?
+  status     FeedbackStatus @default(NEW)
+  resolvedAt DateTime?
+  createdAt  DateTime       @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([ipHash, createdAt])
 }

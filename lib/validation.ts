@@ -80,3 +80,28 @@ export function fieldErrors(error: z.ZodError): FieldErrors {
   }
   return out;
 }
+
+export const FEEDBACK_TYPES = ["BUG", "CONFUSING", "IDEA", "OTHER"] as const;
+
+export const feedbackSchema = z.object({
+  type: z.enum(FEEDBACK_TYPES, { error: "Choose what kind of feedback this is" }),
+  message: z.string().trim().min(5, "Tell us a little more (at least 5 characters)").max(2000, "Please keep it under 2000 characters"),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .max(200)
+    .transform((v) => (v === "" ? undefined : v))
+    .pipe(z.string().email("Enter a valid email, or leave it blank").optional())
+    .optional(),
+  path: z
+    .string()
+    .max(500)
+    .transform((v) => (v.startsWith("/") ? v : "/")),
+  viewport: z
+    .string()
+    .max(20)
+    .regex(/^\d{2,5}x\d{2,5}$/)
+    .optional()
+    .catch(undefined),
+});

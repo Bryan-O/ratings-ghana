@@ -181,3 +181,18 @@ export function getMySubmissions(userId: string) {
 export function countMySubmissions(userId: string) {
   return prisma.business.count({ where: { submittedById: userId } });
 }
+
+export function getFeedback(status: "NEW" | "RESOLVED" | "ALL") {
+  return prisma.feedback.findMany({
+    where: status === "ALL" ? {} : { status },
+    orderBy: { createdAt: "desc" },
+    take: 500,
+    include: { user: { select: { name: true, email: true } } },
+  });
+}
+
+export async function getFeedbackCounts() {
+  const rows = await prisma.feedback.groupBy({ by: ["status"], _count: { _all: true } });
+  const n = (s: string) => rows.find((r) => r.status === s)?._count._all ?? 0;
+  return { NEW: n("NEW"), RESOLVED: n("RESOLVED"), ALL: n("NEW") + n("RESOLVED") };
+}
