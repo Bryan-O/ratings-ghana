@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BusinessType {
+  PHYSICAL
+  ONLINE
+}
+
+enum BusinessStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReviewStatus {
+  PUBLISHED
+  HIDDEN
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  emailVerified   DateTime?
+  image           String?
+  passwordHash    String?
+  // E.164, e.g. +233241234567. Unique so one phone backs at most one account.
+  phone           String?   @unique
+  phoneVerifiedAt DateTime?
+  role            Role      @default(USER)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  emailTokens         EmailVerificationToken[]
+  reviews             Review[]
+  reports             Report[]
+  phoneOtps           PhoneOtp[]
+  submittedBusinesses Business[] @relation("SubmittedBy")
+}
+
+// --- Email verification ---
+
+// Raw token is only ever sent by email; we store its sha256.
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// --- Phone verification ---
+
+model PhoneOtp {
+  id         String    @id @default(cuid())
+  userId     String
+  phone      String
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// --- Directory ---
+
+model Business {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  name          String
+  type          BusinessType
+  category      String
+  description   String         @db.Text
+  address       String?
+  city          String?
+  region        String?
+  website       String?
+  phone         String?
+  images        String[]
+  status        BusinessStatus @default(PENDING)
+  submittedById String?
+  avgRating     Float          @default(0)
+  reviewCount   Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  submittedBy User?    @relation("SubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
+  reviews     Review[]
+
+  @@index([status, avgRating])
+  @@index([city])
+  @@index([category])
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  businessId String
+  userId     String
+  rating     Int
+  title      String
+  body       String       @db.Text
+  status     ReviewStatus @default(PUBLISHED)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reports  Report[]
+
+  // One review per user per business.
+  @@unique([userId, businessId])
+  @@index([businessId, status, createdAt])
+}
+
+model Report {
+  id         String    @id @default(cuid())
+  reviewId   String
+  userId     String
+  reason     String
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewId, userId])
+}

@@ -2,6 +2,8 @@
 
 Guidance for Claude Code (and humans) working in this repository.
 
+@AGENTS.md — this is Next.js 16. Read the bundled docs in `node_modules/next/dist/docs/` before using a Next API you're unsure of (e.g. `proxy.ts` replaced `middleware.ts`, and `params`/`searchParams` are Promises).
+
 ## Project
 
 **RatingsGhana** is a platform where people in Ghana star-rate (1–5) and review businesses, both physical shops and online sellers, and the customer service they give.
@@ -38,22 +40,30 @@ https://www.figma.com/design/7369kBlLR6ZW71vrRPGJvq/RatingsGhana
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Prisma ORM + PostgreSQL (Neon in production, local Postgres 16 in development)
-- Auth.js v5 (Google + email/password), zod for validation, bcrypt for passwords
+- Auth.js v5 (Google + email/password) with **JWT sessions and no adapter**: Google users are upserted by email in the `jwt` callback. Uses zod for validation and bcryptjs for passwords.
 - Vitest (unit) and Playwright (e2e and visual checks; Chromium is preinstalled in cloud sessions, so never run `playwright install`)
 - Deployed on Vercel
 
 ## Commands
 
-_The project is being scaffolded. This section is finalised once the scripts exist._
-
 ```bash
-npm run dev            # start dev server (http://localhost:3000)
+npm run dev            # dev server (http://localhost:3000)
 npm run lint           # ESLint
-npm test               # Vitest unit tests
-npm run build          # production build (also type-checks)
-npx prisma migrate dev # apply/create migrations against DATABASE_URL
-npx prisma db seed     # seed businesses, demo reviews, admin user
+npm test               # Vitest unit tests (tests/)
+npm run build          # prisma generate + next build (also type-checks)
+npm run test:e2e       # Playwright e2e (e2e/), starts `next dev` on :3100
+npm run db:migrate     # prisma migrate dev (run `npx prisma generate` after schema edits)
+npm run db:seed        # businesses + admin; demo reviews when SEED_DEMO_DATA=true
 ```
+
+- **Local Postgres in cloud sessions:**
+  - start it with `service postgresql start`;
+  - the DB is `ratings_ghana`, user/password `postgres`/`postgres`;
+  - copy `.env.example` to `.env` and set `AUTH_SECRET`.
+- **Playwright:** use the preinstalled Chromium by setting `PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium`.
+- **Dev outbox:** OTP codes and verification links land in `.dev-outbox.log`, which the e2e tests read.
+- **Prisma 7:** the client is generated to `lib/generated/prisma` (gitignored) and must be imported from `@/lib/generated/prisma/client`. Config lives in `prisma.config.ts`, which also holds the seed command.
+- **Figma assets:** `www.figma.com` (the Figma asset host) may be blocked by the session network policy. Business photos go in `public/images/businesses/<slug>/`, and the seed picks them up.
 
 ## Architecture
 
@@ -63,11 +73,17 @@ components/          shared UI (SiteHeader, BusinessCard, StarRating, ReviewCard
 lib/
   db.ts              Prisma client singleton
   auth.ts            Auth.js config
+  session.ts         getCurrentUser() (fresh DB read) + nextVerificationStep()
+  queries.ts         read-side queries (search, business, reviews)
+  ratings-db.ts      recomputeBusinessRating(tx, id), used inside review-write transactions
+  otp.ts             OTP generation/HMAC/expiry rules
   phone.ts           Ghana phone normalisation/validation (E.164 +233)
   sms.ts             SMS provider adapter (console | arkesel)
   email.ts           email sending (Resend)
   validation.ts      zod schemas
-  actions/           server actions — ALL mutations live here
+  actions/           server actions — ALL mutations live here (auth, phone, reviews, businesses, admin)
+tests/               Vitest unit tests
+e2e/                 Playwright end-to-end tests
 prisma/
   schema.prisma
   seed.ts
@@ -89,7 +105,8 @@ prisma/
 ## External services and secrets
 
 - SMS lives behind `lib/sms.ts`. With `SMS_PROVIDER=console` (dev), OTP codes are logged to the server console; `arkesel` is for production.
-- Email goes through Resend (`lib/email.ts`). In dev without `RESEND_API_KEY`, verification links are logged to the console.
+- Email goes through Resend (`lib/email.ts`). In dev without `RESEND_API_KEY`, verification links are logged to the console. In production both fallbacks throw instead of silently skipping verification.
+- Demo reviews (`SEED_DEMO_DATA=true`) are for local dev only. Never seed invented reviews into production.
 - All env vars are documented in `.env.example`. **Never commit `.env` or real secrets.**
 
 ## Conventions

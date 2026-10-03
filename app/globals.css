@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Tokens from the RatingsGhana Figma file */
+  --color-ink: #1e1e1e;
+  --color-ink-strong: #222222;
+  --color-btn: #2e2e2e;
+  --color-btn-dark: #121212;
+  --color-muted: #818181;
+  --color-subtle: #888888;
+  --color-placeholder: #9b9b9b;
+  --color-hairline: #b6b6b6;
+  --color-faint: #bababa;
+  --color-page: #f3f3f3;
+  --color-backdrop: #333333;
+  --color-star: #1e1e1e;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+/* Masonry review wall (Figma "Review Ticker") */
+.masonry {
+  column-gap: 1rem;
+}
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
