@@ -6,10 +6,11 @@ import { BusinessCard } from "@/components/business-card";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryIcon, PlusIcon } from "@/components/icons";
 import { EmptyState } from "@/components/empty-state";
-import { btn, container } from "@/components/ui";
+import { btn, container, press } from "@/components/ui";
 import { BUSINESS_SORTS, CATEGORIES, PAGE_SIZE, type BusinessSort } from "@/lib/constants";
 import { SortSelect } from "@/components/sort-select";
 import { Rail } from "@/components/rail";
+import { Reveal } from "@/components/reveal";
 import { getCategoryCounts, searchBusinesses } from "@/lib/queries";
 
 export const metadata: Metadata = { title: "Businesses" };
@@ -19,10 +20,10 @@ type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
 
 // Filters: a swipe row on phones and tablets, a vertical list in the desktop sidebar.
-const railClass = "-mx-4 gap-2 px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0";
+const railClass = "-mx-4 gap-2 px-4 pt-1 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0";
 
 const filterLink = (active: boolean) =>
-  `flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-medium whitespace-nowrap transition-colors duration-200 active:translate-y-px ${
+  `flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-medium whitespace-nowrap ${press} ${
     active ? "bg-ink text-white" : "bg-paper text-ink ring-1 ring-line-strong hover:ring-ink lg:bg-transparent lg:ring-0 lg:hover:bg-brand-wash"
   }`;
 
@@ -107,13 +108,13 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             </div>
           )}
           {items.length > 0 ? (
-            <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {items.map((b, i) => (
-                <li key={b.id} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+            <Reveal as="ul" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((b) => (
+                <li key={b.id}>
                   <BusinessCard business={b} />
                 </li>
               ))}
-            </ul>
+            </Reveal>
           ) : (
             <EmptyState title="Nothing matched that search." text="Try a shorter name, a different spelling, or browse by category. Not listed yet? Add it so others can rate it.">
               <Link href="/businesses/new" className={btn.cta}>

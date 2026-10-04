@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ReviewCard } from "@/components/review-card";
+import { useReveal } from "@/components/reveal";
 import { ChevronDownIcon, StarIcon } from "@/components/icons";
-import { chip } from "@/components/ui";
+import { btn, chip } from "@/components/ui";
 
 export type ListReview = {
   id: string;
@@ -33,6 +34,8 @@ export function ReviewList({ reviews }: { reviews: ListReview[] }) {
   const [sort, setSort] = useState<Sort>("newest");
   const [limit, setLimit] = useState(STEP);
   const top = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+  useReveal(list, `${stars}-${sort}`);
 
   useEffect(() => {
     const onFilter = (e: Event) => {
@@ -100,9 +103,9 @@ export function ReviewList({ reviews }: { reviews: ListReview[] }) {
         Showing {shown.length} of {filtered.length} reviews{stars ? ` with ${stars} stars` : ""}.
       </p>
 
-      <ul key={`${stars}-${sort}`} className="mt-4 space-y-4">
-        {shown.map((r, i) => (
-          <li key={r.id} className="animate-rise" style={{ animationDelay: `${Math.min(i % STEP, 6) * 40}ms` }}>
+      <ul key={`${stars}-${sort}`} ref={list} data-reveal-group="" className="mt-4 space-y-4">
+        {shown.map((r) => (
+          <li key={r.id}>
             <ReviewCard review={r} canReport={r.canReport} isMine={r.isMine} />
           </li>
         ))}
@@ -110,7 +113,7 @@ export function ReviewList({ reviews }: { reviews: ListReview[] }) {
 
       {filtered.length > shown.length && (
         <div className="mt-6 flex flex-col items-center gap-2">
-          <button type="button" onClick={() => setLimit((l) => l + STEP)} className="inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border-2 border-ink bg-paper px-6 font-semibold text-ink transition-colors duration-200 hover:bg-ink hover:text-white active:translate-y-px">
+          <button type="button" onClick={() => setLimit((l) => l + STEP)} className={btn.outline}>
             Show more reviews
           </button>
           <p className="text-sm text-muted">

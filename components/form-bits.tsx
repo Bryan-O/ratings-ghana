@@ -1,12 +1,30 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { STALE_MESSAGE } from "@/lib/actions/safe-action";
+import { shake } from "@/lib/motion";
+import { FORM_ERRORS_EVENT } from "@/lib/use-form-action";
 import { AlertIcon, CheckIcon } from "@/components/icons";
 
+/**
+ * Field-level error. Each time its form comes back with errors (FORM_ERRORS_EVENT), the field it
+ * belongs to shakes once: the nearest [data-shake-target], else the input in the same group.
+ */
 export function FieldError({ message, id }: { message?: string; id?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const form = el?.closest("form");
+    if (!el || !form) return;
+    const group = el.parentElement;
+    const target = group?.querySelector("[data-shake-target]") ?? group?.querySelector("input:not([type=hidden]):not(.sr-only), textarea, select");
+    const run = () => shake(target);
+    form.addEventListener(FORM_ERRORS_EVENT, run);
+    return () => form.removeEventListener(FORM_ERRORS_EVENT, run);
+  }, [message]);
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="mt-1.5 flex animate-drop items-center gap-1.5 text-sm font-medium text-coral-ink">
+    <p ref={ref} id={id} role="alert" className="mt-1.5 flex animate-drop items-center gap-1.5 text-sm font-medium text-coral-ink">
       <AlertIcon size={14} className="shrink-0" />
       {message}
     </p>

@@ -62,7 +62,7 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
             type="button"
             onClick={() => dialog.current?.close()}
             aria-label="Close photos"
-            className="absolute top-3 right-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-colors duration-200 hover:bg-coral"
+            className="absolute top-3 right-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-[background-color,scale] duration-200 ease-spring hover:bg-coral active:scale-90"
           >
             <CloseIcon />
           </button>
@@ -72,7 +72,7 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
                 type="button"
                 onClick={() => step(-1)}
                 aria-label="Previous photo"
-                className="absolute top-1/2 left-3 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-colors duration-200 hover:bg-coral"
+                className="absolute top-[calc(50%-1.375rem)] left-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-[background-color,scale] duration-200 ease-spring hover:bg-coral active:scale-90"
               >
                 <ChevronLeftIcon />
               </button>
@@ -80,7 +80,7 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
                 type="button"
                 onClick={() => step(1)}
                 aria-label="Next photo"
-                className="absolute top-1/2 right-3 flex size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-colors duration-200 hover:bg-coral"
+                className="absolute top-[calc(50%-1.375rem)] right-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-paper text-ink transition-[background-color,scale] duration-200 ease-spring hover:bg-coral active:scale-90"
               >
                 <ChevronRightIcon />
               </button>

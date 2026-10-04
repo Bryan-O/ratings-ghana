@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
+import { useReveal } from "@/components/reveal";
+import { press } from "@/components/ui";
 
 type Props = {
   children: React.ReactNode;
@@ -20,6 +22,7 @@ type Props = {
 export function Rail({ children, label, className = "", arrows = true }: Props) {
   const ref = useRef<HTMLUListElement>(null);
   const [edges, setEdges] = useState({ start: true, end: true });
+  useReveal(ref);
 
   useEffect(() => {
     const el = ref.current;
@@ -52,13 +55,14 @@ export function Rail({ children, label, className = "", arrows = true }: Props) 
 
   const overflow = !(edges.start && edges.end);
   const arrow =
-    "absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-paper text-ink transition-[opacity,background-color,color] duration-200 hover:bg-ink hover:text-white disabled:pointer-events-none disabled:opacity-0 sm:flex";
+    `absolute top-[calc(50%-1.375rem)] z-10 hidden size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-paper text-ink hover:bg-ink hover:text-white disabled:pointer-events-none disabled:opacity-0 sm:flex ${press}`;
 
   return (
     <div className="relative">
       <ul
         ref={ref}
         aria-label={label}
+        data-reveal-group=""
         className={`flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
       >
         {children}

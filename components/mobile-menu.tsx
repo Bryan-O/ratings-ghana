@@ -13,7 +13,7 @@ type Props = {
   userLabel?: string;
 };
 
-const item = "flex min-h-12 w-full cursor-pointer items-center rounded-xl px-4 text-base font-medium text-ink transition-colors duration-200 hover:bg-brand-wash aria-[current=page]:bg-brand-soft aria-[current=page]:text-brand";
+const item = "flex min-h-12 w-full cursor-pointer items-center rounded-xl px-4 text-base font-medium text-ink transition-[background-color,color,translate] duration-200 ease-spring hover:bg-brand-wash hover:translate-x-1 active:bg-brand-soft aria-[current=page]:bg-brand-soft aria-[current=page]:text-brand";
 
 export function MobileMenu({ links, signedIn, userLabel }: Props) {
   const pathname = usePathname();
@@ -29,7 +29,7 @@ export function MobileMenu({ links, signedIn, userLabel }: Props) {
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpenOn(open ? null : pathname)}
-        className="flex size-11 cursor-pointer items-center justify-center rounded-xl text-ink transition-colors duration-200 hover:bg-brand-wash"
+        className="flex size-11 cursor-pointer items-center justify-center rounded-xl text-ink transition-[background-color,scale] duration-200 ease-spring hover:bg-brand-wash active:scale-90"
       >
         <span key={String(open)} className="animate-pop">{open ? <CloseIcon /> : <MenuIcon />}</span>
       </button>

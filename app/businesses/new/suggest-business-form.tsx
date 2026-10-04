@@ -7,7 +7,7 @@ import { CATEGORIES, REGIONS } from "@/lib/constants";
 import { FieldError, FormMessage } from "@/components/form-bits";
 import { CheckIcon, GlobeIcon, StoreIcon } from "@/components/icons";
 import { SubmitButton } from "@/components/submit-button";
-import { btn, card, input, label, textarea } from "@/components/ui";
+import { btn, card, input, label, textarea, press } from "@/components/ui";
 import { useFormAction } from "@/lib/use-form-action";
 
 
@@ -72,7 +72,7 @@ export function SuggestBusinessForm() {
           {TYPES.map(({ value, text, hint, icon: Icon }) => (
             <label
               key={value}
-              className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
+              className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 ${press} has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
                 type === value ? "border-ink bg-brand-wash" : "border-line hover:border-ink/50"
               }`}
             >

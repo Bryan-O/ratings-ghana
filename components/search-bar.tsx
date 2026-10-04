@@ -4,6 +4,7 @@ import { useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryIcon, LocationIcon, SearchIcon } from "@/components/icons";
 import { CATEGORIES } from "@/lib/constants";
+import { btn } from "@/components/ui";
 
 type Props = { q?: string; location?: string; className?: string; size?: "lg" | "md" };
 
@@ -106,8 +107,8 @@ export function SearchBar({ q = "", location = "", className = "", size = "md" }
       <button
         type="submit"
         aria-label="Search"
-        className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-cta px-6 font-semibold text-white transition-colors duration-200 hover:bg-cta-hover hover:text-ink active:translate-y-px ${
-          size === "lg" ? "sm:h-12" : "sm:h-10"
+        className={`${btn.cta} ${
+          size === "lg" ? "sm:h-12" : "sm:h-10 sm:px-5"
         }`}
       >
         <SearchIcon size={18} />

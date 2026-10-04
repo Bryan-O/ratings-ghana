@@ -5,7 +5,7 @@ import { submitFeedbackAction } from "@/lib/actions/feedback";
 import { CheckIcon, CloseIcon, MessageIcon } from "@/components/icons";
 import { FieldError, FormMessage } from "@/components/form-bits";
 import { SubmitButton } from "@/components/submit-button";
-import { btn, input, label, textarea } from "@/components/ui";
+import { btn, press, input, label, textarea } from "@/components/ui";
 import { useFormAction } from "@/lib/use-form-action";
 
 const TYPES = [
@@ -33,7 +33,7 @@ export function FeedbackWidget({ signedIn }: { signedIn: boolean }) {
       <button
         type="button"
         onClick={show}
-        className="group fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-paper bg-ink px-4 text-sm font-semibold text-white transition-[background-color,color,bottom] duration-200 [body:has([data-action-bar=shown])_&]:bottom-24 hover:bg-coral hover:text-ink active:translate-y-px print:hidden"
+        className={`group fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-paper bg-ink px-4 text-sm font-semibold text-white [body:has([data-action-bar=shown])_&]:bottom-24 hover:bg-coral hover:text-ink ${press} print:hidden`}
         aria-haspopup="dialog"
       >
         <MessageIcon size={18} className="transition-transform duration-200 group-hover:-translate-y-0.5" /> Feedback
@@ -122,7 +122,7 @@ function FeedbackForm({ signedIn, onClose, onAnother }: { signedIn: boolean; onC
           {TYPES.map((t) => (
             <label
               key={t.value}
-              className={`inline-flex h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-semibold transition-colors duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
+              className={`inline-flex h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-semibold ${press} has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
                 type === t.value ? "border-ink bg-ink text-white" : "border-line-strong bg-paper text-ink hover:border-ink"
               }`}
             >

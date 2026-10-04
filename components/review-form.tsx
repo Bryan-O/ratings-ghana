@@ -7,6 +7,7 @@ import { FieldError, FormMessage } from "@/components/form-bits";
 import { SubmitButton } from "@/components/submit-button";
 import { input, label, textarea } from "@/components/ui";
 import { useFormAction } from "@/lib/use-form-action";
+import { STAGGER } from "@/lib/motion";
 
 
 const LABELS = ["Terrible", "Poor", "Okay", "Good", "Excellent"];
@@ -24,10 +25,32 @@ export function ReviewForm({ businessId, existing }: Props) {
   const v = state.values;
   const [rating, setRating] = useState<number>(Number(v?.rating) || existing?.rating || 0);
   const [hover, setHover] = useState(0);
-  const [punched, setPunched] = useState(0);
+  // Per-star animation keys and delays: bumping a star's key replays its pop.
+  const [pops, setPops] = useState<{ keys: number[]; delays: number[] }>({ keys: [0, 0, 0, 0, 0], delays: [0, 0, 0, 0, 0] });
+  const [spark, setSpark] = useState<{ star: number; id: number } | null>(null);
   const [bodyLength, setBodyLength] = useState((v?.body ?? existing?.body ?? "").trim().length);
   const needed = Math.max(0, MIN_BODY - bodyLength);
   const shown = hover || rating;
+
+  /** Pop stars from+1..to one after another (45ms apart). */
+  function popRange(from: number, to: number) {
+    if (to <= from) return;
+    setPops((p) => ({
+      keys: p.keys.map((k, i) => (i + 1 > from && i + 1 <= to ? k + 1 : k)),
+      delays: p.delays.map((d, i) => (i + 1 > from && i + 1 <= to ? (i - from) * STAGGER.stars : d)),
+    }));
+  }
+
+  function preview(n: number) {
+    popRange(shown, n);
+    setHover(n);
+  }
+
+  function lock(n: number) {
+    setRating(n);
+    popRange(0, n); // re-pop every selected star, then burst on the chosen one
+    setSpark((s) => ({ star: n, id: (s?.id ?? 0) + 1 }));
+  }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
@@ -35,37 +58,37 @@ export function ReviewForm({ businessId, existing }: Props) {
 
       <fieldset onMouseLeave={() => setHover(0)}>
         <legend className={label}>Your rating</legend>
-        {/* Five large tappable stars on light coral tiles; they fill coral from left to right. */}
-        <div className="flex items-center gap-1.5">
+        {/*
+          Five large tappable stars on light coral tiles. Hover previews the rating (stars pop in one
+          after another); tapping locks it with a pop and a small burst. Keyboard: arrow keys.
+        */}
+        <div data-shake-target="" className="flex items-center gap-1.5">
           {[1, 2, 3, 4, 5].map((n) => {
             const on = n <= shown;
             return (
-              <label key={n} className="cursor-pointer" onMouseEnter={() => setHover(n)}>
+              <label key={n} className="cursor-pointer" onMouseEnter={() => preview(n)}>
                 <input
                   type="radio"
                   name="rating"
                   value={n}
                   checked={rating === n}
-                  onChange={() => {
-                    setRating(n);
-                    setPunched((p) => p + 1);
-                  }}
+                  onChange={() => lock(n)}
                   className="peer sr-only"
                   aria-label={`${n} star${n > 1 ? "s" : ""} — ${LABELS[n - 1]}`}
                 />
                 <span
-                  className={`flex size-12 items-center justify-center rounded-xl transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand ${
+                  className={`relative flex size-12 items-center justify-center rounded-xl transition-[background-color,scale] duration-150 ease-spring peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand active:scale-90 ${
                     on ? "bg-coral-tint" : "bg-coral-soft hover:bg-coral-tint"
                   }`}
                 >
                   <span
-                    // Re-key on each pick so the filled stars pop in again, one after another.
-                    key={on && n <= rating ? `p${punched}` : "idle"}
-                    className={on && n <= rating && punched > 0 ? "animate-pop" : ""}
-                    style={{ animationDelay: `${(n - 1) * 45}ms` }}
+                    key={on ? `on-${pops.keys[n - 1]}` : "off"}
+                    className={on && pops.keys[n - 1] > 0 ? "animate-star-pop" : ""}
+                    style={{ animationDelay: `${pops.delays[n - 1]}ms` }}
                   >
-                    <StarIcon size={28} filled={on} className={on ? "text-star" : "text-star-empty"} />
+                    <StarIcon size={28} filled={on} className={`transition-colors duration-150 ${on ? "text-star" : "text-star-empty"}`} />
                   </span>
+                  {spark?.star === n && <Spark key={spark.id} />}
                 </span>
               </label>
             );
@@ -120,5 +143,20 @@ export function ReviewForm({ businessId, existing }: Props) {
       <FormMessage ok={state.ok} message={state.errors?.form ?? state.message} />
       <SubmitButton pending={pending} variant="cta" pendingText="Posting…">{existing ? "Update review" : "Post review"}</SubmitButton>
     </form>
+  );
+}
+
+/** Six coral particles bursting out of a star when a rating is locked in. Decorative only. */
+function Spark() {
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0 motion-reduce:hidden">
+      {[0, 60, 120, 180, 240, 300].map((deg, i) => (
+        <span
+          key={deg}
+          className={`absolute top-1/2 left-1/2 -mt-1 -ml-1 size-2 animate-spark rounded-full ${i % 2 ? "bg-brand" : "bg-coral"}`}
+          style={{ "--spark-angle": `${deg + 30}deg` } as React.CSSProperties}
+        />
+      ))}
+    </span>
   );
 }

@@ -89,28 +89,32 @@ Privacy and moderation copy must be literal. Never promise something the product
 
 ## Motion
 
-The guidelines don't define motion. This is the app's interpretation of "energetic: move with pace".
+The guidelines don't define motion. This is the app's interpretation of "energetic: move with pace". It's implemented in `lib/motion.ts` and `app/globals.css`.
+
+**Language:**
+- every interactive element reacts within about 100ms;
+- spring easing (`cubic-bezier(0.34, 1.56, 0.64, 1)`) for playful elements;
+- a smooth ease-out for larger reveals;
+- 150–300ms for hover and press, 400–600ms for load and scroll reveals;
+- transform and opacity only.
 
 | Moment | Effect |
 |---|---|
-| Picking a star | The filled stars pop in left to right |
-| Posting, sending, submitting | The confirmation rises in with a check that pops |
-| Verified badge | The check draws itself in |
-| Clickable cards | Lift 2px with an ink edge (no shadows, no scale) |
-| Search | Category suggestions drop down (arrow keys, Enter, Escape) |
-| Hero | Recent verified reviews cycle (pauses on hover or focus) |
-| Rating breakdown | Bars fill when scrolled into view |
-| Business photos | Open in a lightbox (arrow keys, Esc) |
+| Homepage load | The headline builds itself word by word (24px up, 70ms apart); the sub-headline, search and chips fade up after it |
+| Headline hover or tap | The word lifts 2px and turns signal coral |
+| Buttons | Lift 2px with a soft shadow on hover or focus; scale to 0.96 on press and spring back. Primary actions get a colour wash from the tap point |
+| Star rating | Hover previews it with stars popping in one after another (scale 1.15); tapping locks it with a pop and a small coral and violet burst |
+| Cards and lists | Fade and slide up 16px as they scroll into view, 60ms apart |
+| Business card hover | Lifts 4px, shadow deepens, the arrow nudges forward and turns coral |
+| Inputs | Border moves to violet with a soft ring fading in |
+| Validation error | The field shakes once (4px, 300ms) and the message drops in |
+| Filtering and sorting | Results re-reveal; the sort control shows a spinner while loading |
 | Navigating | A thin coral progress line along the top; the nav underline tracks the current section |
-| Filtering reviews | Tap a rating bar or star chip; the list re-rises, filtered, with a "Show more" button |
-| Sorting | The business list re-orders in place (spinner while loading) |
-| Writing a review | A length guide fills coral to the 30-character minimum, then turns green |
-| Sharing | Opens the phone's share sheet, or copies the link and confirms "Link copied" |
-| Scrolling on phones | The header slides away going down and returns going up; a "Rate it" bar slides up from the bottom |
-| Swipe rows | Cards and filters snap as you swipe; arrow buttons appear on wider screens when a row overflows |
-| Invalid field | Shakes once |
+| Phones | The header slides away while scrolling down; a "Rate it" bar slides up from the bottom |
 
 Rules:
-- 150–700ms;
-- transform and opacity only;
-- everything is static under `prefers-reduced-motion`.
+- `prefers-reduced-motion` turns every effect off: content renders in its final state and nothing starts hidden;
+- nothing relies on hover alone;
+- focus-visible states are at least as visible as hover states;
+- animation never shifts layout;
+- soft shadows appear only as interaction feedback, never as static decoration, and never on the logo.

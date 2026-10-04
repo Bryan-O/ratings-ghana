@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckIcon, ShareIcon } from "@/components/icons";
+import { btn } from "@/components/ui";
 
 /** Shares the page with the phone's share sheet, or copies the link where that isn't available. */
 export function ShareButton({ title, className = "" }: { title: string; className?: string }) {
@@ -35,7 +36,7 @@ export function ShareButton({ title, className = "" }: { title: string; classNam
     <button
       type="button"
       onClick={share}
-      className={`relative inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-ink bg-paper px-5 font-semibold text-ink transition-colors duration-200 hover:bg-ink hover:text-white active:translate-y-px ${className}`}
+      className={`${btn.outline} px-5 ${className}`}
     >
       {copied ? <CheckIcon size={18} className="animate-pop" /> : <ShareIcon size={18} />}
       <span>{copied ? "Link copied" : "Share"}</span>

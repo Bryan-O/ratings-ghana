@@ -125,9 +125,9 @@ export function PhotoUpload({ businessId }: { businessId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <label
-        className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line-strong bg-brand-wash px-4 py-5 text-center transition-colors duration-200 hover:border-brand has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
+        className="group flex min-h-28 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line-strong bg-brand-wash px-4 py-5 text-center transition-[border-color,scale] duration-200 ease-spring hover:border-brand active:scale-[0.98] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
       >
-        <span className="flex size-10 items-center justify-center rounded-full bg-brand text-white">
+        <span className="flex size-10 items-center justify-center rounded-full bg-brand text-white transition-[rotate,scale] duration-300 ease-spring group-hover:scale-110 group-hover:rotate-90">
           <PlusIcon size={20} />
         </span>
         <span className="font-semibold text-ink">Choose photos</span>

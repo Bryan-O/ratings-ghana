@@ -44,6 +44,21 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - the nav progress line (`NavProgress`).
 
   Animate transform and opacity only, 150–700ms.
+- **Motion system** (one place: `lib/motion.ts` + the `@theme` tokens and keyframes in `globals.css`):
+  - **Easing:** `ease-spring` `cubic-bezier(0.34,1.56,0.64,1)` for small, playful things (buttons, stars); `ease-out-soft` for reveals.
+  - **Durations:** 150–300ms for hover and press; 400–600ms for load and scroll reveals.
+  - **Buttons:** the `press` recipe in `components/ui.ts` is built into every `btn.*` and `chip`. Use it for any custom clickable.
+    - Hover or keyboard focus: lift 2px with a soft shadow.
+    - Press: scale 0.96 at once, then a spring back.
+    - Disabled controls don't move.
+    - Primary buttons also have the `ripple` class (tap wash, run by `MotionRuntime`).
+  - **Hero:** `HeroHeadline` staggers words up 24px, 70ms apart, in CSS only. Hovering or tapping a word lifts it and turns it coral. Follow-up content uses `animate-fade-up` with `afterHeadline()` delays.
+  - **Scroll reveals:** wrap lists in `<Reveal as="ul">`, or call `useReveal(ref)` in client lists. Children fade and slide up 16px with a 60ms stagger.
+    - The hidden start state only applies under `<html data-motion="on">`, which an inline boot script sets before first paint, and never with reduced motion.
+    - A CSS fallback shows everything if JavaScript never loads.
+  - **Stars:** the review form pops stars in sequence on hover, and pops plus bursts on lock-in.
+  - **Validation:** `FieldError` shakes its field on every failed submit, via `FORM_ERRORS_EVENT` from `useFormAction`.
+  - **Testing:** `e2e/motion.spec.ts` checks that the hero reaches its final state with reduced motion. Keep it passing.
 - **Responsive patterns:**
   - Card rows and filter chips use `Rail`: a swipeable snap row on phones and tablets that becomes a grid or list via `lg:` classes.
   - On phones, `AutoHideHeader` slides the header away while scrolling down, and `MobileActionBar` pins the page's main action to the bottom. The Feedback button moves up when the bar shows.
@@ -51,7 +66,9 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - Grid columns that hold swipe rows must use `minmax(0,1fr)` (or `grid-cols-1`), or the row's content widens the page.
 - **Rules:**
   - `cursor-pointer` and a 200ms colour transition on everything interactive;
-  - no drop shadows or gradients, and no scale-on-hover layout shift;
+  - no gradients and no static drop shadows. Soft shadows appear only as interaction feedback (a lifted button or card);
+  - animate `translate`/`scale`/`opacity` only, never anything that causes a layout shift;
+  - nothing may rely on hover alone: every hover effect has a press (`active:`) or focus equivalent;
   - visible focus rings and touch targets of at least 44px;
   - `prefers-reduced-motion` is respected in `globals.css` (everything static);
   - no horizontal scroll at 375px.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { press } from "@/components/ui";
 import { BadgeCheckIcon, CheckIcon, LogoMark, ShieldCheckIcon, SmartphoneIcon } from "@/components/icons";
 
 const POINTS = [
@@ -78,7 +79,7 @@ export function Terms() {
 }
 
 export const socialBtn =
-  "flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-ink bg-paper px-4 text-base font-semibold text-ink transition-colors duration-200 hover:bg-brand-wash active:translate-y-px";
+  `flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-ink bg-paper px-4 text-base font-semibold text-ink hover:bg-brand-wash ${press}`;
 
 export function OrDivider() {
   return (

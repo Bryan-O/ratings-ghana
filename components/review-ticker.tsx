@@ -57,7 +57,7 @@ export function ReviewTicker({ reviews }: { reviews: TickerReview[] }) {
                 onClick={() => setIndex(i)}
                 aria-label={`Show review ${i + 1} of ${reviews.length}`}
                 aria-current={i === index}
-                className="group flex size-11 cursor-pointer items-center justify-center rounded-full"
+                className="group flex size-11 cursor-pointer items-center justify-center rounded-full transition-[scale] duration-150 ease-spring active:scale-75"
               >
                 <span
                   className={`block h-2 rounded-full transition-[width,background-color] duration-300 ${
