@@ -7,6 +7,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { btn, card, container } from "@/components/ui";
 import { dismissReportsAction, hideReviewAction } from "@/lib/actions/admin";
 import { PendingBusiness } from "@/app/admin/pending-business";
+import { SetupCheckPanel } from "@/app/admin/setup-check";
+import { setupChecks } from "@/lib/setup-status";
 import { approvePhotoAction, removePhotoAction } from "@/lib/actions/photos";
 import { getFeedbackCounts, getModerationQueue, getPendingPhotos } from "@/lib/queries";
 import { MessageIcon } from "@/components/icons";
@@ -40,6 +42,7 @@ export default async function AdminPage() {
     <>
       <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and photos, and handle reported reviews." />
       <main className={`${container} flex-1 py-10`}>
+        <SetupCheckPanel checks={setupChecks()} />
         <Link
           href="/admin/feedback"
           className={`${card} mb-10 flex items-center gap-4 p-5 transition-colors duration-200 hover:border-brand-light`}

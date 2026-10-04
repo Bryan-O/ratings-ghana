@@ -47,7 +47,7 @@ async function _sendPhoneOtp(_prev: ActionState, formData: FormData): Promise<Ac
   }
 
   const code = generateOtpCode();
-  await prisma.phoneOtp.create({
+  const otp = await prisma.phoneOtp.create({
     data: {
       userId: user.id,
       phone,
@@ -55,7 +55,19 @@ async function _sendPhoneOtp(_prev: ActionState, formData: FormData): Promise<Ac
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     },
   });
-  await sendSms(phone, `Your RatingsGhana verification code is ${code}. It expires in 10 minutes. Don't share it with anyone.`);
+  try {
+    await sendSms(phone, `Your RatingsGhana verification code is ${code}. It expires in 10 minutes. Don't share it with anyone.`);
+  } catch (e) {
+    // A text that never left doesn't count towards the hourly limit, and its code must not be usable.
+    await prisma.phoneOtp.delete({ where: { id: otp.id } }).catch(() => {});
+    console.error("[action:sendPhoneOtp] SMS not sent", { to: maskGhanaPhone(phone) }, e);
+    return {
+      errors: {
+        form: "We couldn't send a text to that number. Check it's a Ghana mobile number and try again. If it keeps happening, come back in a few minutes.",
+      },
+      values: { phone: raw },
+    };
+  }
 
   return { ok: true, data: { step: "code", maskedPhone: maskGhanaPhone(phone) } };
 }

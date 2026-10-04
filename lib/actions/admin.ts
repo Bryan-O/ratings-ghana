@@ -10,6 +10,8 @@ import { guard } from "@/lib/actions/guard";
 import { formValues, type ActionState } from "@/lib/actions/state";
 import { recomputeBusinessRating } from "@/lib/ratings-db";
 import { getCurrentUser } from "@/lib/session";
+import { maskGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
+import { sendSms } from "@/lib/sms";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
@@ -121,4 +123,25 @@ export async function dismissReportsAction(formData: FormData) {
   await requireAdmin();
   await prisma.report.updateMany({ where: { reviewId: id(formData), resolvedAt: null }, data: { resolvedAt: new Date() } });
   revalidatePath("/admin");
+}
+
+/**
+ * Admin-only: send a test text and report exactly what the SMS provider said,
+ * so setup problems can be fixed without digging through server logs.
+ */
+export async function testSmsAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("testSms", _testSms)(prev, formData);
+}
+
+async function _testSms(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  const raw = String(formData.get("phone") ?? "");
+  const phone = normalizeGhanaPhone(raw);
+  if (!phone) return { errors: { phone: "Enter a valid Ghana mobile number, e.g. 024 123 4567" }, values: { phone: raw } };
+  try {
+    await sendSms(phone, "RatingsGhana test message. SMS sending works.");
+  } catch (e) {
+    return { errors: { form: `Not sent. ${(e as Error).message}` }, values: { phone: raw } };
+  }
+  return { ok: true, message: `Sent to ${maskGhanaPhone(phone)}. If it doesn't arrive within a minute, check the sender ID and balance in Arkesel.` };
 }

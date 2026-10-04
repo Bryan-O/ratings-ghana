@@ -168,6 +168,9 @@ prisma/
 ## External services and secrets
 
 - SMS lives behind `lib/sms.ts`. With `SMS_PROVIDER=console` (dev), OTP codes are logged to the server console; `arkesel` is for production.
+  - Failures throw `SmsError`, including when Arkesel answers HTTP 200 with a non-success status.
+  - `sendPhoneOtp` deletes the OTP when the text fails, so failed sends don't count towards the hourly limit, and it shows a specific message.
+  - `/admin` has a **Setup check** panel (`lib/setup-status.ts`). It shows which services are configured (never secret values) and has a "Send a test text" tool that shows the provider's exact error.
 - Email goes through Resend (`lib/email.ts`). In dev without `RESEND_API_KEY`, verification links are logged to the console. In production both fallbacks throw instead of silently skipping verification.
 - Demo reviews (`SEED_DEMO_DATA=true`) are for local dev only. Never seed invented reviews into production.
 - All env vars are documented in `.env.example`. **Never commit `.env` or real secrets.**
