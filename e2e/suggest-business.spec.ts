@@ -28,7 +28,7 @@ test("an online business with an Instagram page can be submitted", async ({ page
 
   await page.getByLabel("Category").selectOption("Fashion");
   await page.getByRole("button", { name: "Submit for review" }).click();
-  await expect(page.getByText("Thanks! We'll review this business")).toBeVisible();
+  await expect(page.getByText("Submitted. We're checking the details.")).toBeVisible();
 });
 
 test("fixing an error and resubmitting keeps the 'Online only' choice", async ({ page }) => {
@@ -45,7 +45,7 @@ test("fixing an error and resubmitting keeps the 'Online only' choice", async ({
 
   await page.getByLabel(/Website or social page/).fill("https://www.instagram.com/drezzupsneakers/?hl=en");
   await page.getByRole("button", { name: "Submit for review" }).click();
-  await expect(page.getByText("Thanks! We'll review this business")).toBeVisible();
+  await expect(page.getByText("Submitted. We're checking the details.")).toBeVisible();
 });
 
 test("a failed submit shows a message instead of doing nothing", async ({ page }) => {

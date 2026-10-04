@@ -21,7 +21,7 @@ export function SubmitButton({
   const pending = pendingProp ?? status.pending;
   return (
     <button type="submit" disabled={pending} aria-disabled={pending} className={`${btn[variant]} w-full ${className}`}>
-      {pending && <span aria-hidden className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
+      {pending && <span aria-hidden className="size-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />}
       {pending ? (pendingText ?? "Please wait…") : children}
     </button>
   );

@@ -22,11 +22,11 @@ export default async function RegisterPage({ searchParams }: { searchParams: SP 
   return (
     <AuthCard
       title="Create your account"
-      subtitle="Join thousands of Ghanaians sharing honest experiences."
+      subtitle="Say what happened, plainly and publicly. It takes about two minutes."
       footer={
         <>
           Already on RatingsGhana?{" "}
-          <Link href={`/login${nextQs ? `?${nextQs}` : ""}`} className="font-semibold text-brand hover:text-brand-hover">
+          <Link href={`/login${nextQs ? `?${nextQs}` : ""}`} className="font-semibold text-brand hover:text-ink">
             Log in
           </Link>
         </>
@@ -42,7 +42,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: SP 
           </Link>
         </div>
       )}
-      <p className="mt-6 rounded-xl bg-brand-soft px-4 py-3 text-sm text-brand-deep">
+      <p className="mt-6 rounded-xl bg-brand-soft px-4 py-3 text-sm text-brand">
         To keep reviews genuine, you&apos;ll also verify a Ghana phone number before posting your first review.
       </p>
       <Terms />

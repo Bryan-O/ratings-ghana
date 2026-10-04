@@ -48,13 +48,13 @@ export default async function BusinessPhotosPage({ params }: Props) {
       </SiteHeader>
       <main className={`${container} flex-1 py-10`}>
         {items.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-line-strong bg-white p-10 text-center text-muted">
+          <p className="rounded-2xl border border-dashed border-line-strong bg-paper p-10 text-center text-muted">
             No photos yet. Be the first to add one.
           </p>
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map(({ url, photo }, i) => (
-              <li key={url} className="overflow-hidden rounded-2xl border border-line bg-white">
+              <li key={url} className="overflow-hidden rounded-2xl border border-line bg-paper">
                 <div className="relative aspect-[4/3] bg-brand-soft">
                   <Image
                     src={url}

@@ -9,7 +9,7 @@ Trust is the product, so every reviewer must:
 
 Users can suggest missing businesses, and an admin approves them before they go live.
 
-Design: [Figma — RatingsGhana](https://www.figma.com/design/7369kBlLR6ZW71vrRPGJvq/RatingsGhana)
+Brand: "Loud & Clear", summarised in [docs/brand.md](docs/brand.md). Original wireframes: [Figma: RatingsGhana](https://www.figma.com/design/7369kBlLR6ZW71vrRPGJvq/RatingsGhana).
 
 ## Stack
 

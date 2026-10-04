@@ -19,7 +19,7 @@ async function suggest(page: Page, b: { name: string; city: string; website?: st
   await page.getByLabel("Town / city").fill(b.city);
   if (b.website) await page.getByLabel(/Website or social page/).fill(b.website);
   await page.getByRole("button", { name: "Submit for review" }).click();
-  await expect(page.getByText("Thanks! We'll review this business")).toBeVisible();
+  await expect(page.getByText("Submitted. We're checking the details.")).toBeVisible();
 }
 
 async function adminPage(browser: Browser) {
@@ -36,7 +36,9 @@ test("admin sees context, edits a pending listing, and approves it", async ({ pa
   await verifiedUser(page, "Yaw Asante");
   // Same identifying words as the seeded "Rakho Fufu" → should be flagged as a possible duplicate.
   const submitted = `Rakho Fufu Joint ${stamp}`;
-  await suggest(page, { name: submitted, city: "Kotei", website: "https://www.instagram.com/rakhofufu/" });
+  // A per-run handle so listings approved by earlier runs don't crowd the duplicate list.
+  const handle = `rakhofufu${stamp}`;
+  await suggest(page, { name: submitted, city: "Kotei", website: `https://www.instagram.com/${handle}/` });
 
   const { admin, close } = await adminPage(browser);
   const card = admin.locator("article").filter({ hasText: submitted });
@@ -48,8 +50,8 @@ test("admin sees context, edits a pending listing, and approves it", async ({ pa
   await expect(card.getByText(/Possible duplicate/)).toBeVisible();
   await expect(card.getByRole("link", { name: "Rakho Fufu", exact: true })).toBeVisible();
 
-  const site = card.getByRole("link", { name: /instagram\.com\/rakhofufu/ });
-  await expect(site).toHaveAttribute("href", "https://www.instagram.com/rakhofufu/");
+  const site = card.getByRole("link", { name: new RegExp(`instagram\\.com/${handle}`) });
+  await expect(site).toHaveAttribute("href", `https://www.instagram.com/${handle}/`);
   await expect(site).toHaveAttribute("target", "_blank");
 
   // Fix the name and category, then save & approve in one go.
@@ -90,5 +92,5 @@ test("a rejected suggestion shows the reason to the person who submitted it", as
   await expect(page.getByText("We couldn't verify that this business exists. No address or phone we could confirm.")).toBeVisible();
   // Still hidden from the public.
   await page.goto(`/businesses?q=${encodeURIComponent(name)}`);
-  await expect(page.getByText("No businesses found.")).toBeVisible();
+  await expect(page.getByText("Nothing matched that search.")).toBeVisible();
 });

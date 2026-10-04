@@ -15,10 +15,10 @@ export const metadata: Metadata = { title: "Tester feedback" };
 export const dynamic = "force-dynamic";
 
 const TYPE_LABEL = {
-  BUG: { text: "Bug", className: "bg-red-50 text-red-800" },
-  CONFUSING: { text: "Confusing", className: "bg-amber-50 text-amber-900" },
-  IDEA: { text: "Idea", className: "bg-cta-soft text-green-900" },
-  OTHER: { text: "Other", className: "bg-brand-soft text-brand-deep" },
+  BUG: { text: "Bug", className: "bg-coral-soft text-coral-ink" },
+  CONFUSING: { text: "Confusing", className: "bg-coral-tint text-ink" },
+  IDEA: { text: "Idea", className: "bg-cta-soft text-ok-ink" },
+  OTHER: { text: "Other", className: "bg-brand-soft text-brand" },
 } as const;
 
 type Filter = "NEW" | "RESOLVED" | "ALL";
@@ -36,7 +36,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
       href={f === "NEW" ? "/admin/feedback" : `/admin/feedback?status=${f}`}
       aria-current={filter === f ? "page" : undefined}
       className={`inline-flex h-11 items-center rounded-xl px-4 text-sm font-semibold transition-colors duration-200 ${
-        filter === f ? "bg-brand text-white" : "bg-white text-ink ring-1 ring-line hover:text-brand hover:ring-brand"
+        filter === f ? "bg-brand text-white" : "bg-paper text-ink ring-1 ring-line hover:text-brand hover:ring-brand"
       }`}
     >
       {text} ({counts[f]})
@@ -84,7 +84,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
                           <time dateTime={f.createdAt.toISOString()} title={formatDate(f.createdAt)}>{timeAgo(f.createdAt)}</time>
                         </span>
                         {f.status === "RESOLVED" && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-cta-soft px-2.5 py-0.5 text-xs font-semibold text-green-900">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-cta-soft px-2.5 py-0.5 text-xs font-semibold text-ok-ink">
                             <CheckIcon size={12} /> Resolved
                           </span>
                         )}
@@ -93,7 +93,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
                       <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm text-muted sm:grid-cols-[auto_1fr]">
                         <dt className="font-semibold text-body">Page</dt>
                         <dd className="break-all">
-                          <Link href={f.path} className="text-brand underline underline-offset-2 hover:text-brand-hover">{f.path}</Link>
+                          <Link href={f.path} className="text-brand underline underline-offset-2 hover:text-ink">{f.path}</Link>
                         </dd>
                         <dt className="font-semibold text-body">From</dt>
                         <dd className="break-all">{who}</dd>

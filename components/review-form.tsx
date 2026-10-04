@@ -21,6 +21,7 @@ export function ReviewForm({ businessId, existing }: Props) {
   const v = state.values;
   const [rating, setRating] = useState<number>(Number(v?.rating) || existing?.rating || 0);
   const [hover, setHover] = useState(0);
+  const [punched, setPunched] = useState(0);
   const shown = hover || rating;
 
   return (
@@ -29,31 +30,57 @@ export function ReviewForm({ businessId, existing }: Props) {
 
       <fieldset onMouseLeave={() => setHover(0)}>
         <legend className={label}>Your rating</legend>
-        <div className="flex items-center gap-1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <label key={n} className="cursor-pointer" onMouseEnter={() => setHover(n)}>
-              <input
-                type="radio"
-                name="rating"
-                value={n}
-                checked={rating === n}
-                onChange={() => setRating(n)}
-                className="peer sr-only"
-                aria-label={`${n} star${n > 1 ? "s" : ""} — ${LABELS[n - 1]}`}
-              />
-              <span className="flex size-11 items-center justify-center rounded-xl transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-brand hover:bg-brand-soft">
-                <StarIcon size={30} className={n <= shown ? "text-star" : "text-star-empty"} />
-              </span>
-            </label>
-          ))}
+        {/* Five large tappable stars on light coral tiles; they fill coral from left to right. */}
+        <div className="flex items-center gap-1.5">
+          {[1, 2, 3, 4, 5].map((n) => {
+            const on = n <= shown;
+            return (
+              <label key={n} className="cursor-pointer" onMouseEnter={() => setHover(n)}>
+                <input
+                  type="radio"
+                  name="rating"
+                  value={n}
+                  checked={rating === n}
+                  onChange={() => {
+                    setRating(n);
+                    setPunched((p) => p + 1);
+                  }}
+                  className="peer sr-only"
+                  aria-label={`${n} star${n > 1 ? "s" : ""} — ${LABELS[n - 1]}`}
+                />
+                <span
+                  className={`flex size-12 items-center justify-center rounded-xl transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand ${
+                    on ? "bg-coral-tint" : "bg-coral-soft hover:bg-coral-tint"
+                  }`}
+                >
+                  <span
+                    // Re-key on each pick so the filled stars pop in again, one after another.
+                    key={on && n <= rating ? `p${punched}` : "idle"}
+                    className={on && n <= rating && punched > 0 ? "animate-pop" : ""}
+                    style={{ animationDelay: `${(n - 1) * 45}ms` }}
+                  >
+                    <StarIcon size={28} filled={on} className={on ? "text-star" : "text-star-empty"} />
+                  </span>
+                </span>
+              </label>
+            );
+          })}
         </div>
-        <p className="mt-1 h-5 text-sm font-semibold text-brand-deep" aria-live="polite">{shown ? LABELS[shown - 1] : ""}</p>
+        <p className="mt-1.5 h-5 text-sm font-semibold text-ink" aria-live="polite">
+          {shown ? (
+            <>
+              <span className="font-display">{shown}.0</span> · {LABELS[shown - 1]}
+            </>
+          ) : (
+            <span className="font-normal text-muted">Tap a star</span>
+          )}
+        </p>
         <FieldError message={state.errors?.rating} />
       </fieldset>
 
       <div>
         <label htmlFor="review-title" className={label}>Title</label>
-        <input id="review-title" name="title" maxLength={100} defaultValue={v?.title ?? existing?.title} placeholder="Sum up your experience" className={input} />
+        <input id="review-title" name="title" maxLength={100} defaultValue={v?.title ?? existing?.title} placeholder="The one thing people should know" className={input} />
         <FieldError message={state.errors?.title} />
       </div>
 
@@ -65,7 +92,7 @@ export function ReviewForm({ businessId, existing }: Props) {
           rows={6}
           maxLength={3000}
           defaultValue={v?.body ?? existing?.body}
-          placeholder="What happened? How was the service, quality and value?"
+          placeholder="Tell us what happened. How were you treated?"
           className={`${textarea} resize-y`}
         />
         <FieldError message={state.errors?.body} />

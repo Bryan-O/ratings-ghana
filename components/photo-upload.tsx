@@ -150,7 +150,7 @@ export function PhotoUpload({ businessId }: { businessId: string }) {
               {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview */}
               <img src={item.preview} alt="" className="size-full object-cover" />
               {item.status === "uploading" && (
-                <span className="absolute inset-0 flex items-center justify-center bg-brand-night/60">
+                <span className="absolute inset-0 flex items-center justify-center bg-ink/60">
                   <span className="size-6 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-label="Uploading" />
                 </span>
               )}
@@ -160,7 +160,7 @@ export function PhotoUpload({ businessId }: { businessId: string }) {
                 </span>
               )}
               {item.status === "error" && (
-                <span className="absolute inset-x-0 bottom-0 bg-red-700 px-1.5 py-1 text-[11px] leading-tight font-semibold text-white" role="alert">
+                <span className="absolute inset-x-0 bottom-0 bg-coral-ink px-1.5 py-1 text-[11px] leading-tight font-semibold text-white" role="alert">
                   {item.error}
                 </span>
               )}
@@ -169,7 +169,7 @@ export function PhotoUpload({ businessId }: { businessId: string }) {
                   type="button"
                   onClick={() => remove(item.id)}
                   aria-label={`Remove ${item.file.name}`}
-                  className="absolute top-1 right-1 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-ink shadow transition-colors duration-200 hover:bg-white"
+                  className="absolute top-1 right-1 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-ink shadow transition-colors duration-200 hover:bg-paper"
                 >
                   <CloseIcon size={16} />
                 </button>
@@ -211,12 +211,12 @@ export function PhotoUpload({ businessId }: { businessId: string }) {
       )}
 
       {notice && (
-        <p role="alert" className="text-sm font-medium text-red-700">
+        <p role="alert" className="text-sm font-medium text-coral-ink">
           {notice}
         </p>
       )}
       {done > 0 && !busy && pending === 0 && (
-        <p role="status" className="rounded-xl border border-green-200 bg-cta-soft px-4 py-3 text-sm font-medium text-green-900">
+        <p role="status" className="rounded-xl bg-cta-soft px-4 py-3 text-sm font-medium text-ok-ink">
           Thanks! {done === 1 ? "Your photo" : `Your ${done} photos`} will appear once our team has reviewed {done === 1 ? "it" : "them"}.
         </p>
       )}

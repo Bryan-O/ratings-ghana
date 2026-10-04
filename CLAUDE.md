@@ -16,20 +16,34 @@ MVP scope:
 - search;
 - star ratings and written reviews.
 
-## Design system ("Trust purple marketplace")
+## Design system ("Loud & Clear")
 
-The UI was redesigned with the ui-ux-pro-max skill. It uses the Marketplace/Directory pattern (search-first hero, categories, featured listings, trust section, CTA) in a vibrant, block-based style. **The tokens below, not the Figma file, are now the visual source of truth.**
+The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. No filters." `docs/brand.md` summarises them (colour, type, logo, ratings, components, voice/copy library, motion). **They, not the Figma file, are the visual source of truth.**
 
-- **Tokens** are defined in `app/globals.css` (`@theme`). Use the token classes (`bg-brand`, `text-ink`, `bg-cta`, `border-line`, `text-star` …), never raw hex values.
-  - brand `#7C3AED` (hover `#6D28D9`, deep `#4C1D95`, night `#2E1065`), light `#A78BFA`, soft `#EDE9FE`, wash `#FAF5FF` (page bg)
-  - CTA green `#15803D`, darkened from the recommended `#22C55E` so white text passes WCAG AA; hover `#166534`
-  - text: ink `#1E1433` (headings), body `#3B3450`, muted `#5E5873`; borders `#E7DEFA` / `#CFC2EF`; stars amber `#F59E0B`
-- **Type:** Lexend for headings (`font-display`), Source Sans 3 for body (`font-sans`), via `next/font/google` in `app/layout.tsx`.
-- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `container`, `chip`). Reuse them instead of re-styling controls.
-- **Icons** are Lucide-style inline SVGs in `components/icons.tsx` (24×24, 2px stroke). The file includes `CategoryIcon` and `LogoMark`. Never use emoji as icons.
-- **Layout:** sticky purple top bar (`SiteHeader`), optional white title band (`title`/`crumbs`/`subtitle`/children props), `SiteFooter` on content pages, and the split-screen `AuthCard` for auth flows. Content width is `max-w-7xl`.
-- **Rules:** `cursor-pointer` and a 200ms colour/shadow transition on everything interactive. No scale-on-hover layout shift. Visible focus rings. Touch targets of at least 44px. `prefers-reduced-motion` is respected in `globals.css`. No horizontal scroll at 375px.
-- **Placeholders:** businesses without photos show a branded gradient tile (`BusinessImage`) with the category icon and initials.
+- **Tokens** are defined in `app/globals.css` (`@theme`). Use the token classes (`bg-ink`, `bg-paper`, `bg-coral`, `text-brand`, `bg-brand-wash`, `text-star` …), never raw hex values. Old token names were kept and remapped:
+  - ink `#16161A` (`ink`, `cta`, `brand-night`): text, logo, primary buttons, dark sections;
+  - paper `#FFFFFF` (`paper`): page and cards; light neutral `#F6F5FA` (`brand-wash`) for containers;
+  - signal coral `#FF4D5E` (`coral`, `star`, `cta-hover`): CTA hover/press, earned stars, highlights. **Never body text** (3.2:1); error text uses `coral-ink` `#C42338`;
+  - deep violet `#3D2C8D` (`brand`): verified badges, links, navigation, focus rings;
+  - stars are solid coral when earned and ink outlines at 40% when not. **Never yellow or gold stars.**
+- **Type:** Space Grotesk Bold for headings and rating numerals (`font-display font-bold`), Inter for everything else (`font-sans`), via `next/font/google` in `app/layout.tsx`. Use sentence case; no all-caps headlines.
+- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `panel`, `lift`, `eyebrow`, `container`, `chip`). Primary buttons are ink and shift to coral with an ink label on hover/press. Reuse the recipes instead of re-styling controls.
+- **Brand components:**
+  - `LogoMark`: a speech bubble with a coral star. Never rotate or recolour it. Use `mono` on dark backgrounds, and pass `bg`.
+  - `VerifiedBadge`: a violet pill with the fixed wording "Verified reviewer".
+  - `EmptyState`: a bubble motif plus one line.
+  - `Stars` / `RatingBadge`.
+- **Icons** are Lucide-style inline SVGs in `components/icons.tsx` (24×24, 2px stroke). Never use emoji as icons.
+- **Layout:** sticky paper top bar (`SiteHeader`, with an optional neutral title band via the `title`/`crumbs`/`subtitle`/children props), ink `SiteFooter`, and the split-screen `AuthCard` (ink panel). Content width is `max-w-7xl`. One clear action per surface.
+- **Interaction:** the platform is meant to feel responsive. Every effect answers a user action. Examples: star pop, confirmation rise/pop, card lift, search suggestions, hero review ticker, rating bars on view, photo lightbox, and the nav progress line (`NavProgress`). Animate transform and opacity only, 150–700ms.
+- **Rules:**
+  - `cursor-pointer` and a 200ms colour transition on everything interactive;
+  - no drop shadows or gradients, and no scale-on-hover layout shift;
+  - visible focus rings and touch targets of at least 44px;
+  - `prefers-reduced-motion` is respected in `globals.css` (everything static);
+  - no horizontal scroll at 375px.
+- **Copy:** use the brand voice and copy library in `docs/brand.md` (e.g. "How did it really go?", "Your review is live."). Privacy and moderation copy must be literal.
+- **Placeholders:** businesses without photos show a flat brand-colour tile (`BusinessImage`) with the category icon and initials.
 - **Base CSS:** keep global element styles inside `@layer base`. Unlayered CSS overrides Tailwind utilities.
 
 Figma file `7369kBlLR6ZW71vrRPGJvq` ("RatingsGhana") is the original wireframe. Use it for page inventory and content, not visuals:

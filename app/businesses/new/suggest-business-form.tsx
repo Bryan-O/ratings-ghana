@@ -42,8 +42,8 @@ export function SuggestBusinessForm() {
   if (state.ok) {
     return (
       <div className={`${card} flex flex-col items-center p-10 text-center`}>
-        <span className="flex size-14 items-center justify-center rounded-full bg-cta-soft text-cta"><CheckIcon size={28} /></span>
-        <p className="mt-5 font-display text-xl font-semibold text-ink">{state.message}</p>
+        <span className="flex size-14 animate-pop items-center justify-center rounded-full bg-cta-soft text-ok-ink"><CheckIcon size={28} /></span>
+        <p className="mt-5 max-w-md animate-rise font-display text-xl font-bold text-ink">{state.message}</p>
         <p className="mt-2 text-muted">You can follow its status on My submissions.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/my-submissions" className={btn.primary}>My submissions</Link>
@@ -73,11 +73,11 @@ export function SuggestBusinessForm() {
             <label
               key={value}
               className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
-                type === value ? "border-brand bg-brand-soft" : "border-line hover:border-brand-light"
+                type === value ? "border-ink bg-brand-wash" : "border-line hover:border-ink/50"
               }`}
             >
               <input type="radio" name="type" value={value} checked={type === value} onChange={() => setType(value)} className="sr-only" />
-              <span className={`flex size-10 items-center justify-center rounded-lg ${type === value ? "bg-brand text-white" : "bg-brand-soft text-brand"}`}>
+              <span className={`flex size-10 items-center justify-center rounded-lg transition-colors duration-200 ${type === value ? "bg-coral text-ink" : "bg-brand-wash text-ink"}`}>
                 <Icon size={20} />
               </span>
               <span>

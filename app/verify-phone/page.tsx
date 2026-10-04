@@ -18,13 +18,13 @@ export default async function VerifyPhonePage({ searchParams }: { searchParams: 
   const verified = Boolean(user.phoneVerifiedAt && user.phone);
   return (
     <AuthCard
-      title="Verify your phone number"
+      title={verified ? "Your phone is verified" : "Prove you\u2019re a real person"}
       subtitle={
         verified
           ? undefined
-          : "RatingsGhana links each account to one Ghana mobile number so every review comes from a real person. Your number is never shown publicly."
+          : "We\u2019ll text you a code. Each mobile number can back one account, and it\u2019s never shown publicly."
       }
-      footer={<Link href={next} className="font-semibold text-brand hover:text-brand-hover">Back</Link>}
+      footer={<Link href={next} className="font-semibold text-brand transition-colors duration-200 hover:text-ink">Back</Link>}
     >
       {verified ? (
         <Notice ok>{formatGhanaPhone(user.phone!)} is verified. You&apos;re all set to write reviews.</Notice>

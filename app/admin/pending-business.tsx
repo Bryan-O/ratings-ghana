@@ -10,7 +10,7 @@ import type { getModerationQueue } from "@/lib/queries";
 
 type Item = Awaited<ReturnType<typeof getModerationQueue>>[number];
 
-const linkClass = "font-medium break-all text-brand underline underline-offset-2 hover:text-brand-hover";
+const linkClass = "font-medium break-all text-brand underline underline-offset-2 hover:text-ink";
 
 export function PendingBusiness({ b }: { b: Item }) {
   const phoneE164 = b.phone ? normalizeGhanaPhone(b.phone) : null;
@@ -26,7 +26,7 @@ export function PendingBusiness({ b }: { b: Item }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 id={`pb-${b.id}`} className="font-display text-lg font-semibold">{b.name}</h3>
-            <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-brand-deep">{b.category}</span>
+            <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-semibold text-brand">{b.category}</span>
             <span className="rounded-full border border-line-strong px-2.5 py-0.5 text-xs font-semibold text-ink">
               {b.type === "ONLINE" ? "Online" : "Physical"}
             </span>
@@ -64,7 +64,7 @@ export function PendingBusiness({ b }: { b: Item }) {
           </ul>
 
           {b.duplicates.length > 0 && (
-            <div role="note" className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            <div role="note" className="mt-4 rounded-xl border-l-4 border-coral bg-coral-soft p-4 text-sm text-ink">
               <p className="flex items-center gap-2 font-semibold">
                 <AlertIcon size={16} /> Possible duplicate{b.duplicates.length === 1 ? "" : "s"}
               </p>
@@ -95,7 +95,7 @@ export function PendingBusiness({ b }: { b: Item }) {
               <>
                 <p className="mt-0.5 break-all text-muted">{s.email}</p>
                 <p className="mt-2 text-muted">Joined {formatDate(s.createdAt)}</p>
-                <p className={`mt-1 flex items-center gap-1.5 ${s.phoneVerifiedAt ? "text-cta" : "text-red-700"}`}>
+                <p className={`mt-1 flex items-center gap-1.5 ${s.phoneVerifiedAt ? "text-brand" : "text-coral-ink"}`}>
                   <ShieldCheckIcon size={14} /> {s.phoneVerifiedAt ? "Phone verified" : "Phone not verified"}
                 </p>
                 <p className="mt-2 text-ink">
@@ -114,7 +114,7 @@ export function PendingBusiness({ b }: { b: Item }) {
           </div>
 
           <details className="group rounded-xl border border-line">
-            <summary className="flex min-h-11 cursor-pointer list-none items-center px-4 text-sm font-semibold text-red-700 hover:bg-red-50">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center px-4 text-sm font-semibold text-coral-ink hover:bg-coral-soft">
               Reject…
             </summary>
             <form action={rejectBusinessAction} className="flex flex-col gap-3 border-t border-line p-4">
@@ -136,7 +136,7 @@ export function PendingBusiness({ b }: { b: Item }) {
       </div>
 
       <details className="mt-4 border-t border-line pt-3">
-        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center rounded-lg px-1 text-sm font-semibold text-brand hover:text-brand-hover">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center rounded-lg px-1 text-sm font-semibold text-brand hover:text-ink">
           Edit details before approving
         </summary>
         <BusinessEditor

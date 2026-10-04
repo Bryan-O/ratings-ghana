@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import { Lexend, Source_Sans_3 } from "next/font/google";
+import { Suspense } from "react";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { NavProgress } from "@/components/nav-progress";
 import { feedbackEnabled } from "@/lib/features";
 import { getCurrentUser } from "@/lib/session";
 
-const heading = Lexend({ variable: "--font-heading", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const body = Source_Sans_3({ variable: "--font-body", subsets: ["latin"] });
+// Space Grotesk Bold: headlines, rating numerals. Inter: body, labels, forms, actions.
+const heading = Space_Grotesk({ variable: "--font-heading", subsets: ["latin"], weight: ["500", "700"] });
+const body = Inter({ variable: "--font-body", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: { default: "RatingsGhana — honest reviews of businesses in Ghana", template: "%s · RatingsGhana" },
@@ -18,7 +21,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = feedbackEnabled ? await getCurrentUser() : null;
   return (
     <html lang="en" className={`${heading.variable} ${body.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans text-[17px] leading-relaxed">
+      <body className="flex min-h-full flex-col font-sans text-base leading-normal">
+        <Suspense>
+          <NavProgress />
+        </Suspense>
         {children}
         {feedbackEnabled && <FeedbackWidget signedIn={Boolean(user)} />}
       </body>

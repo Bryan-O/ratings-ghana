@@ -13,9 +13,9 @@ export const metadata: Metadata = { title: "My submissions" };
 export const dynamic = "force-dynamic";
 
 const STATUS = {
-  PENDING: { label: "Awaiting review", className: "bg-brand-soft text-brand-deep", icon: ClockIcon },
-  APPROVED: { label: "Live", className: "bg-cta-soft text-green-900", icon: CheckIcon },
-  REJECTED: { label: "Not approved", className: "bg-red-50 text-red-800", icon: AlertIcon },
+  PENDING: { label: "Awaiting review", className: "bg-brand-soft text-brand", icon: ClockIcon },
+  APPROVED: { label: "Live", className: "bg-cta-soft text-ok-ink", icon: CheckIcon },
+  REJECTED: { label: "Not approved", className: "bg-coral-soft text-coral-ink", icon: AlertIcon },
 } as const;
 
 export default async function MySubmissionsPage() {
@@ -64,12 +64,12 @@ export default async function MySubmissionsPage() {
                       {b.reviewedAt && <> · Reviewed {formatDate(b.reviewedAt)}</>}
                     </p>
                     {b.status === "REJECTED" && b.rejectionReason && (
-                      <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+                      <p className="mt-3 rounded-xl border-l-4 border-coral bg-coral-soft px-4 py-3 text-sm text-ink">
                         <span className="font-semibold">Reason:</span> {b.rejectionReason}
                       </p>
                     )}
                     {b.status === "APPROVED" && (
-                      <Link href={`/businesses/${b.slug}`} className="mt-2 inline-block text-sm font-semibold text-brand hover:text-brand-hover">
+                      <Link href={`/businesses/${b.slug}`} className="mt-2 inline-block text-sm font-semibold text-brand hover:text-ink">
                         View listing →
                       </Link>
                     )}

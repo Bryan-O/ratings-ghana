@@ -3,6 +3,7 @@ import type { Business } from "@/lib/generated/prisma/client";
 import { BusinessImage } from "@/components/business-image";
 import { GlobeIcon, LocationIcon } from "@/components/icons";
 import { RatingBadge } from "@/components/stars";
+import { lift } from "@/components/ui";
 
 function whereLabel(b: Business) {
   if (b.type === "ONLINE") {
@@ -19,19 +20,19 @@ export function BusinessCard({ business: b }: { business: Business }) {
   return (
     <Link
       href={`/businesses/${b.slug}`}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-line bg-white transition-[border-color,box-shadow] duration-200 hover:border-brand-light hover:shadow-[0_12px_32px_-12px_rgba(76,29,149,0.25)]"
+      className={`group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-transparent bg-brand-wash ${lift}`}
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <div className="relative m-2 mb-0 aspect-[16/10] overflow-hidden rounded-xl">
         <BusinessImage src={b.images[0]} name={b.name} category={b.category} />
-        <span className="absolute top-3 left-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-brand-deep shadow-sm">
+        <span className="absolute top-2.5 left-2.5 rounded-full bg-paper px-2.5 py-1 text-xs font-semibold text-brand">
           {b.category}
         </span>
         {b.type === "ONLINE" && (
-          <span className="absolute top-3 right-3 rounded-full bg-brand-night/85 px-3 py-1 text-xs font-bold text-white">Online</span>
+          <span className="absolute top-2.5 right-2.5 rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-white">Online</span>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
-        <h2 className="font-display text-lg leading-snug font-semibold text-ink transition-colors duration-200 group-hover:text-brand">
+        <h2 className="font-display text-xl leading-tight font-bold text-ink transition-colors duration-200 group-hover:text-brand">
           {b.name}
         </h2>
         <RatingBadge avg={b.avgRating} count={b.reviewCount} />

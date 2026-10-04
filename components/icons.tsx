@@ -24,11 +24,11 @@ export function StarIcon({ className, size = 18, filled = true }: IconProps & { 
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className={className}>
       <path
-        d="M12 2.8l2.83 5.73 6.32.92-4.57 4.46 1.08 6.3L12 17.24l-5.66 2.97 1.08-6.3-4.57-4.46 6.32-.92z"
+        d={STAR}
         fill={filled ? "currentColor" : "none"}
         stroke="currentColor"
         strokeWidth={filled ? 0 : 1.6}
-        strokeLinejoin="round"
+        strokeLinejoin="miter"
       />
     </svg>
   );
@@ -44,6 +44,18 @@ export const SearchIcon = (p: IconProps) => (
 export const ChevronDownIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="m6 9 6 6 6-6" />
+  </Stroke>
+);
+
+export const ChevronLeftIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="m15 18-6-6 6-6" />
+  </Stroke>
+);
+
+export const ChevronRightIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="m9 18 6-6-6-6" />
   </Stroke>
 );
 
@@ -158,11 +170,32 @@ export function GoogleIcon({ className, size = 20 }: IconProps) {
 }
 
 /** Brand mark: white star in a rounded purple square. */
-export function LogoMark({ className = "", size = 32 }: IconProps) {
+// Geometric five-pointed star (sharp points, never rounded), shared by the logo and ratings.
+const STAR = "M12 1.5l3.09 6.26 6.91 1-5 4.88 1.18 6.88L12 17.27l-6.18 3.25L7 13.64 2 8.76l6.91-1z";
+
+/**
+ * The mark: a bold speech bubble whose corner resolves into a coral star.
+ * `mono` draws it in one colour (all-white on dark, all-ink on light); `bg` is the
+ * surface colour, used to cut the star out of the bubble. Never rotate or recolour it.
+ */
+export function LogoMark({
+  className = "",
+  size = 32,
+  mono = false,
+  bg = "#fff",
+}: IconProps & { mono?: boolean; bg?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className={className}>
-      <rect width="32" height="32" rx="9" fill="currentColor" />
-      <path fill="#fff" d="M16 7l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L16 20.4l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z" />
+      <path fill="currentColor" d="M7 3h17a5 5 0 0 1 5 5v9a5 5 0 0 1-5 5H13.5L7 28.5V22a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5z" />
+      <path
+        d={STAR}
+        transform="translate(19.2 15.4) scale(0.58)"
+        fill={mono ? "currentColor" : "#ff4d5e"}
+        stroke={bg}
+        strokeWidth={2.6}
+        strokeLinejoin="miter"
+        paintOrder="stroke"
+      />
     </svg>
   );
 }

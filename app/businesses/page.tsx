@@ -4,7 +4,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { BusinessCard } from "@/components/business-card";
 import { SearchBar } from "@/components/search-bar";
-import { CategoryIcon, PlusIcon, SearchIcon } from "@/components/icons";
+import { CategoryIcon, PlusIcon } from "@/components/icons";
+import { EmptyState } from "@/components/empty-state";
 import { btn, container } from "@/components/ui";
 import { CATEGORIES } from "@/lib/constants";
 import { getCategoryCounts, searchBusinesses } from "@/lib/queries";
@@ -16,8 +17,8 @@ type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
 
 const filterLink = (active: boolean) =>
-  `flex shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 ${
-    active ? "bg-brand text-white" : "bg-white text-ink ring-1 ring-line hover:text-brand hover:ring-brand lg:bg-transparent lg:ring-0 lg:hover:bg-brand-soft"
+  `flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-medium whitespace-nowrap transition-colors duration-200 active:translate-y-px ${
+    active ? "bg-ink text-white" : "bg-paper text-ink ring-1 ring-line-strong hover:ring-ink lg:bg-transparent lg:ring-0 lg:hover:bg-brand-wash"
   }`;
 
 export default async function BusinessesPage({ searchParams }: { searchParams: Promise<SP> }) {
@@ -52,7 +53,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
         subtitle={
           <span aria-live="polite">
             {total} {total === 1 ? "business" : "businesses"}
-            {location ? ` in “${location}”` : ""} · rated by phone-verified reviewers
+            {location ? ` in “${location}”` : ""} · rated by verified reviewers
           </span>
         }
       >
@@ -61,13 +62,13 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
 
       <main className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_1fr] lg:gap-10 lg:py-10`}>
         <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:self-start">
-          <h2 className="sr-only lg:not-sr-only lg:mb-2 lg:px-3 lg:font-display lg:text-sm lg:font-semibold lg:tracking-wide lg:text-muted lg:uppercase">Type</h2>
+          <h2 className="sr-only lg:not-sr-only lg:mb-2 lg:px-3 lg:text-xs lg:font-semibold lg:tracking-[0.08em] lg:text-muted lg:uppercase">Type</h2>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0">
             <Link href={qs({ type: undefined, page: undefined })} className={filterLink(!type)}>All</Link>
             <Link href={qs({ type: "PHYSICAL", page: undefined })} className={filterLink(type === "PHYSICAL")}>Physical</Link>
             <Link href={qs({ type: "ONLINE", page: undefined })} className={filterLink(type === "ONLINE")}>Online</Link>
           </div>
-          <h2 className="sr-only lg:not-sr-only lg:mt-6 lg:mb-2 lg:px-3 lg:font-display lg:text-sm lg:font-semibold lg:tracking-wide lg:text-muted lg:uppercase">Category</h2>
+          <h2 className="sr-only lg:not-sr-only lg:mt-6 lg:mb-2 lg:px-3 lg:text-xs lg:font-semibold lg:tracking-[0.08em] lg:text-muted lg:uppercase">Category</h2>
           <div className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:mt-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0">
             {CATEGORIES.map((c) => (
               <Link key={c} href={qs({ category: category === c ? undefined : c, page: undefined })} className={filterLink(category === c)} aria-current={category === c ? "true" : undefined}>
@@ -81,24 +82,19 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
 
         <section className="mt-6 lg:mt-0" aria-label="Results">
           {items.length > 0 ? (
-            <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {items.map((b) => (
-                <li key={b.id}>
+            <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((b, i) => (
+                <li key={b.id} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
                   <BusinessCard business={b} />
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="flex flex-col items-center rounded-3xl border border-dashed border-line-strong bg-white px-6 py-16 text-center">
-              <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft text-brand">
-                <SearchIcon size={26} />
-              </span>
-              <p className="mt-5 font-display text-xl font-semibold text-ink">No businesses found.</p>
-              <p className="mt-2 max-w-md text-muted">Try a different search or location — or add the business so others can review it.</p>
-              <Link href="/businesses/new" className={`${btn.cta} mt-6`}>
+            <EmptyState title="Nothing matched that search." text="Try a shorter name, a different spelling, or browse by category. Not listed yet? Add it so others can rate it.">
+              <Link href="/businesses/new" className={btn.cta}>
                 <PlusIcon size={18} /> Add a business
               </Link>
-            </div>
+            </EmptyState>
           )}
 
           {pageCount > 1 && (

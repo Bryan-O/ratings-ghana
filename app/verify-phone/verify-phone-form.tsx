@@ -22,7 +22,7 @@ export function VerifyPhoneForm({ next }: { next: string }) {
         <div>
           <label htmlFor="phone" className={label}>Ghana mobile number</label>
           <div className="flex">
-            <span className="flex h-12 items-center rounded-l-xl border border-r-0 border-line-strong bg-brand-soft px-4 font-semibold text-brand-deep">+233</span>
+            <span className="flex h-12 items-center rounded-l-xl border border-r-0 border-line-strong bg-brand-soft px-4 font-semibold text-brand">+233</span>
             <input
               id="phone"
               name="phone"

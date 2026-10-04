@@ -60,17 +60,25 @@ test("register → verify email → verify phone → post a review", async ({ pa
 
   // Back on the business page with the review form.
   await expect(page).toHaveURL(/\/businesses\/rakho-fufu/);
-  await expect(page.getByRole("heading", { name: "Give a review here" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How did it really go?" })).toBeVisible();
 
   // Validation: no stars.
   await page.getByRole("button", { name: "Post review" }).click();
   await expect(page.getByText("Choose a star rating")).toBeVisible();
 
+  // The star input stays keyboard-operable (arrow keys move between ratings).
+  await page.getByLabel("3 stars — Okay").check({ force: true });
+  await page.getByLabel("3 stars — Okay").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByLabel("4 stars — Good")).toBeChecked();
+  await page.mouse.move(0, 0); // leave the stars so the label shows the chosen rating, not a hover preview
+  await expect(page.getByText("4.0 · Good")).toBeVisible();
+
   await page.getByLabel("5 stars — Excellent").check({ force: true });
   await page.getByLabel("Title").fill(title);
   await page.getByLabel("Your review").fill("Soft fufu, rich light soup and the goat meat was tender. Friendly service too.");
   await page.getByRole("button", { name: "Post review" }).click();
-  await expect(page.getByText("Thanks! Your review is live.")).toBeVisible();
+  await expect(page.getByText("Your review is live. Thanks for saying it clearly.")).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
   await expect(page.getByText(`${before + 1} verified reviews`)).toBeVisible();
@@ -79,7 +87,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await expect(page.getByRole("heading", { name: "Your review" })).toBeVisible();
   await page.getByLabel("Title").fill(`Updated: ${title}`);
   await page.getByRole("button", { name: "Update review" }).click();
-  await expect(page.getByText("Your review has been updated.")).toBeVisible();
+  await expect(page.getByText("Your review is updated.")).toBeVisible();
   await page.reload();
   await expect(page.getByText(`${before + 1} verified reviews`)).toBeVisible();
   await expect(page.getByRole("heading", { name: `Updated: ${title}`, exact: true })).toBeVisible();
@@ -92,7 +100,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await expect(page.getByText(/at least 30 characters/)).toBeVisible();
   await page.getByRole("textbox", { name: "Your review" }).fill("Service has slipped lately — we waited forty minutes and the soup was cold.");
   await page.getByRole("button", { name: "Update review" }).click();
-  await expect(page.getByText("Your review has been updated.")).toBeVisible();
+  await expect(page.getByText("Your review is updated.")).toBeVisible();
   await page.reload();
   const mine = page.locator("article").filter({ hasText: "(you)" });
   await expect(mine.getByRole("img", { name: "2 out of 5 stars" })).toBeVisible();
@@ -135,10 +143,10 @@ test("suggested businesses stay hidden until an admin approves them", async ({ p
   await page.getByLabel("Address or landmark").fill("Near the Madina market");
   await page.getByLabel("Town / city").fill("Madina");
   await page.getByRole("button", { name: "Submit for review" }).click();
-  await expect(page.getByText("We'll review this business")).toBeVisible();
+  await expect(page.getByText("Submitted. We're checking the details.")).toBeVisible();
 
   await page.goto(`/businesses?q=${encodeURIComponent(name)}`);
-  await expect(page.getByText("No businesses found.")).toBeVisible();
+  await expect(page.getByText("Nothing matched that search.")).toBeVisible();
 
   // Non-admins can't see the admin page.
   const res = await page.goto("/admin");

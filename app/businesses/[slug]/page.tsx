@@ -7,7 +7,10 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { BusinessImage } from "@/components/business-image";
 import { Stars } from "@/components/stars";
 import { CategoryIcon, GlobeIcon, LocationIcon, PhoneIcon, PlusIcon, ShieldCheckIcon } from "@/components/icons";
+import { EmptyState } from "@/components/empty-state";
+import { PhotoGallery } from "@/components/photo-gallery";
 import { PhotoUpload } from "@/components/photo-upload";
+import { RatingBars } from "@/components/rating-bars";
 import { ReviewCard } from "@/components/review-card";
 import { ReviewForm } from "@/components/review-form";
 import { btn, card, container } from "@/components/ui";
@@ -47,7 +50,7 @@ export default async function BusinessPage({ params }: Props) {
       <SiteHeader />
 
       {/* Business header */}
-      <section className="border-b border-line bg-white">
+      <section className="border-b border-line">
         <div className={`${container} py-8`}>
           <Breadcrumb
             crumbs={[
@@ -59,18 +62,18 @@ export default async function BusinessPage({ params }: Props) {
           <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand-deep">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
                   <CategoryIcon category={business.category} size={16} /> {business.category}
                 </span>
                 <span className="rounded-full border border-line-strong px-3 py-1 text-sm font-semibold text-ink">
                   {business.type === "ONLINE" ? "Online business" : "Physical location"}
                 </span>
               </div>
-              <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl">{business.name}</h1>
+              <h1 className="mt-3 font-display text-[2rem] leading-tight font-bold tracking-tight sm:text-5xl">{business.name}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className="inline-flex items-center gap-2">
                   <Stars rating={business.avgRating} size={22} />
-                  <span className="font-display text-xl font-bold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>
+                  <span className="font-display text-2xl font-bold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>
                 </span>
                 <span className="text-muted">
                   {business.reviewCount} verified review{business.reviewCount === 1 ? "" : "s"}
@@ -83,7 +86,7 @@ export default async function BusinessPage({ params }: Props) {
               </div>
             </div>
             <a href="#write-review" className={`${btn.cta} self-start lg:self-auto`}>
-              {myReview ? "Edit your review" : "Write a review"}
+              {myReview ? "Edit your review" : "Rate this business"}
             </a>
           </div>
         </div>
@@ -92,13 +95,7 @@ export default async function BusinessPage({ params }: Props) {
       <main className={`${container} flex-1 py-8`}>
         {/* Gallery */}
         {imgs.length > 0 ? (
-          <section aria-label="Photos" className="grid h-[260px] grid-cols-4 grid-rows-2 gap-3 sm:h-[420px]">
-            {imgs.slice(0, 5).map((src, i) => (
-              <div key={src} className={`relative overflow-hidden rounded-2xl ${i === 0 ? "col-span-4 row-span-2 sm:col-span-2" : "hidden sm:block"}`}>
-                <BusinessImage src={src} name={business.name} sizes={i === 0 ? "(max-width: 640px) 100vw, 50vw" : "25vw"} priority={i === 0} />
-              </div>
-            ))}
-          </section>
+          <PhotoGallery images={imgs} name={business.name} />
         ) : (
           <section aria-label="Photos" className="relative h-44 overflow-hidden rounded-3xl sm:h-64">
             <BusinessImage name={business.name} category={business.category} />
@@ -107,11 +104,11 @@ export default async function BusinessPage({ params }: Props) {
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted">
             {imgs.length === 0 ? (
-              "No photos yet — be the first to add one."
+              "No photos yet. You could add the first."
             ) : (
               <>
                 {imgs.length} photo{imgs.length === 1 ? "" : "s"} ·{" "}
-                <Link href={`/businesses/${business.slug}/photos`} className="font-semibold text-brand hover:text-brand-hover">
+                <Link href={`/businesses/${business.slug}/photos`} className="font-semibold text-brand transition-colors duration-200 hover:text-ink">
                   See all photos
                 </Link>
               </>
@@ -125,14 +122,15 @@ export default async function BusinessPage({ params }: Props) {
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
           {/* About */}
           <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="about-heading">
-            <h2 id="about-heading" className="font-display text-xl font-semibold">About</h2>
+            <h2 id="about-heading" className="font-display text-xl font-bold">About</h2>
             <p className="mt-3 whitespace-pre-line text-body">{business.description}</p>
           </section>
 
           {/* Sidebar: write a review + contact (after About on mobile, right column on desktop) */}
           <aside className="flex flex-col gap-6 lg:col-start-2 lg:row-span-3 lg:row-start-1">
-            <section id="write-review" className={`${card} p-6`} aria-labelledby="write-heading">
-              <h2 id="write-heading" className="font-display text-xl font-semibold">{myReview ? "Your review" : "Give a review here"}</h2>
+            <section id="write-review" className="scroll-mt-24 rounded-2xl border-2 border-ink bg-paper p-6" aria-labelledby="write-heading">
+              <h2 id="write-heading" className="font-display text-xl font-bold">{myReview ? "Your review" : "How did it really go?"}</h2>
+              {!myReview && <p className="mt-1 text-sm text-muted">Rate the business and tell people what mattered.</p>}
               <div className="mt-4">
                 {step === null && user ? (
                   isSubmitter ? (
@@ -150,21 +148,21 @@ export default async function BusinessPage({ params }: Props) {
             </section>
 
             <section className={`${card} p-6`} aria-labelledby="contact-heading">
-              <h2 id="contact-heading" className="font-display text-xl font-semibold">
+              <h2 id="contact-heading" className="font-display text-xl font-bold">
                 {business.type === "ONLINE" ? "Website & contact" : "Location & contact"}
               </h2>
               <ul className="mt-4 space-y-3 text-[15px]">
                 {business.address && (
                   <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><LocationIcon size={18} /></span>
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-wash text-ink"><LocationIcon size={18} /></span>
                     <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="pt-1.5 font-medium text-ink hover:text-brand">
-                      {where} <span className="text-sm text-brand">· Open in Maps ↗</span>
+                      {where} <span className="text-sm text-brand">· Open in Maps</span>
                     </a>
                   </li>
                 )}
                 {business.website && (
                   <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><GlobeIcon size={18} /></span>
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-wash text-ink"><GlobeIcon size={18} /></span>
                     <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className="pt-1.5 font-medium break-all text-ink hover:text-brand">
                       {business.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                     </a>
@@ -172,7 +170,7 @@ export default async function BusinessPage({ params }: Props) {
                 )}
                 {business.phone && (
                   <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><PhoneIcon size={18} /></span>
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-wash text-ink"><PhoneIcon size={18} /></span>
                     <a href={`tel:${phoneE164 ?? business.phone}`} className="pt-1.5 font-medium text-ink hover:text-brand">
                       {phoneE164 ? formatGhanaPhone(phoneE164) : business.phone}
                     </a>
@@ -182,10 +180,10 @@ export default async function BusinessPage({ params }: Props) {
             </section>
 
             <section id="add-photos" className={`${card} p-6`} aria-labelledby="photos-heading">
-              <h2 id="photos-heading" className="font-display text-xl font-semibold">Add photos</h2>
+              <h2 id="photos-heading" className="font-display text-xl font-bold">Add photos</h2>
               <p className="mt-1 mb-4 text-sm text-muted">Been here? Share photos of the place, food, products or service.</p>
               {myPendingPhotos > 0 && (
-                <p className="mb-4 rounded-xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand-deep" role="status">
+                <p className="mb-4 rounded-xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand" role="status">
                   You have {myPendingPhotos} photo{myPendingPhotos === 1 ? "" : "s"} awaiting review.
                 </p>
               )}
@@ -198,34 +196,20 @@ export default async function BusinessPage({ params }: Props) {
           </aside>
 
           {/* Rating breakdown */}
-          <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="ratings-heading">
-            <h2 id="ratings-heading" className="font-display text-xl font-semibold">Rating breakdown</h2>
+          <section className="rounded-2xl bg-brand-wash p-6 lg:col-start-1" aria-labelledby="ratings-heading">
+            <h2 id="ratings-heading" className="font-display text-xl font-bold">Rating breakdown</h2>
             <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
-              <div className="flex shrink-0 flex-col items-center rounded-2xl bg-brand-soft px-8 py-5">
-                <p className="font-display text-5xl font-bold text-brand-deep">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</p>
-                <Stars rating={business.avgRating} size={16} className="mt-1" />
-                <p className="mt-1 text-sm text-brand-deep">out of 5</p>
+              <div className="flex shrink-0 flex-col items-center px-4">
+                <p className="font-display text-6xl leading-none font-bold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</p>
+                <Stars rating={business.avgRating} size={18} className="mt-2" />
+                <p className="mt-1 text-sm text-muted">
+                  {business.reviewCount} verified rating{business.reviewCount === 1 ? "" : "s"}
+                </p>
               </div>
-              <dl className="flex-1 space-y-2">
-                {[5, 4, 3, 2, 1].map((star) => {
-                  const n = dist[star - 1];
-                  const pct = reviews.length ? Math.round((n / reviews.length) * 100) : 0;
-                  return (
-                    <div key={star} className="flex items-center gap-3 text-sm">
-                      <dt className="w-12 shrink-0 font-semibold text-ink">{star} star</dt>
-                      <dd className="flex flex-1 items-center gap-3">
-                        <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-brand-soft">
-                          <span className="block h-full rounded-full bg-star" style={{ width: `${pct}%` }} />
-                        </span>
-                        <span className="w-8 text-right text-muted">{n}</span>
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
+              <RatingBars dist={dist} total={reviews.length} />
             </div>
             <p className="mt-5 flex items-center gap-2 text-sm text-muted">
-              <ShieldCheckIcon size={16} className="text-cta" /> Only phone-verified reviewers can rate. One review per person.
+              <ShieldCheckIcon size={16} className="text-brand" /> Only verified reviewers can rate. One review per person.
             </p>
           </section>
 
@@ -233,7 +217,11 @@ export default async function BusinessPage({ params }: Props) {
           <section className="lg:col-start-1" aria-labelledby="reviews-heading">
             <h2 id="reviews-heading" className="font-display text-2xl font-bold">Reviews ({reviews.length})</h2>
             {reviews.length === 0 ? (
-              <p className={`${card} mt-4 p-6 text-muted`}>No reviews yet. Be the first to share your experience.</p>
+              <div className="mt-4">
+                <EmptyState title="No reviews yet. You could be first." text="Share a real experience to help the next customer.">
+                  <a href="#write-review" className={btn.cta}>Rate this business</a>
+                </EmptyState>
+              </div>
             ) : (
               <ul className="mt-4 space-y-4">
                 {reviews.map((r) => (
@@ -270,7 +258,7 @@ function VerificationPrompt({
     },
     "verify-email": { text: `Verify your email address to ${what}.`, href: "/login", cta: "Verify email" },
     "verify-phone": {
-      text: `To keep RatingsGhana genuine, everyone who contributes verifies a Ghana phone number. Verify yours to ${what}.`,
+      text: `Prove you're a real person to ${what}. We'll text you a code. Your number stays private.`,
       href: `/verify-phone?next=${next}`,
       cta: "Verify phone number",
     },

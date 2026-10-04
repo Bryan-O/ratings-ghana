@@ -33,10 +33,10 @@ export function FeedbackWidget({ signedIn }: { signedIn: boolean }) {
       <button
         type="button"
         onClick={show}
-        className="fixed right-4 bottom-4 z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-brand-night px-4 text-sm font-semibold text-white shadow-lg shadow-brand-night/30 transition-colors duration-200 hover:bg-brand-deep print:hidden"
+        className="group fixed right-4 bottom-4 z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-paper bg-ink px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-coral hover:text-ink active:translate-y-px print:hidden"
         aria-haspopup="dialog"
       >
-        <MessageIcon size={18} /> Feedback
+        <MessageIcon size={18} className="transition-transform duration-200 group-hover:-translate-y-0.5" /> Feedback
       </button>
 
       <dialog
@@ -44,19 +44,19 @@ export function FeedbackWidget({ signedIn }: { signedIn: boolean }) {
         aria-labelledby="feedback-title"
         onClick={(e) => e.target === dialogRef.current && dialogRef.current?.close()}
         onClose={() => setOpen(false)}
-        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border border-line bg-white p-0 text-body shadow-2xl backdrop:bg-brand-night/50 max-sm:mb-4"
+        className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border-2 border-ink bg-paper p-0 text-body backdrop:bg-ink/50 open:animate-rise max-sm:mb-4"
       >
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 id="feedback-title" className="font-display text-xl font-bold">Send feedback</h2>
-              <p className="mt-1 text-sm text-muted">Spotted a bug or have an idea? We read every message.</p>
+              <p className="mt-1 text-sm text-muted">Found a bug or have an idea? Tell us what happened.</p>
             </div>
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
               aria-label="Close"
-              className="-mt-1 -mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl text-muted transition-colors duration-200 hover:bg-brand-soft hover:text-ink"
+              className="-mt-1 -mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-xl text-muted transition-colors duration-200 hover:bg-brand-wash hover:text-ink"
             >
               <CloseIcon size={20} />
             </button>
@@ -83,7 +83,7 @@ function FeedbackForm({ signedIn, onClose, onAnother }: { signedIn: boolean; onC
   if (state.ok) {
     return (
       <div className="mt-6 flex flex-col items-center text-center" role="status">
-        <span className="flex size-14 items-center justify-center rounded-full bg-cta-soft text-cta">
+        <span className="flex size-14 animate-pop items-center justify-center rounded-full bg-cta-soft text-ok-ink">
           <CheckIcon size={28} />
         </span>
         <p className="mt-4 font-display text-lg font-semibold text-ink">Thanks — your feedback was sent.</p>
@@ -123,7 +123,7 @@ function FeedbackForm({ signedIn, onClose, onAnother }: { signedIn: boolean; onC
             <label
               key={t.value}
               className={`inline-flex h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-semibold transition-colors duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand ${
-                type === t.value ? "border-brand bg-brand text-white" : "border-line-strong bg-white text-ink hover:border-brand hover:text-brand"
+                type === t.value ? "border-ink bg-ink text-white" : "border-line-strong bg-paper text-ink hover:border-ink"
               }`}
             >
               <input type="radio" name="type" value={t.value} checked={type === t.value} onChange={() => setType(t.value)} className="sr-only" />

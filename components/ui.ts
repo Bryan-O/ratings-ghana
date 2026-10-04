@@ -1,36 +1,57 @@
-// Shared Tailwind class recipes so every page uses identical controls.
+// Shared Tailwind class recipes so every page uses identical controls ("Loud & Clear", docs/brand.md).
 
 const base =
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold transition-[background-color,border-color,color] duration-200 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0";
+
+// Primary: ink fill, paper text; on hover or press the fill shifts to coral and the label to ink.
+const primaryFill = "bg-cta text-white hover:bg-cta-hover hover:text-ink active:bg-cta-hover active:text-ink";
 
 export const btn = {
-  /** Main call to action (green). */
-  cta: `${base} h-12 bg-cta px-6 text-white hover:bg-cta-hover`,
-  /** Brand action (purple). */
-  primary: `${base} h-12 bg-brand px-6 text-white hover:bg-brand-hover`,
-  /** Secondary, outlined. */
-  outline: `${base} h-12 border-2 border-line-strong bg-white px-6 text-ink hover:border-brand hover:text-brand`,
-  /** Outlined, for use on purple/dark backgrounds. */
-  outlineOnDark: `${base} h-12 border-2 border-white/50 px-6 text-white hover:border-white hover:bg-white/10`,
+  /** The one main action on a surface. */
+  cta: `${base} h-12 px-6 ${primaryFill}`,
+  /** Same as cta; kept so older call sites read naturally. */
+  primary: `${base} h-12 px-6 ${primaryFill}`,
+  /** Coral action for ink or violet surfaces, where an ink button would disappear. */
+  coral: `${base} h-12 bg-coral px-6 text-ink hover:bg-white`,
+  /** Secondary: paper fill with an ink outline. Never for the main path. */
+  outline: `${base} h-12 border-2 border-ink bg-paper px-6 text-ink hover:bg-ink hover:text-white`,
+  /** Outlined, for use on ink/violet backgrounds. */
+  outlineOnDark: `${base} h-12 border-2 border-white px-6 text-white hover:bg-white hover:text-ink`,
   /** Small variants for dense UI. */
-  smPrimary: `${base} h-10 bg-brand px-4 text-sm text-white hover:bg-brand-hover`,
-  smOutline: `${base} h-10 border border-line-strong bg-white px-4 text-sm text-ink hover:border-brand hover:text-brand`,
-  smDanger: `${base} h-10 bg-red-700 px-4 text-sm text-white hover:bg-red-800`,
+  smPrimary: `${base} h-10 px-4 text-sm ${primaryFill}`,
+  smOutline: `${base} h-10 border-2 border-ink bg-paper px-4 text-sm text-ink hover:bg-ink hover:text-white`,
+  smDanger: `${base} h-10 bg-coral-ink px-4 text-sm text-white hover:bg-ink`,
 };
 
-const invalid = "aria-[invalid=true]:border-red-600 aria-[invalid=true]:ring-4 aria-[invalid=true]:ring-red-600/10";
+const invalid =
+  "aria-[invalid=true]:border-coral-ink aria-[invalid=true]:ring-4 aria-[invalid=true]:ring-coral/20 aria-[invalid=true]:animate-shake";
 
-export const input = `h-12 w-full rounded-xl border border-line-strong bg-white px-4 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15 ${invalid}`;
+// Form field: paper fill, 1px ink at 30%, 12px radius; focus adds a violet ring without removing the border.
+const field =
+  "w-full rounded-xl border border-line-strong bg-paper text-base text-ink outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted hover:border-ink/60 focus:border-brand focus:ring-4 focus:ring-brand/20";
 
-export const textarea = `w-full rounded-xl border border-line-strong bg-white px-4 py-3 text-base text-ink outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/15 ${invalid}`;
+export const input = `h-12 px-4 ${field} ${invalid}`;
+
+export const textarea = `px-4 py-3 ${field} ${invalid}`;
 
 export const label = "mb-1.5 block text-sm font-semibold text-ink";
 
-export const card = "rounded-2xl border border-line bg-white";
+/** A white card with a hairline border. */
+export const card = "rounded-2xl border border-line bg-paper";
+
+/** Light neutral container on paper (business rating cards, panels). */
+export const panel = "rounded-2xl bg-brand-wash";
+
+/** Hover response for clickable cards: flat (no shadows), a small lift and an ink edge. */
+export const lift =
+  "transition-[transform,border-color,background-color] duration-200 hover:-translate-y-0.5 hover:border-ink focus-visible:-translate-y-0.5";
 
 export const container = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8";
 
+/** Small all-caps label used above groups, as in the brand book (never for headlines). */
+export const eyebrow = "text-xs font-semibold tracking-[0.08em] text-muted uppercase";
+
 export const chip = (active: boolean) =>
-  `inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200 ${
-    active ? "border-brand bg-brand text-white" : "border-line-strong bg-white text-ink hover:border-brand hover:text-brand"
+  `inline-flex h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200 active:translate-y-px ${
+    active ? "border-ink bg-ink text-white" : "border-line-strong bg-paper text-ink hover:border-ink"
   }`;

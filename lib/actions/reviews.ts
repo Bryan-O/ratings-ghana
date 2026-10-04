@@ -67,7 +67,7 @@ async function _submitReview(_prev: ActionState, formData: FormData): Promise<Ac
 
   revalidatePath(`/businesses/${business.slug}`);
   revalidatePath("/businesses");
-  return { ok: true, message: existing ? "Your review has been updated." : "Thanks! Your review is live." };
+  return { ok: true, message: existing ? "Your review is updated." : "Your review is live. Thanks for saying it clearly." };
 }
 
 export async function reportReviewAction(prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -88,8 +88,8 @@ async function _reportReview(_prev: ActionState, formData: FormData): Promise<Ac
   try {
     await prisma.report.create({ data: { reviewId: parsed.data.reviewId, userId: user.id, reason: parsed.data.reason } });
   } catch (e) {
-    if (isUniqueViolation(e)) return { ok: true, message: "You've already reported this review." };
+    if (isUniqueViolation(e)) return { ok: true, message: "You already reported this review. We're checking it." };
     throw e;
   }
-  return { ok: true, message: "Thanks — our team will take a look." };
+  return { ok: true, message: "Thanks. We're checking this review. It stays visible unless it breaks the community rules." };
 }

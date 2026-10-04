@@ -5,7 +5,8 @@ import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
 import { MobileMenu } from "@/components/mobile-menu";
 import { LogoMark, ShieldCheckIcon } from "@/components/icons";
-import { container } from "@/components/ui";
+import { NavLink } from "@/components/nav-link";
+import { btn, container } from "@/components/ui";
 
 type Props = {
   /** Inner pages get a title band with a breadcrumb under the top bar. */
@@ -17,7 +18,7 @@ type Props = {
 };
 
 const navLink =
-  "rounded-lg px-3 py-2 text-[15px] font-semibold text-white/90 transition-colors duration-200 hover:bg-white/10 hover:text-white";
+  "inline-flex h-11 items-center rounded-lg px-3 text-[15px] font-medium text-ink transition-colors duration-200 hover:text-brand aria-[current=page]:text-brand";
 
 export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
   const user = await getCurrentUser();
@@ -26,8 +27,8 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
   const submissions = user ? await countMySubmissions(user.id) : 0;
 
   const links = [
-    { href: "/businesses", label: "Businesses" },
-    { href: "/businesses", label: "Write a review" },
+    { href: "/businesses", label: "Businesses", exclude: ["/businesses/new"] },
+    { href: "/businesses", label: "Rate a business", matchable: false },
     ...(user ? [{ href: "/businesses/new", label: "Add a business" }] : []),
     ...(submissions > 0 ? [{ href: "/my-submissions", label: "My submissions" }] : []),
     ...(user?.role === "ADMIN" ? [{ href: "/admin", label: "Admin" }] : []),
@@ -35,38 +36,38 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-brand shadow-[0_1px_0_rgba(255,255,255,0.08)]">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
         <div className={`${container} flex h-16 items-center justify-between gap-4`}>
-          <Link href="/" className="flex items-center gap-2.5 rounded-lg text-white">
-            <LogoMark className="text-white [&>rect]:fill-white/15" />
+          <Link href="/" className="group flex items-center gap-2.5 rounded-lg text-ink">
+            <LogoMark className="text-ink" />
             <span className="font-display text-xl font-bold tracking-tight">RatingsGhana</span>
           </Link>
 
           <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
             {links.map((l) => (
-              <Link key={l.label} href={l.href} className={navLink}>
+              <NavLink key={l.label} href={l.href} matchable={l.matchable !== false} exclude={l.exclude} className={navLink}>
                 {l.label}
-              </Link>
+              </NavLink>
             ))}
-            <div className="ml-3 flex items-center gap-2 border-l border-white/20 pl-4">
+            <div className="ml-3 flex items-center gap-2 border-l border-line pl-4">
               {user ? (
                 <>
-                  <span className="max-w-40 truncate text-sm font-semibold text-white/80" title={user.email}>
+                  <span className="max-w-40 truncate text-sm font-medium text-muted" title={user.email}>
                     {user.name ?? user.email}
                   </span>
                   <form action={signOutAction}>
-                    <button type="submit" className="h-10 cursor-pointer rounded-xl border-2 border-white/40 px-4 text-sm font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white/10">
+                    <button type="submit" className={btn.smOutline}>
                       Sign out
                     </button>
                   </form>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className={navLink}>
-                    Login
-                  </Link>
-                  <Link href="/register" className="inline-flex h-10 items-center rounded-xl bg-cta px-5 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-cta-hover">
-                    Register
+                  <NavLink href="/login" className={navLink}>
+                    Log in
+                  </NavLink>
+                  <Link href="/register" className={btn.smPrimary}>
+                    Sign up
                   </Link>
                 </>
               )}
@@ -78,20 +79,20 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
       </header>
 
       {user && step === "verify-phone" && (
-        <div className="bg-brand-night px-4 py-2.5 text-center text-sm text-white">
-          <ShieldCheckIcon size={16} className="mr-1.5 inline -mt-0.5 text-brand-light" />
-          Verify your phone number to start writing reviews.{" "}
-          <Link href="/verify-phone" className="font-semibold underline underline-offset-2 hover:text-brand-light">
-            Verify now
+        <div className="bg-brand px-4 py-2.5 text-center text-sm text-white">
+          <ShieldCheckIcon size={16} className="mr-1.5 inline -mt-0.5" />
+          Prove you&rsquo;re a real person to start reviewing.{" "}
+          <Link href="/verify-phone" className="font-semibold underline underline-offset-2 transition-colors duration-200 hover:text-coral">
+            Verify your phone
           </Link>
         </div>
       )}
 
       {title && (
-        <div className="border-b border-line bg-white">
+        <div className="border-b border-line bg-brand-wash">
           <div className={`${container} py-8 lg:py-10`}>
             {crumbs && <Breadcrumb crumbs={crumbs} />}
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight lg:text-4xl">{title}</h1>
+            <h1 className="mt-2 font-display text-[2rem] leading-tight font-bold tracking-tight lg:text-[2.5rem]">{title}</h1>
             {subtitle && <div className="mt-2 text-muted">{subtitle}</div>}
             {children && <div className="mt-6">{children}</div>}
           </div>

@@ -108,7 +108,7 @@ export default async function AdminPage() {
                     </p>
                     <p className="mt-1 font-semibold">{r.title}</p>
                     <p className="mt-1 text-sm">{r.body}</p>
-                    <p className="mt-2 text-xs text-red-700">
+                    <p className="mt-2 text-xs text-coral-ink">
                       {r.reports.length} report{r.reports.length === 1 ? "" : "s"}: {[...new Set(r.reports.map((x) => x.reason))].join(", ")}
                     </p>
                   </div>

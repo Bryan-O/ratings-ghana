@@ -12,10 +12,10 @@ export default function Error({ error, retry }: { error: Error & { digest?: stri
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-24 text-center">
-      <LogoMark size={48} className="text-brand" />
-      <h1 className="font-display text-3xl font-bold tracking-tight">Something went wrong.</h1>
+      <LogoMark size={48} className="animate-pop text-ink" />
+      <h1 className="font-display text-3xl font-bold tracking-tight">That didn&rsquo;t work.</h1>
       <p className="max-w-md text-muted">
-        Sorry about that. Try again — and if the site was just updated, reloading the page usually fixes it.
+        Try again. If it keeps happening, reload the page or come back in a few minutes.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <button type="button" onClick={() => retry()} className={btn.primary}>

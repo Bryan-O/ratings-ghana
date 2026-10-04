@@ -29,11 +29,11 @@ export default async function LoginPage({ searchParams }: { searchParams: SP }) 
   return (
     <AuthCard
       title="Welcome back"
-      subtitle="Log in to RatingsGhana to write and manage your reviews."
+      subtitle="Log in to rate businesses and manage your reviews."
       footer={
         <>
           New to RatingsGhana?{" "}
-          <Link href={`/register${sp.next ? `?next=${encodeURIComponent(next)}` : ""}`} className="font-semibold text-brand hover:text-brand-hover">
+          <Link href={`/register${sp.next ? `?next=${encodeURIComponent(next)}` : ""}`} className="font-semibold text-brand hover:text-ink">
             Create an account
           </Link>
         </>

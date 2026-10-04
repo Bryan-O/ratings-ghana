@@ -60,5 +60,5 @@ async function _suggestBusiness(_prev: ActionState, formData: FormData): Promise
     },
   });
 
-  return { ok: true, message: "Thanks! We'll review this business and publish it soon." };
+  return { ok: true, message: "Submitted. We're checking the details. We'll publish the business when the information is confirmed." };
 }

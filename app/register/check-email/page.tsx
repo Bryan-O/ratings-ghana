@@ -13,7 +13,7 @@ export default async function CheckEmailPage({ searchParams }: { searchParams: P
       footer={
         <>
           Verified already?{" "}
-          <Link href="/login" className="font-semibold text-brand hover:text-brand-hover">Log in</Link>
+          <Link href="/login" className="font-semibold text-brand hover:text-ink">Log in</Link>
         </>
       }
     >
