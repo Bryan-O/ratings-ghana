@@ -190,7 +190,12 @@ async function main() {
 
   // --- Businesses ---
   for (const b of BUSINESSES) {
-    const data = { ...b, status: "APPROVED" as const, images: imagesFor(b.slug) };
+    const local = imagesFor(b.slug);
+    const existing = await prisma.business.findUnique({ where: { slug: b.slug }, select: { images: true } });
+    // The seed runs on every deploy: keep community photos admins have approved since,
+    // and only add local photos that aren't listed yet.
+    const images = existing ? [...existing.images, ...local.filter((u) => !existing.images.includes(u))] : local;
+    const data = { ...b, status: "APPROVED" as const, images };
     await prisma.business.upsert({ where: { slug: b.slug }, update: data, create: data });
   }
   console.log(`Seeded admin (${adminEmail}) and ${BUSINESSES.length} businesses.`);
