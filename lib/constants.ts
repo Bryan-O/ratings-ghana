@@ -44,6 +44,15 @@ export const REPORT_REASONS = [
 
 export const REVIEWS_PER_DAY_LIMIT = 10;
 export const PAGE_SIZE = 12;
+
+/** Sort orders for the business list (`?sort=`). The first one is the default. */
+export const BUSINESS_SORTS = [
+  { value: "popular", label: "Most reviewed" },
+  { value: "rating", label: "Highest rated" },
+  { value: "newest", label: "Newest" },
+  { value: "name", label: "Name (A–Z)" },
+] as const;
+export type BusinessSort = (typeof BUSINESS_SORTS)[number]["value"];
 export const PHOTO_UPLOADS_PER_DAY = 20;
 
 /** Shown to the person who suggested a business when an admin rejects it. */

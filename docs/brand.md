@@ -102,6 +102,12 @@ The guidelines don't define motion. This is the app's interpretation of "energet
 | Rating breakdown | Bars fill when scrolled into view |
 | Business photos | Open in a lightbox (arrow keys, Esc) |
 | Navigating | A thin coral progress line along the top; the nav underline tracks the current section |
+| Filtering reviews | Tap a rating bar or star chip; the list re-rises, filtered, with a "Show more" button |
+| Sorting | The business list re-orders in place (spinner while loading) |
+| Writing a review | A length guide fills coral to the 30-character minimum, then turns green |
+| Sharing | Opens the phone's share sheet, or copies the link and confirms "Link copied" |
+| Scrolling on phones | The header slides away going down and returns going up; a "Rate it" bar slides up from the bottom |
+| Swipe rows | Cards and filters snap as you swipe; arrow buttons appear on wider screens when a row overflows |
 | Invalid field | Shakes once |
 
 Rules:

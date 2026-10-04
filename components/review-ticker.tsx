@@ -26,7 +26,7 @@ export function ReviewTicker({ reviews }: { reviews: TickerReview[] }) {
 
   return (
     <figure
-      className="relative flex min-h-80 flex-col rounded-3xl bg-brand p-7 text-white sm:p-9"
+      className="relative flex min-h-64 flex-col rounded-3xl bg-brand p-6 text-white sm:min-h-80 sm:p-9"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

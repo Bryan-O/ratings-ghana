@@ -14,7 +14,7 @@ export function ReportReview({ reviewId }: { reviewId: string }) {
 
   return (
     <details className="group mt-4 text-sm">
-      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg py-1 font-medium text-brand transition-colors duration-200 hover:text-ink">
+      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-lg font-medium text-brand transition-colors duration-200 hover:text-ink">
         <FlagIcon size={14} /> Report review
       </summary>
       <form onSubmit={onSubmit} className="mt-3 flex animate-drop flex-wrap items-center gap-2 rounded-xl bg-brand-wash p-3">

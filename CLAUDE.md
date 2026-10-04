@@ -35,7 +35,20 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - `Stars` / `RatingBadge`.
 - **Icons** are Lucide-style inline SVGs in `components/icons.tsx` (24×24, 2px stroke). Never use emoji as icons.
 - **Layout:** sticky paper top bar (`SiteHeader`, with an optional neutral title band via the `title`/`crumbs`/`subtitle`/children props), ink `SiteFooter`, and the split-screen `AuthCard` (ink panel). Content width is `max-w-7xl`. One clear action per surface.
-- **Interaction:** the platform is meant to feel responsive. Every effect answers a user action. Examples: star pop, confirmation rise/pop, card lift, search suggestions, hero review ticker, rating bars on view, photo lightbox, and the nav progress line (`NavProgress`). Animate transform and opacity only, 150–700ms.
+- **Interaction:** the platform is meant to feel responsive. Every effect answers a user action. Examples:
+  - star pop, confirmation rise/pop, card lift;
+  - search suggestions and the hero review ticker;
+  - rating bars that fill on view and filter the `ReviewList` (star chips, sort, "Show more");
+  - list sorting (`SortSelect`, `?sort=`);
+  - `ShareButton`, the photo lightbox, the review length guide;
+  - the nav progress line (`NavProgress`).
+
+  Animate transform and opacity only, 150–700ms.
+- **Responsive patterns:**
+  - Card rows and filter chips use `Rail`: a swipeable snap row on phones and tablets that becomes a grid or list via `lg:` classes.
+  - On phones, `AutoHideHeader` slides the header away while scrolling down, and `MobileActionBar` pins the page's main action to the bottom. The Feedback button moves up when the bar shows.
+  - Route-level `loading.tsx` skeletons (`components/skeletons.tsx`) show instantly while data loads.
+  - Grid columns that hold swipe rows must use `minmax(0,1fr)` (or `grid-cols-1`), or the row's content widens the page.
 - **Rules:**
   - `cursor-pointer` and a 200ms colour transition on everything interactive;
   - no drop shadows or gradients, and no scale-on-hover layout shift;

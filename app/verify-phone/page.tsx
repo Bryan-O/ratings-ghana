@@ -24,7 +24,7 @@ export default async function VerifyPhonePage({ searchParams }: { searchParams: 
           ? undefined
           : "We\u2019ll text you a code. Each mobile number can back one account, and it\u2019s never shown publicly."
       }
-      footer={<Link href={next} className="font-semibold text-brand transition-colors duration-200 hover:text-ink">Back</Link>}
+      footer={<Link href={next} className="inline-flex min-h-11 items-center px-2 font-semibold text-brand transition-colors duration-200 hover:text-ink">Back</Link>}
     >
       {verified ? (
         <Notice ok>{formatGhanaPhone(user.phone!)} is verified. You&apos;re all set to write reviews.</Notice>

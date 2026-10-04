@@ -10,6 +10,9 @@ import { useFormAction } from "@/lib/use-form-action";
 
 
 const LABELS = ["Terrible", "Poor", "Okay", "Good", "Excellent"];
+// Matches reviewSchema in lib/validation.ts.
+const MIN_BODY = 30;
+const MAX_BODY = 3000;
 
 type Props = {
   businessId: string;
@@ -22,6 +25,8 @@ export function ReviewForm({ businessId, existing }: Props) {
   const [rating, setRating] = useState<number>(Number(v?.rating) || existing?.rating || 0);
   const [hover, setHover] = useState(0);
   const [punched, setPunched] = useState(0);
+  const [bodyLength, setBodyLength] = useState((v?.body ?? existing?.body ?? "").trim().length);
+  const needed = Math.max(0, MIN_BODY - bodyLength);
   const shown = hover || rating;
 
   return (
@@ -90,11 +95,25 @@ export function ReviewForm({ businessId, existing }: Props) {
           id="review-body"
           name="body"
           rows={6}
-          maxLength={3000}
+          maxLength={MAX_BODY}
           defaultValue={v?.body ?? existing?.body}
+          onChange={(e) => setBodyLength(e.target.value.trim().length)}
+          aria-describedby="review-body-count"
           placeholder="Tell us what happened. How were you treated?"
-          className={`${textarea} resize-y`}
+          className={`${textarea} min-h-36 resize-y`}
         />
+        {/* Live length guide: fills coral up to the minimum, then confirms. */}
+        <div className="mt-2 flex items-center gap-3">
+          <span aria-hidden className="h-1 flex-1 overflow-hidden rounded-full bg-brand-wash">
+            <span
+              className={`block h-full origin-left rounded-full transition-[transform,background-color] duration-300 ${needed ? "bg-coral" : "bg-ok-ink"}`}
+              style={{ transform: `scaleX(${Math.min(1, bodyLength / MIN_BODY)})` }}
+            />
+          </span>
+          <span id="review-body-count" className={`shrink-0 text-xs font-medium ${needed ? "text-muted" : "text-ok-ink"}`}>
+            {needed ? `${needed} more character${needed === 1 ? "" : "s"}` : `${bodyLength} / ${MAX_BODY}`}
+          </span>
+        </div>
         <FieldError message={state.errors?.body} />
       </div>
 

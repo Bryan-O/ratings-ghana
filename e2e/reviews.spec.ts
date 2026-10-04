@@ -165,3 +165,22 @@ test("suggested businesses stay hidden until an admin approves them", async ({ p
   await page.goto(`/businesses?q=${encodeURIComponent(name)}`);
   await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
 });
+
+test("sort the business list and filter reviews by stars", async ({ page }) => {
+  await page.goto("/businesses");
+  await page.getByLabel("Sort by").selectOption("name");
+  await expect(page).toHaveURL(/sort=name/);
+  const names = await page.getByRole("region", { name: "Results" }).getByRole("heading", { level: 2 }).allTextContents();
+  expect(names.length).toBeGreaterThan(1);
+  expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
+
+  await page.goto("/businesses/rakho-fufu");
+  const five = page.getByRole("group", { name: "Filter by rating" }).getByRole("button", { name: /^5 star reviews/ });
+  await five.click();
+  await expect(five).toHaveAttribute("aria-pressed", "true");
+  const ratings = page.locator("article").getByRole("img", { name: /out of 5 stars/ });
+  await expect(ratings.first()).toBeVisible();
+  for (const name of await ratings.evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")))) {
+    expect(name).toBe("5 out of 5 stars");
+  }
+});

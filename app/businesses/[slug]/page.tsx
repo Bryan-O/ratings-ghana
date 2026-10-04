@@ -11,7 +11,9 @@ import { EmptyState } from "@/components/empty-state";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { PhotoUpload } from "@/components/photo-upload";
 import { RatingBars } from "@/components/rating-bars";
-import { ReviewCard } from "@/components/review-card";
+import { ReviewList } from "@/components/review-list";
+import { ShareButton } from "@/components/share-button";
+import { MobileActionBar } from "@/components/mobile-action-bar";
 import { ReviewForm } from "@/components/review-form";
 import { btn, card, container } from "@/components/ui";
 import { formatGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
@@ -85,9 +87,12 @@ export default async function BusinessPage({ params }: Props) {
                 )}
               </div>
             </div>
-            <a href="#write-review" className={`${btn.cta} self-start lg:self-auto`}>
-              {myReview ? "Edit your review" : "Rate this business"}
-            </a>
+            <div id="business-actions" className="flex flex-wrap gap-3 self-start lg:self-auto">
+              <a href="#write-review" className={btn.cta}>
+                {myReview ? "Edit your review" : "Rate this business"}
+              </a>
+              <ShareButton title={business.name} />
+            </div>
           </div>
         </div>
       </section>
@@ -119,7 +124,7 @@ export default async function BusinessPage({ params }: Props) {
           </a>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
           {/* About */}
           <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="about-heading">
             <h2 id="about-heading" className="font-display text-xl font-bold">About</h2>
@@ -223,17 +228,38 @@ export default async function BusinessPage({ params }: Props) {
                 </EmptyState>
               </div>
             ) : (
-              <ul className="mt-4 space-y-4">
-                {reviews.map((r) => (
-                  <li key={r.id}>
-                    <ReviewCard review={r} canReport={Boolean(user?.emailVerified) && user?.id !== r.userId} isMine={user?.id === r.userId} />
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-4">
+                <ReviewList
+                  reviews={reviews.map((r) => ({
+                    id: r.id,
+                    rating: r.rating,
+                    title: r.title,
+                    body: r.body,
+                    createdAt: r.createdAt,
+                    user: { name: r.user.name },
+                    canReport: Boolean(user?.emailVerified) && user?.id !== r.userId,
+                    isMine: user?.id === r.userId,
+                  }))}
+                />
+              </div>
             )}
           </section>
         </div>
       </main>
+      <MobileActionBar watch="business-actions" target="write-review">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-display font-bold text-ink">{business.name}</p>
+            <p className="flex items-center gap-1.5 text-sm text-muted">
+              <Stars rating={business.avgRating} size={14} />
+              <span className="font-display font-bold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>· {business.reviewCount}
+            </p>
+          </div>
+          <a href="#write-review" className={`${btn.cta} shrink-0 px-5`}>
+            {myReview ? "Edit review" : "Rate it"}
+          </a>
+        </div>
+      </MobileActionBar>
       <SiteFooter />
     </>
   );

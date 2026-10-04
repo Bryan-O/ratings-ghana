@@ -5,6 +5,7 @@ import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 import { Breadcrumb, type Crumb } from "@/components/breadcrumb";
 import { MobileMenu } from "@/components/mobile-menu";
 import { LogoMark, ShieldCheckIcon } from "@/components/icons";
+import { AutoHideHeader } from "@/components/auto-hide-header";
 import { NavLink } from "@/components/nav-link";
 import { btn, container } from "@/components/ui";
 
@@ -36,9 +37,9 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
+      <AutoHideHeader className="border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
         <div className={`${container} flex h-16 items-center justify-between gap-4`}>
-          <Link href="/" className="group flex items-center gap-2.5 rounded-lg text-ink">
+          <Link href="/" className="group flex min-h-11 items-center gap-2.5 rounded-lg text-ink">
             <LogoMark className="text-ink" />
             <span className="font-display text-xl font-bold tracking-tight">RatingsGhana</span>
           </Link>
@@ -76,13 +77,13 @@ export async function SiteHeader({ title, subtitle, crumbs, children }: Props) {
 
           <MobileMenu links={links} signedIn={Boolean(user)} userLabel={user?.name ?? user?.email ?? undefined} />
         </div>
-      </header>
+      </AutoHideHeader>
 
       {user && step === "verify-phone" && (
-        <div className="bg-brand px-4 py-2.5 text-center text-sm text-white">
+        <div className="bg-brand px-4 py-1 text-center text-sm text-white sm:py-2.5">
           <ShieldCheckIcon size={16} className="mr-1.5 inline -mt-0.5" />
           Prove you&rsquo;re a real person to start reviewing.{" "}
-          <Link href="/verify-phone" className="font-semibold underline underline-offset-2 transition-colors duration-200 hover:text-coral">
+          <Link href="/verify-phone" className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2 transition-colors duration-200 hover:text-coral sm:min-h-0">
             Verify your phone
           </Link>
         </div>

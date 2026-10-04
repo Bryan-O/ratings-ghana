@@ -1,5 +1,5 @@
 import "server-only";
-import { PAGE_SIZE } from "@/lib/constants";
+import { PAGE_SIZE, type BusinessSort } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { nameTokens, rankDuplicates, websiteKey } from "@/lib/duplicates";
 import type { Prisma } from "@/lib/generated/prisma/client";
@@ -9,10 +9,19 @@ export type BusinessSearch = {
   location?: string;
   category?: string;
   type?: "PHYSICAL" | "ONLINE";
+  sort?: BusinessSort;
   page?: number;
 };
 
-export async function searchBusinesses({ q, location, category, type, page = 1 }: BusinessSearch) {
+const SORT_ORDER: Record<BusinessSort, Prisma.BusinessOrderByWithRelationInput[]> = {
+  popular: [{ reviewCount: "desc" }, { avgRating: "desc" }, { name: "asc" }],
+  // Rated businesses first; unrated ones (avgRating 0) sink to the bottom.
+  rating: [{ avgRating: "desc" }, { reviewCount: "desc" }, { name: "asc" }],
+  newest: [{ createdAt: "desc" }, { name: "asc" }],
+  name: [{ name: "asc" }],
+};
+
+export async function searchBusinesses({ q, location, category, type, sort = "popular", page = 1 }: BusinessSearch) {
   const and: Prisma.BusinessWhereInput[] = [{ status: "APPROVED" }];
   if (q) {
     and.push({
@@ -39,7 +48,7 @@ export async function searchBusinesses({ q, location, category, type, page = 1 }
   const [items, total] = await Promise.all([
     prisma.business.findMany({
       where,
-      orderBy: [{ reviewCount: "desc" }, { avgRating: "desc" }, { name: "asc" }],
+      orderBy: SORT_ORDER[sort],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),

@@ -59,6 +59,14 @@ export const ChevronRightIcon = (p: IconProps) => (
   </Stroke>
 );
 
+export const ShareIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+    <path d="m16 6-4-4-4 4" />
+    <path d="M12 2v13" />
+  </Stroke>
+);
+
 export const ArrowRightIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="M5 12h14M13 6l6 6-6 6" />

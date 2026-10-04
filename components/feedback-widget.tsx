@@ -33,7 +33,7 @@ export function FeedbackWidget({ signedIn }: { signedIn: boolean }) {
       <button
         type="button"
         onClick={show}
-        className="group fixed right-4 bottom-4 z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-paper bg-ink px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-coral hover:text-ink active:translate-y-px print:hidden"
+        className="group fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border-2 border-paper bg-ink px-4 text-sm font-semibold text-white transition-[background-color,color,bottom] duration-200 [body:has([data-action-bar=shown])_&]:bottom-24 hover:bg-coral hover:text-ink active:translate-y-px print:hidden"
         aria-haspopup="dialog"
       >
         <MessageIcon size={18} className="transition-transform duration-200 group-hover:-translate-y-0.5" /> Feedback
