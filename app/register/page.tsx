@@ -7,6 +7,8 @@ import { MailIcon } from "@/components/icons";
 import { RegisterForm } from "@/app/register/register-form";
 import { safeNext } from "@/lib/actions/state";
 import { getCurrentUser } from "@/lib/session";
+import { googleEnabled } from "@/lib/auth";
+import { emailSignupEnabled } from "@/lib/features";
 
 export const metadata: Metadata = { title: "Sign up" };
 
@@ -16,7 +18,8 @@ export default async function RegisterPage({ searchParams }: { searchParams: SP 
   const sp = await searchParams;
   const next = safeNext(sp.next);
   if (await getCurrentUser()) redirect(next);
-  const emailStep = sp.method === "email";
+  const emailOn = emailSignupEnabled();
+  const emailStep = emailOn && sp.method === "email";
   const nextQs = sp.next ? `next=${encodeURIComponent(next)}` : "";
 
   return (
@@ -37,9 +40,18 @@ export default async function RegisterPage({ searchParams }: { searchParams: SP 
       ) : (
         <div className="flex flex-col gap-3">
           <GoogleButton next={next} />
-          <Link href={`/register?method=email${nextQs ? `&${nextQs}` : ""}`} className={socialBtn}>
-            <MailIcon /> Continue with email
-          </Link>
+          {emailOn ? (
+            <Link href={`/register?method=email${nextQs ? `&${nextQs}` : ""}`} className={socialBtn}>
+              <MailIcon /> Continue with email
+            </Link>
+          ) : (
+            !googleEnabled && (
+              // Neither Google nor an email service is set up yet.
+              <p className="rounded-xl border-l-4 border-coral bg-coral-soft px-4 py-3 text-sm text-ink">
+                Sign-up isn&rsquo;t open yet. Check back soon.
+              </p>
+            )
+          )}
         </div>
       )}
       <p className="mt-6 rounded-xl bg-brand-soft px-4 py-3 text-sm text-brand">

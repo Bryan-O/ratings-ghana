@@ -205,3 +205,23 @@ export async function getFeedbackCounts() {
   const n = (s: string) => rows.find((r) => r.status === s)?._count._all ?? 0;
   return { NEW: n("NEW"), RESOLVED: n("RESOLVED"), ALL: n("NEW") + n("RESOLVED") };
 }
+
+/** Manual phone-verification requests (test phase), oldest first, with numbers others also asked for. */
+export async function getPhoneRequests() {
+  const users = await prisma.user.findMany({
+    where: { phoneRequest: { not: null }, phoneVerifiedAt: null },
+    orderBy: { phoneRequestedAt: "asc" },
+    select: { id: true, name: true, email: true, emailVerified: true, phoneRequest: true, phoneRequestedAt: true, createdAt: true },
+    take: 100,
+  });
+  const numbers = users.map((u) => u.phoneRequest!);
+  const taken = new Set(
+    (await prisma.user.findMany({ where: { phone: { in: numbers } }, select: { phone: true } })).map((u) => u.phone),
+  );
+  return users.map((u) => ({
+    ...u,
+    phoneRequest: u.phoneRequest!,
+    takenByAnother: taken.has(u.phoneRequest),
+    sharedRequest: users.some((o) => o.id !== u.id && o.phoneRequest === u.phoneRequest),
+  }));
+}

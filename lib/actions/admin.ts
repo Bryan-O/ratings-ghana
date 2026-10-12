@@ -10,6 +10,7 @@ import { guard } from "@/lib/actions/guard";
 import { formValues, type ActionState } from "@/lib/actions/state";
 import { recomputeBusinessRating } from "@/lib/ratings-db";
 import { getCurrentUser } from "@/lib/session";
+import { isUniqueViolation } from "@/lib/prisma-errors";
 import { maskGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
 import { sendSms } from "@/lib/sms";
 
@@ -144,4 +145,50 @@ async function _testSms(_prev: ActionState, formData: FormData): Promise<ActionS
     return { errors: { form: `Not sent. ${(e as Error).message}` }, values: { phone: raw } };
   }
   return { ok: true, message: `Sent to ${maskGhanaPhone(phone)}. If it doesn't arrive within a minute, check the sender ID and balance in Arkesel.` };
+}
+
+/**
+ * Admin-only (test phase without SMS): verify the phone number a user asked for.
+ * Keeps the one-number-per-account rule (unique constraint) and records which admin did it.
+ */
+export async function verifyPhoneRequestAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("verifyPhoneRequest", _verifyPhoneRequest)(prev, formData);
+}
+
+async function _verifyPhoneRequest(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const admin = await requireAdmin();
+  const user = await prisma.user.findUnique({ where: { id: id(formData) } });
+  if (!user?.phoneRequest || user.phoneVerifiedAt) return { errors: { form: "This request is no longer open." } };
+  if (!user.emailVerified) return { errors: { form: "This person hasn't verified their email yet." } };
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        phone: user.phoneRequest,
+        phoneVerifiedAt: new Date(),
+        phoneVerifiedById: admin.id,
+        phoneRequest: null,
+        phoneRequestedAt: null,
+      },
+    });
+  } catch (e) {
+    if (isUniqueViolation(e)) return { errors: { form: "That number already backs another account. Decline this request." } };
+    throw e;
+  }
+  revalidatePath("/admin");
+  return { ok: true, message: "Verified." };
+}
+
+export async function declinePhoneRequestAction(prev: ActionState, formData: FormData): Promise<ActionState> {
+  return guard("declinePhoneRequest", _declinePhoneRequest)(prev, formData);
+}
+
+async function _declinePhoneRequest(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  await prisma.user.updateMany({
+    where: { id: id(formData), phoneVerifiedAt: null },
+    data: { phoneRequest: null, phoneRequestedAt: null },
+  });
+  revalidatePath("/admin");
+  return { ok: true, message: "Declined." };
 }

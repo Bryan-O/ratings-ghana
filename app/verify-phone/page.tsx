@@ -6,6 +6,7 @@ import { VerifyPhoneForm } from "@/app/verify-phone/verify-phone-form";
 import { safeNext } from "@/lib/actions/state";
 import { formatGhanaPhone } from "@/lib/phone";
 import { getCurrentUser } from "@/lib/session";
+import { phoneVerificationMode } from "@/lib/features";
 
 export const metadata: Metadata = { title: "Verify your phone" };
 
@@ -16,20 +17,30 @@ export default async function VerifyPhonePage({ searchParams }: { searchParams: 
   if (!user) redirect(`/login?next=${encodeURIComponent(`/verify-phone?next=${next}`)}`);
 
   const verified = Boolean(user.phoneVerifiedAt && user.phone);
+  const manual = phoneVerificationMode() === "manual";
   return (
     <AuthCard
       title={verified ? "Your phone is verified" : "Prove you\u2019re a real person"}
       subtitle={
         verified
           ? undefined
-          : "We\u2019ll text you a code. Each mobile number can back one account, and it\u2019s never shown publicly."
+          : manual
+            ? "During testing, the RatingsGhana team checks numbers by hand. Send yours and we\u2019ll verify it. Each number can back one account, and it\u2019s never shown publicly."
+            : "We\u2019ll text you a code. Each mobile number can back one account, and it\u2019s never shown publicly."
       }
       footer={<Link href={next} className="inline-flex min-h-11 items-center px-2 font-semibold text-brand transition-colors duration-200 hover:text-ink">Back</Link>}
     >
       {verified ? (
         <Notice ok>{formatGhanaPhone(user.phone!)} is verified. You&apos;re all set to write reviews.</Notice>
       ) : (
-        <VerifyPhoneForm next={next} />
+        <>
+          {manual && user.phoneRequest && (
+            <Notice ok>
+              We have your request for {formatGhanaPhone(user.phoneRequest)}. The team will verify it soon. You can send a different number below.
+            </Notice>
+          )}
+          <VerifyPhoneForm next={next} manual={manual} />
+        </>
       )}
     </AuthCard>
   );

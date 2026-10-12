@@ -56,6 +56,11 @@ model User {
   // E.164, e.g. +233241234567. Unique so one phone backs at most one account.
   phone           String?   @unique
   phoneVerifiedAt DateTime?
+  // Test phase without SMS ("manual" phone mode): the number someone asked an admin to verify.
+  phoneRequest     String?
+  phoneRequestedAt DateTime?
+  // Set when an admin verified the phone by hand instead of by text code (audit trail).
+  phoneVerifiedById String?
   role            Role      @default(USER)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

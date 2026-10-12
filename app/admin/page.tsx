@@ -10,7 +10,11 @@ import { PendingBusiness } from "@/app/admin/pending-business";
 import { SetupCheckPanel } from "@/app/admin/setup-check";
 import { setupChecks } from "@/lib/setup-status";
 import { approvePhotoAction, removePhotoAction } from "@/lib/actions/photos";
-import { getFeedbackCounts, getModerationQueue, getPendingPhotos } from "@/lib/queries";
+import { getFeedbackCounts, getModerationQueue, getPendingPhotos, getPhoneRequests } from "@/lib/queries";
+import { PhoneRequestRow } from "@/app/admin/phone-requests";
+import { phoneVerificationMode } from "@/lib/features";
+import { timeAgo } from "@/lib/format";
+import { formatGhanaPhone } from "@/lib/phone";
 import { MessageIcon } from "@/components/icons";
 import { prisma } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
@@ -23,7 +27,7 @@ export default async function AdminPage() {
   const user = await getCurrentUser();
   if (user?.role !== "ADMIN") notFound();
 
-  const [pending, reported, photos, feedback] = await Promise.all([
+  const [pending, reported, photos, feedback, phoneRequests] = await Promise.all([
     getModerationQueue(),
     prisma.review.findMany({
       where: { status: "PUBLISHED", reports: { some: { resolvedAt: null } } },
@@ -36,13 +40,14 @@ export default async function AdminPage() {
     }),
     getPendingPhotos(),
     getFeedbackCounts(),
+    getPhoneRequests(),
   ]);
 
   return (
     <>
       <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and photos, and handle reported reviews." />
       <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
-        <SetupCheckPanel checks={setupChecks()} />
+        <SetupCheckPanel checks={setupChecks()} smsTest={phoneVerificationMode() !== "manual"} />
         <Link
           href="/admin/feedback"
           className={`${card} mb-10 flex items-center gap-4 p-5 transition-colors duration-200 hover:border-brand-light`}
@@ -54,6 +59,39 @@ export default async function AdminPage() {
           </span>
           <span className="font-semibold text-brand">View →</span>
         </Link>
+        {(phoneVerificationMode() === "manual" || phoneRequests.length > 0) && (
+          <section className="mb-12" aria-labelledby="phone-requests">
+            <h2 id="phone-requests" className="font-display text-xl font-semibold">
+              Phone verification requests ({phoneRequests.length})
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-muted">
+              Texts aren&rsquo;t switched on yet, so testers send their number here. Only verify people you know, or call or
+              message the number first to confirm it&rsquo;s theirs. Each number can back one account.
+            </p>
+            {phoneRequests.length === 0 ? (
+              <p className="mt-4 text-muted">No requests waiting.</p>
+            ) : (
+              <ul className="mt-4 flex flex-col gap-3">
+                {phoneRequests.map((r) => (
+                  <PhoneRequestRow
+                    key={r.id}
+                    r={{
+                      id: r.id,
+                      name: r.name,
+                      email: r.email,
+                      emailVerified: r.emailVerified,
+                      phone: formatGhanaPhone(r.phoneRequest),
+                      requestedAgo: r.phoneRequestedAt ? timeAgo(r.phoneRequestedAt) : "recently",
+                      takenByAnother: r.takenByAnother,
+                      sharedRequest: r.sharedRequest,
+                    }}
+                  />
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
         <section className="mb-12" aria-labelledby="pending-photos">
           <h2 id="pending-photos" className="font-display text-xl font-semibold">Pending photos ({photos.length})</h2>
           {photos.length === 0 && <p className="mt-3 text-muted">No photos waiting for review.</p>}

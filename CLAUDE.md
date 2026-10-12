@@ -172,6 +172,7 @@ prisma/
 
 1. Creating or editing a review requires a session, a **verified email** and a **verified phone**, all checked **server-side** in the action rather than only in the UI.
 2. Phone numbers are **unique per account**, stored as E.164 (`+233…`). OTP codes are **hashed**, expire after 10 minutes, allow max 5 attempts per code and max 5 sends per hour per user.
+   - **Test phase without SMS** (`phoneVerificationMode()` in `lib/features.ts` returns `"manual"` when `SMS_PROVIDER=manual`, or in production with no provider): people submit their number (`User.phoneRequest`), and only an admin can verify it in `/admin` (`verifyPhoneRequestAction`, which checks the role server-side, keeps the unique constraint and records `phoneVerifiedById`). Reviewing stays blocked until then. Switch to `SMS_PROVIDER=arkesel` before public launch.
 3. **One review per user per business**, enforced by a unique DB constraint; users edit rather than duplicate.
 4. `Business.avgRating` / `reviewCount` are recomputed **in the same transaction** as any review write.
 5. User-suggested businesses are `PENDING` and invisible to the public until an admin approves them.
@@ -193,6 +194,8 @@ prisma/
   - `sendPhoneOtp` deletes the OTP when the text fails, so failed sends don't count towards the hourly limit, and it shows a specific message.
   - `/admin` has a **Setup check** panel (`lib/setup-status.ts`). It shows which services are configured (never secret values) and has a "Send a test text" tool that shows the provider's exact error.
 - Email goes through Resend (`lib/email.ts`). In dev without `RESEND_API_KEY`, verification links are logged to the console. In production both fallbacks throw instead of silently skipping verification.
+  - In production without `RESEND_API_KEY`, email/password **sign-up turns off** (`emailSignupEnabled()`; enforced in `registerAction` too) and sign-up is Google-only (Google verifies emails). Login for existing password accounts, such as the admin, still works.
+- `e2e/manual-phone.spec.ts` is opt-in: run it with `E2E_PHONE_MODE=manual` against a server started with `SMS_PROVIDER=manual`.
 - Demo reviews (`SEED_DEMO_DATA=true`) are for local dev only. Never seed invented reviews into production.
 - All env vars are documented in `.env.example`. **Never commit `.env` or real secrets.**
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { phoneVerificationMode } from "@/lib/features";
 
 export type SetupCheck = { area: string; ok: boolean; detail: string };
 
@@ -10,20 +11,25 @@ const set = (name: string) => Boolean(process.env[name]?.trim());
  */
 export function setupChecks(): SetupCheck[] {
   const prod = process.env.NODE_ENV === "production";
-  const sms = process.env.SMS_PROVIDER?.trim() || "console";
   const sender = process.env.ARKESEL_SENDER_ID?.trim() || "RatingsGH";
   const storage = process.env.STORAGE_PROVIDER?.trim() || "local";
 
+  const phoneMode = phoneVerificationMode();
+  const google = set("AUTH_GOOGLE_ID") && set("AUTH_GOOGLE_SECRET");
+  const emailOn = set("RESEND_API_KEY");
+
   return [
     {
-      area: "SMS provider",
-      ok: sms === "arkesel" || (!prod && sms === "console"),
+      area: "Phone verification",
+      ok: true,
       detail:
-        sms === "arkesel"
-          ? "SMS_PROVIDER=arkesel"
-          : `SMS_PROVIDER is "${sms}"${prod ? ". Set it to arkesel; phone verification fails in production until you do." : " (codes go to .dev-outbox.log)."}`,
+        phoneMode === "sms"
+          ? "Codes by text (SMS_PROVIDER=arkesel)"
+          : phoneMode === "manual"
+            ? "Test mode: people send their number and an admin verifies it below. Switch to SMS_PROVIDER=arkesel before public launch."
+            : "Local development: codes go to .dev-outbox.log.",
     },
-    ...(sms === "arkesel"
+    ...(phoneMode === "sms"
       ? [
           { area: "Arkesel API key", ok: set("ARKESEL_API_KEY"), detail: set("ARKESEL_API_KEY") ? "Set" : "ARKESEL_API_KEY is missing" },
           {
@@ -34,13 +40,24 @@ export function setupChecks(): SetupCheck[] {
         ]
       : []),
     {
-      area: "Email (Resend)",
-      ok: set("RESEND_API_KEY") || !prod,
-      detail: set("RESEND_API_KEY")
-        ? `Set; sending from ${process.env.EMAIL_FROM || "(EMAIL_FROM not set)"}`
-        : prod
-          ? "RESEND_API_KEY is missing; sign-up emails fail"
-          : "Not set (links go to .dev-outbox.log)",
+      area: "Google sign-in",
+      ok: google || emailOn || !prod,
+      detail: google
+        ? "On. People can sign up with Google (their email is already verified by Google)."
+        : emailOn || !prod
+          ? "Off (optional): set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET to add it."
+          : "Off, and email sign-up is off too, so nobody can sign up. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET.",
+    },
+    {
+      area: "Email sign-up (Resend)",
+      ok: emailOn || !prod || google,
+      detail: emailOn
+        ? `On; sending from ${process.env.EMAIL_FROM || "(EMAIL_FROM not set)"}`
+        : !prod
+          ? "Not set (links go to .dev-outbox.log)."
+          : google
+            ? "Off: sign-up is Google-only. Add RESEND_API_KEY (needs your own domain) to allow email sign-up."
+            : "Off: RESEND_API_KEY is missing.",
     },
     {
       area: "Photo storage",

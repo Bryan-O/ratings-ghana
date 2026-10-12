@@ -8,13 +8,25 @@ import { input, label } from "@/components/ui";
 import { useFormAction } from "@/lib/use-form-action";
 
 
-export function VerifyPhoneForm({ next }: { next: string }) {
+export function VerifyPhoneForm({ next, manual = false }: { next: string; manual?: boolean }) {
   const [sendState, onSend, sending] = useFormAction(sendPhoneOtpAction);
   const [verifyState, onVerify, verifying] = useFormAction(verifyPhoneOtpAction);
   const [changeNumber, setChangeNumber] = useState(false);
 
   const codeSent = sendState.data?.step === "code" && !changeNumber;
   const maskedPhone = sendState.data?.maskedPhone ?? verifyState.data?.maskedPhone;
+
+  // Manual mode (test phase): the number goes to the team instead of a text code.
+  if (manual && sendState.data?.step === "requested" && !changeNumber) {
+    return (
+      <div className="flex flex-col gap-4">
+        <FormMessage ok message={`Request sent for ${sendState.data.maskedPhone}. The team will verify your number soon, then you can post reviews.`} />
+        <button type="button" onClick={() => setChangeNumber(true)} className="min-h-11 cursor-pointer text-center text-sm font-semibold text-brand underline underline-offset-2">
+          Use a different number
+        </button>
+      </div>
+    );
+  }
 
   if (!codeSent) {
     return (
@@ -37,7 +49,9 @@ export function VerifyPhoneForm({ next }: { next: string }) {
           <FieldError message={sendState.errors?.phone} />
         </div>
         <FormMessage ok={sendState.ok} message={sendState.errors?.form ?? sendState.message} />
-        <SubmitButton pending={sending} pendingText="Sending code…">Send code</SubmitButton>
+        <SubmitButton pending={sending} pendingText={manual ? "Sending…" : "Sending code…"}>
+          {manual ? "Send for verification" : "Send code"}
+        </SubmitButton>
       </form>
     );
   }

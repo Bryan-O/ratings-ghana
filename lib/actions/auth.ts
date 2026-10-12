@@ -10,6 +10,7 @@ import { generateToken, hashToken } from "@/lib/tokens";
 import { fieldErrors, loginSchema, registerSchema } from "@/lib/validation";
 import { formValues, safeNext, type ActionState } from "@/lib/actions/state";
 import { guard } from "@/lib/actions/guard";
+import { emailSignupEnabled } from "@/lib/features";
 
 const EMAIL_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const MAX_VERIFICATION_EMAILS_PER_HOUR = 3;
@@ -34,6 +35,10 @@ export async function registerAction(prev: ActionState, formData: FormData): Pro
 
 async function _register(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const values = formValues(formData, ["name", "email"]);
+  // No email service yet (test phase): sign-up is Google-only, because we couldn't verify the address.
+  if (!emailSignupEnabled()) {
+    return { errors: { form: "Email sign-up is off for now. Use Continue with Google instead." }, values };
+  }
   const parsed = registerSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
   const { name, email, password } = parsed.data;
@@ -62,6 +67,7 @@ export async function resendVerificationAction(prev: ActionState, formData: Form
 }
 
 async function _resendVerification(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  if (!emailSignupEnabled()) return { errors: { form: "We can't send emails right now. Use Continue with Google instead." } };
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const user = email ? await prisma.user.findUnique({ where: { email } }) : null;
   if (user && !user.emailVerified && user.passwordHash) {

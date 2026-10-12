@@ -9,7 +9,7 @@ import { input, label } from "@/components/ui";
 import { useFormAction } from "@/lib/use-form-action";
 
 /** Admin panel: which services are configured, plus a "send a test text" tool. Opens itself when something is wrong. */
-export function SetupCheckPanel({ checks }: { checks: SetupCheck[] }) {
+export function SetupCheckPanel({ checks, smsTest = true }: { checks: SetupCheck[]; smsTest?: boolean }) {
   const problems = checks.filter((c) => !c.ok).length;
   const [state, onSubmit, pending] = useFormAction(testSmsAction);
 
@@ -22,7 +22,7 @@ export function SetupCheckPanel({ checks }: { checks: SetupCheck[] }) {
           </span>
           <span>
             <span className="block font-display font-bold text-ink">Setup check</span>
-            <span className="text-sm text-muted">{problems ? `${problems} thing${problems === 1 ? "" : "s"} to fix` : "Email, SMS and photo storage are configured"}</span>
+            <span className="text-sm text-muted">{problems ? `${problems} thing${problems === 1 ? "" : "s"} to fix` : "Everything needed to run the site is set up"}</span>
           </span>
         </span>
         <span className="text-sm font-semibold text-brand group-open:hidden">Show</span>
@@ -41,6 +41,7 @@ export function SetupCheckPanel({ checks }: { checks: SetupCheck[] }) {
           ))}
         </ul>
 
+        {smsTest && (
         <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 rounded-xl bg-brand-wash p-4" noValidate>
           <div>
             <label htmlFor="test-sms-phone" className={label}>Send a test text</label>
@@ -53,6 +54,7 @@ export function SetupCheckPanel({ checks }: { checks: SetupCheck[] }) {
           </div>
           <FormMessage ok={state.ok} message={state.errors?.form ?? state.message} />
         </form>
+        )}
       </div>
     </details>
   );

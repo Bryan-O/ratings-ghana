@@ -15,6 +15,7 @@ import { maskGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
 import { isUniqueViolation } from "@/lib/prisma-errors";
 import { getCurrentUser } from "@/lib/session";
 import { sendSms } from "@/lib/sms";
+import { phoneVerificationMode } from "@/lib/features";
 import { safeNext, type ActionState } from "@/lib/actions/state";
 import { guard } from "@/lib/actions/guard";
 
@@ -38,6 +39,13 @@ async function _sendPhoneOtp(_prev: ActionState, formData: FormData): Promise<Ac
 
   const taken = await prisma.user.findFirst({ where: { phone, NOT: { id: user.id } }, select: { id: true } });
   if (taken) return { errors: { phone: TAKEN }, values: { phone: raw } };
+
+  // Test phase without an SMS provider: record the number for an admin to verify by hand.
+  // Nothing is verified here; reviewing stays blocked until an admin approves it in /admin.
+  if (phoneVerificationMode() === "manual") {
+    await prisma.user.update({ where: { id: user.id }, data: { phoneRequest: phone, phoneRequestedAt: new Date() } });
+    return { ok: true, data: { step: "requested", maskedPhone: maskGhanaPhone(phone) } };
+  }
 
   const sentLastHour = await prisma.phoneOtp.count({
     where: { userId: user.id, createdAt: { gt: new Date(Date.now() - 60 * 60 * 1000) } },
