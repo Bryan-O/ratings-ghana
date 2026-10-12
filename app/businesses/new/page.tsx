@@ -22,7 +22,7 @@ export default async function NewBusinessPage() {
         crumbs={[{ label: "Home", href: "/" }, { label: "Businesses", href: "/businesses" }]}
         subtitle="Can't find a business? Add it here. Physical shops and online sellers are both welcome — our team checks every listing before it goes live."
       />
-      <main className={`${container} flex-1 py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
         <div className="mx-auto max-w-2xl">
           {step === "verify-phone" ? (
             <div className={`${card} flex flex-col items-start gap-4 p-6`}>

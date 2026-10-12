@@ -4,11 +4,25 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "@/components/icons";
 
-/** Photo strip on a business page. Tapping a photo opens it full size (arrow keys to browse, Esc to close). */
-export function PhotoGallery({ images, name }: { images: string[]; name: string }) {
+/**
+ * Photos on a business page. Tapping a photo opens it full size (arrow keys to browse, Esc to close).
+ * `tile` fits a bento tile: one large photo plus two smaller ones.
+ */
+export function PhotoGallery({ images, name, variant = "wide" }: { images: string[]; name: string; variant?: "wide" | "tile" }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [index, setIndex] = useState(0);
-  const shown = images.slice(0, 5);
+  const isTile = variant === "tile";
+  const shown = images.slice(0, isTile ? 3 : 5);
+  const cell = (i: number) =>
+    isTile
+      ? i === 0
+        ? images.length > 1
+          ? "col-span-3 row-span-2 sm:col-span-2"
+          : "col-span-3 row-span-2"
+        : "hidden sm:block"
+      : i === 0
+        ? "col-span-4 row-span-2 sm:col-span-2"
+        : "hidden sm:block";
 
   function open(i: number) {
     setIndex(i);
@@ -18,14 +32,17 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
 
   return (
     <>
-      <section aria-label="Photos" className="grid h-[260px] grid-cols-4 grid-rows-2 gap-3 sm:h-[420px]">
+      <section
+        aria-label="Photos"
+        className={isTile ? "grid h-full min-h-[240px] grid-cols-3 grid-rows-2 gap-2" : "grid h-[260px] grid-cols-4 grid-rows-2 gap-3 sm:h-[420px]"}
+      >
         {shown.map((src, i) => (
           <button
             key={src}
             type="button"
             onClick={() => open(i)}
             aria-label={`Open photo ${i + 1} of ${images.length}`}
-            className={`group relative cursor-pointer overflow-hidden rounded-2xl ${i === 0 ? "col-span-4 row-span-2 sm:col-span-2" : "hidden sm:block"}`}
+            className={`group relative cursor-pointer overflow-hidden rounded-2xl ${cell(i)}`}
           >
             <Image
               src={src}

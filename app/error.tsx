@@ -11,7 +11,7 @@ export default function Error({ error, retry }: { error: Error & { digest?: stri
   }, [error]);
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-24 text-center">
+    <main id="main" tabIndex={-1} className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-24 text-center">
       <LogoMark size={48} className="animate-pop text-ink" />
       <h1 className="font-display text-3xl font-bold tracking-tight">That didn&rsquo;t work.</h1>
       <p className="max-w-md text-muted">

@@ -22,7 +22,9 @@ test("verified users upload photos that appear only after admin approval", async
   await verifyPhone(page, uniquePhone());
 
   await page.goto(`/businesses/${slug}#add-photos`);
-  const before = await page.getByText(/^\d+ photos? ·|No photos yet/).first().textContent();
+  // The uploader is a client component: wait until the page has hydrated (MotionRuntime marks it).
+  await page.waitForFunction(() => "motionReady" in document.documentElement.dataset);
+  const before = await page.getByText(/^See all \d+ photos?$|No photos yet/).first().textContent();
 
   await page.getByLabel("Choose photos").setInputFiles([
     { name: "front.jpg", mimeType: "image/jpeg", buffer: await testPhoto({ r: 20, g: 120, b: 60 }) },
@@ -41,7 +43,7 @@ test("verified users upload photos that appear only after admin approval", async
   // Not public yet.
   await page.goto(`/businesses/${slug}/photos`);
   await expect(page.getByText(caption)).toHaveCount(0);
-  expect(await page.goto(`/businesses/${slug}`).then(() => page.getByText(/^\d+ photos? ·|No photos yet/).first().textContent())).toBe(before);
+  expect(await page.goto(`/businesses/${slug}`).then(() => page.getByText(/^See all \d+ photos?$|No photos yet/).first().textContent())).toBe(before);
 
   // Admin approves it.
   const ctx = await browser.newContext();

@@ -46,7 +46,7 @@ export default async function BusinessPhotosPage({ params }: Props) {
           <PlusIcon size={18} /> Add photos
         </Link>
       </SiteHeader>
-      <main className={`${container} flex-1 py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
         {items.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-line-strong bg-paper p-10 text-center text-muted">
             No photos yet. Be the first to add one.

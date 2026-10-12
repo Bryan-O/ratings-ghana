@@ -57,6 +57,23 @@ export const lift =
 
 export const container = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8";
 
+/**
+ * Type scale ("Exaggerated Minimalism" from the ui-ux-pro-max skill, within the brand):
+ * one oversized statement per page, tight tracking, lots of space around it.
+ * Space Grotesk tops out at 700, so loudness comes from size, not weight.
+ */
+export const type = {
+  /** Hero statement. */
+  giant: "font-display font-bold leading-[0.92] tracking-[-0.045em] text-[clamp(2.75rem,10.5vw,8.25rem)]",
+  /** Section headline. */
+  section: "font-display font-bold leading-[1.02] tracking-[-0.035em] text-[clamp(2rem,5vw,3.5rem)]",
+  /** Big numerals (ratings, counts) in bento tiles. */
+  numeral: "font-display font-bold leading-none tracking-[-0.04em] tabular-nums",
+};
+
+/** Bento tile base: generous radius; padding, colour and span are set per tile. */
+export const tile = "relative flex min-w-0 flex-col overflow-hidden rounded-3xl";
+
 /** Small all-caps label used above groups, as in the brand book (never for headlines). */
 export const eyebrow = "text-xs font-semibold tracking-[0.08em] text-muted uppercase";
 

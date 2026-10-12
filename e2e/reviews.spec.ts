@@ -44,7 +44,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
 
   // Logged in but no phone → asked to verify before reviewing.
   await page.goto("/businesses/rakho-fufu");
-  const before = Number(await page.getByText(/verified reviews?$/).textContent().then((t) => t!.split(" ")[0]));
+  const before = Number(await page.getByText(/^\d+ verified ratings?$/).textContent().then((t) => t!.split(" ")[0]));
   await page.getByRole("link", { name: "Verify phone number" }).first().click();
   await expect(page).toHaveURL(/\/verify-phone/);
 
@@ -81,7 +81,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await expect(page.getByText("Your review is live. Thanks for saying it clearly.")).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
-  await expect(page.getByText(`${before + 1} verified reviews`)).toBeVisible();
+  await expect(page.getByText(`${before + 1} verified ratings`)).toBeVisible();
 
   // Editing updates rather than duplicating.
   await expect(page.getByRole("heading", { name: "Your review" })).toBeVisible();
@@ -89,7 +89,7 @@ test("register → verify email → verify phone → post a review", async ({ pa
   await page.getByRole("button", { name: "Update review" }).click();
   await expect(page.getByText("Your review is updated.")).toBeVisible();
   await page.reload();
-  await expect(page.getByText(`${before + 1} verified reviews`)).toBeVisible();
+  await expect(page.getByText(`${before + 1} verified ratings`)).toBeVisible();
   await expect(page.getByRole("heading", { name: `Updated: ${title}`, exact: true })).toBeVisible();
 
   // Changing the rating survives a failed submit (regression: React's form reset used to

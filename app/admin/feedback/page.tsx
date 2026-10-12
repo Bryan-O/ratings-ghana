@@ -59,7 +59,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
           </a>
         </div>
       </SiteHeader>
-      <main className={`${container} flex-1 py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
         {items.length === 0 ? (
           <div className={`${card} flex flex-col items-center p-10 text-center`}>
             <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft text-brand"><MessageIcon size={26} /></span>

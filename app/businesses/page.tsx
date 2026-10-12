@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { BusinessCard } from "@/components/business-card";
+import { BusinessCard, FeaturedBusinessCard } from "@/components/business-card";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryIcon, PlusIcon } from "@/components/icons";
 import { EmptyState } from "@/components/empty-state";
@@ -51,6 +51,10 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
     return s ? `/businesses?${s}` : "/businesses";
   };
 
+  // Bento lead: the first result on page one gets the feature card, labelled by the current order.
+  const featureLabel =
+    page === 1 && items.length > 2 ? ({ popular: "Most reviewed", rating: "Highest rated", newest: "Newest", name: null } as const)[sort] : null;
+
   const title = category ?? (q ? `Results for “${q}”` : "Businesses in Ghana");
 
   return (
@@ -68,7 +72,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
         <SearchBar q={q} location={location} className="max-w-3xl" />
       </SiteHeader>
 
-      <main className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 lg:py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 lg:py-10`}>
         <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:self-start">
           <h2 className="sr-only lg:not-sr-only lg:mb-2 lg:px-3 lg:text-xs lg:font-semibold lg:tracking-[0.08em] lg:text-muted lg:uppercase">Type</h2>
           <Rail label="Business type" arrows={false} className={railClass}>
@@ -108,12 +112,18 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             </div>
           )}
           {items.length > 0 ? (
-            <Reveal as="ul" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {items.map((b) => (
-                <li key={b.id}>
-                  <BusinessCard business={b} />
-                </li>
-              ))}
+            <Reveal as="ul" className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((b, i) =>
+                i === 0 && featureLabel ? (
+                  <li key={b.id} className="sm:col-span-2">
+                    <FeaturedBusinessCard business={b} label={featureLabel} />
+                  </li>
+                ) : (
+                  <li key={b.id}>
+                    <BusinessCard business={b} />
+                  </li>
+                ),
+              )}
             </Reveal>
           ) : (
             <EmptyState title="Nothing matched that search." text="Try a shorter name, a different spelling, or browse by category. Not listed yet? Add it so others can rate it.">

@@ -51,7 +51,7 @@ export function AuthCard({
         </p>
       </aside>
 
-      <main className="flex flex-col bg-brand-wash px-4 py-8 sm:px-8">
+      <main id="main" tabIndex={-1} className="flex flex-col bg-brand-wash px-4 py-8 sm:px-8">
         <Link href="/" className="inline-flex items-center gap-2.5 self-start text-ink lg:hidden">
           <LogoMark bg="#f6f5fa" />
           <span className="font-display text-lg font-bold text-ink">RatingsGhana</span>

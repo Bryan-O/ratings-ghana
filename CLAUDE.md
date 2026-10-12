@@ -27,7 +27,11 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - deep violet `#3D2C8D` (`brand`): verified badges, links, navigation, focus rings;
   - stars are solid coral when earned and ink outlines at 40% when not. **Never yellow or gold stars.**
 - **Type:** Space Grotesk Bold for headings and rating numerals (`font-display font-bold`), Inter for everything else (`font-sans`), via `next/font/google` in `app/layout.tsx`. Use sentence case; no all-caps headlines.
-- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `panel`, `lift`, `eyebrow`, `container`, `chip`). Primary buttons are ink and shift to coral with an ink label on hover/press. Reuse the recipes instead of re-styling controls.
+- **Layout style** (from the ui-ux-pro-max skill, inside the brand): **Exaggerated Minimalism + Bento grid**.
+  - One oversized statement per page (`type.giant` on the home hero, big business names), lots of white space, and section headlines in `type.section`.
+  - Summaries are bento grids of `tile`s with varied spans and big numerals (`type.numeral`): the home "right now" grid, the business page summary (photos, rating, who rated it, contact), and `FeaturedBusinessCard` leading page one of the list.
+  - Headings on ink or violet tiles need an explicit `text-white`, because the base `h1`–`h3` colour is ink.
+- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `panel`, `tile`, `type.*`, `lift`, `eyebrow`, `container`, `chip`). Primary buttons are ink and shift to coral with an ink label on hover/press. Reuse the recipes instead of re-styling controls.
 - **Brand components:**
   - `LogoMark`: a speech bubble with a coral star. Never rotate or recolour it. Use `mono` on dark backgrounds, and pass `bg`.
   - `VerifiedBadge`: a violet pill with the fixed wording "Verified reviewer".
@@ -197,6 +201,7 @@ prisma/
 - Tailwind utility classes only; no CSS modules or styled-components.
 - Responsive and mobile-first; check 390px and 1440px.
 - Use accessible markup: labelled inputs, alt text on images, and keyboard-operable star input.
+- Every page's `<main>` has `id="main" tabIndex={-1}`, the target of the "Skip to content" link in `app/layout.tsx`. Keep heading levels sequential (e.g. cards inside an `h2` section use `headingLevel={3}`).
 - Keep components small and colocate page-only components under their route.
 
 ## Before pushing

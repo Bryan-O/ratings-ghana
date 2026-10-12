@@ -41,7 +41,7 @@ export default async function AdminPage() {
   return (
     <>
       <SiteHeader title="Admin" crumbs={[{ label: "Home", href: "/" }]} subtitle="Approve new listings and photos, and handle reported reviews." />
-      <main className={`${container} flex-1 py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
         <SetupCheckPanel checks={setupChecks()} />
         <Link
           href="/admin/feedback"

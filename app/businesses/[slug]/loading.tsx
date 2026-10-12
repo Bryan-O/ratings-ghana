@@ -14,7 +14,7 @@ export default function BusinessLoading() {
           <Bone className="mt-3 h-6 w-64 max-w-full" />
         </div>
       </div>
-      <main className={`${container} flex-1 py-8`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-8`}>
         <Bone className="h-44 rounded-3xl sm:h-64" />
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-8">
           <div className="flex flex-col gap-6">

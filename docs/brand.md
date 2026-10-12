@@ -87,6 +87,19 @@ Copy library, used in the app:
 
 Privacy and moderation copy must be literal. Never promise something the product doesn't do.
 
+## Layout
+
+The layout system comes from the ui-ux-pro-max skill, applied inside this brand: **Exaggerated Minimalism + Bento grid**.
+
+- **One loud statement per page.** The home hero headline runs up to about 132px (`type.giant`, tight -0.045em tracking) with generous space around it. Size does the work, because Space Grotesk tops out at 700 and screens use two weights at most.
+- **Section headlines** use `type.section` (32–56px).
+- **Bento summaries:**
+  - **Home:** a live verified review (2×2), the top-rated business (2×1), a verified-reviews count and a businesses-listed count.
+  - **Business page:** photos (2×2), the rating, who rated it, and contact.
+  - **List:** the first result on page one is a two-column feature card.
+- **Tiles** are 24px-radius, flat-colour blocks in paper, light neutral, coral tint, ink or violet, with big Space Grotesk numerals. Clickable tiles lift on hover, focus or press.
+- The grid collapses from 4 to 2 columns, with stat tiles staying side by side on phones.
+
 ## Motion
 
 The guidelines don't define motion. This is the app's interpretation of "energetic: move with pace". It's implemented in `lib/motion.ts` and `app/globals.css`.

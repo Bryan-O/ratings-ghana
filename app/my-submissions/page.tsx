@@ -34,7 +34,7 @@ export default async function MySubmissionsPage() {
           <PlusIcon size={18} /> Add a business
         </Link>
       </SiteHeader>
-      <main className={`${container} flex-1 py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-10`}>
         {items.length === 0 ? (
           <p className={`${card} p-8 text-center text-muted`}>You haven&apos;t suggested any businesses yet.</p>
         ) : (

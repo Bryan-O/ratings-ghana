@@ -13,7 +13,7 @@ export default function BusinessesLoading() {
           <Bone className="mt-6 h-16 w-full max-w-3xl rounded-2xl bg-line" />
         </div>
       </div>
-      <main className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_1fr] lg:gap-10 lg:py-10`}>
+      <main id="main" tabIndex={-1} className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_1fr] lg:gap-10 lg:py-10`}>
         <div className="flex gap-2 overflow-hidden lg:flex-col">
           {Array.from({ length: 6 }, (_, i) => (
             <Bone key={i} className="h-11 w-24 shrink-0 rounded-xl lg:w-full" />
