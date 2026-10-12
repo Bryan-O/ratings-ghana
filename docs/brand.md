@@ -31,10 +31,11 @@ Accessibility rules:
 
 ## Type
 
-- **Plus Jakarta Sans** for everything (it replaced the guideline's Space Grotesk + Inter pairing at the owner's request). One variable font, loaded with `next/font/google`.
-  - **Bold (700)** (`font-display font-bold`): headlines, hero lines and rating numerals. Display 40/44, H1 32/36, H2 24/30, H3 20/26.
+- **Manrope** for everything. The owner asked to match Trustpilot's type, which is proprietary; Manrope is the closest free match. One variable font, loaded with `next/font/google`.
+  - **Extra-bold (800)** (`font-display font-extrabold`): the hero, page titles and rating numerals. Hero 52/57, page title 40/44.
+  - **Bold (700):** section headlines (26/32) and card titles (16/22).
   - **Regular, medium, semibold** (`font-sans`): body 16/24, small 14/20, caption 12/16. Use regular for reading, medium for controls and semibold for labels.
-  - **Spacing:** the font's space is narrow, so body text has `word-spacing: 0.035em` and big headings use -0.025 to -0.03em tracking (tighter makes words run together).
+  - **Spacing:** keep headings between 0 and -0.02em tracking.
 - Use sentence case and never all-caps headlines. Small all-caps labels (`eyebrow`) are allowed above groups.
 - Numbers use tabular figures (set globally).
 
@@ -51,19 +52,21 @@ The mark is a bold speech bubble whose corner resolves into a coral star (`LogoM
 - Use one sharp, geometric five-pointed star everywhere.
 - Earned stars are solid coral; unearned stars are ink outlines at 40%.
 - **Never yellow or gold.**
-- Set the rating numeral in bold Plus Jakarta Sans right beside the row.
+- Set the rating numeral in Manrope right beside the row (semibold on cards, extra-bold in the score card).
+- The score card adds a plain word under the numeral: Excellent (4.5+), Good (3.5+), Okay (2.5+), Poor (1.5+), Bad.
 
 ## Components
 
 | Component | Spec | Code |
 |---|---|---|
-| Primary button | Ink fill, paper text, 12px radius. On hover or press the fill shifts to coral and the label to ink. | `btn.cta` / `btn.primary` |
-| Secondary button | Paper with a 2px ink outline. Never for the main path. | `btn.outline` |
+| Primary button | Ink pill, paper text. On hover or press the fill shifts to coral and the label to ink. | `btn.cta` / `btn.primary` |
+| Secondary button | Paper pill with a 1px violet outline ("Visit website", "Share"), or a 2px ink outline. Never for the main path. | `btn.pill` / `btn.outline` |
 | Coral button | For ink or violet surfaces. | `btn.coral` |
 | Verified badge | Violet pill, white check, the fixed wording "Verified reviewer". | `<VerifiedBadge>` |
 | Rating input | Five large tappable stars on light coral tiles, filling coral left to right. | `components/review-form.tsx` |
 | Form field | Paper, 1px ink at ~30%, 12px radius, violet focus ring that keeps the border. | `input`, `textarea` |
-| Business rating card | Light neutral container, name in bold Plus Jakarta Sans, coral stars + numeral. | `BusinessCard` |
+| Business card | White with a hairline border: logo-style thumbnail, bold name, where it is, coral stars + "4.7 (15)". | `BusinessCard` |
+| Search | Pill with business and location fields and a round ink button. | `SearchBar` |
 | Empty state | One speech-bubble motif plus one useful line. | `<EmptyState>` |
 
 **Rule of thumb:** one clear action per surface.
@@ -91,16 +94,27 @@ Privacy and moderation copy must be literal. Never promise something the product
 
 ## Layout
 
-The layout system comes from the ui-ux-pro-max skill, applied inside this brand: **Exaggerated Minimalism + Bento grid**.
+The arrangement follows Trustpilot's (structure and type only). Colours stay "Loud & Clear": Trustpilot's pastel bands become light neutral, coral and violet tints, and stars stay coral.
 
-- **One loud statement per page.** The home hero headline runs up to about 132px (`type.giant`, -0.03em tracking) with generous space around it. Size does the work, because headlines stay at 700 and screens use two weights at most.
-- **Section headlines** use `type.section` (32–56px).
-- **Bento summaries:**
-  - **Home:** a live verified review (2×2), the top-rated business (2×1), a verified-reviews count and a businesses-listed count.
-  - **Business page:** photos (2×2), the rating, who rated it, and contact.
-  - **List:** the first result on page one is a two-column feature card.
-- **Tiles** are 24px-radius, flat-colour blocks in paper, light neutral, coral tint, ink or violet, with big bold numerals. Clickable tiles lift on hover, focus or press.
-- The grid collapses from 4 to 2 columns, with stat tiles staying side by side on phones.
+- **Top bar:** ink, with the mono logo, a compact search on inner pages, white links and one coral pill.
+- **Home**, in order:
+  - a centred hero on light neutral with flat coral and violet shapes;
+  - a "Write a review" prompt on a divider line;
+  - the category icon row;
+  - a coral-soft promo band;
+  - "Best in <category>" rows of four cards;
+  - a violet-tint join band;
+  - another "Best in" row;
+  - a coral-tint "We're RatingsGhana" band with an inner ink card;
+  - a "Recent reviews" grid;
+  - the multi-column ink footer.
+- **Business page:**
+  - an ink breadcrumb band;
+  - a white sheet with a 40px rounded top;
+  - main column: name, score line, actions, photos, the review form, reviews, then "About" / "Contact info" with the heading on the left;
+  - right column: the score card and trust notes.
+- **Section headers:** the title on the left and a small violet "See more" pill on the right.
+- **Widths:** content is 1200px wide. Card rows swipe on phones and tablets and become four-column grids on desktop.
 
 ## Motion
 
@@ -120,7 +134,7 @@ The guidelines don't define motion. This is the app's interpretation of "energet
 | Buttons | Lift 2px with a soft shadow on hover or focus; scale to 0.96 on press and spring back. Primary actions get a colour wash from the tap point |
 | Star rating | Hover previews it with stars popping in one after another (scale 1.15); tapping locks it with a pop and a small coral and violet burst |
 | Cards and lists | Fade and slide up 16px as they scroll into view, 60ms apart |
-| Business card hover | Lifts 4px, shadow deepens, the arrow nudges forward and turns coral |
+| Business card hover | Lifts 4px, shadow deepens, the name turns violet |
 | Inputs | Border moves to violet with a soft ring fading in |
 | Validation error | The field shakes once (4px, 300ms) and the message drops in |
 | Filtering and sorting | Results re-reveal; the sort control shows a spinner while loading |

@@ -145,6 +145,18 @@ export const FlagIcon = (p: IconProps) => (
   </Stroke>
 );
 
+export const PencilIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M21.17 6.81a2.83 2.83 0 0 0-4-4L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5zM15 5l4 4" />
+  </Stroke>
+);
+
+export const ExternalIcon = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+  </Stroke>
+);
+
 export const PlusIcon = (p: IconProps) => (
   <Stroke {...p}>
     <path d="M12 5v14M5 12h14" />

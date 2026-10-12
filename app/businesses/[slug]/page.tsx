@@ -6,20 +6,19 @@ import { SiteFooter } from "@/components/site-footer";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { BusinessImage } from "@/components/business-image";
 import { Stars } from "@/components/stars";
-import { CategoryIcon, GlobeIcon, LocationIcon, PhoneIcon, PlusIcon, ShieldCheckIcon } from "@/components/icons";
+import { BadgeCheckIcon, CategoryIcon, ExternalIcon, FlagIcon, GlobeIcon, LocationIcon, PencilIcon, PhoneIcon, PlusIcon, ShieldCheckIcon } from "@/components/icons";
 import { EmptyState } from "@/components/empty-state";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { PhotoUpload } from "@/components/photo-upload";
 import { RatingBars } from "@/components/rating-bars";
-import { Reveal } from "@/components/reveal";
 import { ReviewList } from "@/components/review-list";
 import { ShareButton } from "@/components/share-button";
 import { MobileActionBar } from "@/components/mobile-action-bar";
 import { ReviewForm } from "@/components/review-form";
-import { btn, card, container, eyebrow, lift, tile, type } from "@/components/ui";
+import { btn, container, type } from "@/components/ui";
 import { formatGhanaPhone, normalizeGhanaPhone } from "@/lib/phone";
 import { countMyPendingPhotos, getBusinessBySlug, getPublishedReviews, getUserReview } from "@/lib/queries";
-import { ratingDistribution } from "@/lib/ratings";
+import { ratingDistribution, ratingLabel } from "@/lib/ratings";
 import { getCurrentUser, nextVerificationStep } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -52,205 +51,221 @@ export default async function BusinessPage({ params }: Props) {
     <>
       <SiteHeader />
 
-      <main id="main" tabIndex={-1} className="flex-1">
-      {/* Business header */}
-      <section>
-        <div className={`${container} pt-8 pb-6 sm:pt-10`}>
+      {/* Ink band with the breadcrumb; the page sits on a white sheet with a rounded top (Trustpilot-style). */}
+      <div className="bg-ink">
+        <div className={`${container} pt-1 pb-5`}>
           <Breadcrumb
+            onDark
             crumbs={[
               { label: "Home", href: "/" },
               { label: business.category, href: `/businesses?category=${encodeURIComponent(business.category)}` },
               { label: business.name },
             ]}
           />
-          <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
-                  <CategoryIcon category={business.category} size={16} /> {business.category}
-                </span>
-                <span className="rounded-full border border-line-strong px-3 py-1 text-sm font-semibold text-ink">
-                  {business.type === "ONLINE" ? "Online business" : "Physical location"}
-                </span>
-              </div>
-              <h1 className="mt-4 font-display text-[clamp(2.25rem,9vw,4.5rem)] leading-[1.05] font-bold tracking-[-0.025em] break-words">{business.name}</h1>
-            </div>
-            <div id="business-actions" className="flex flex-wrap gap-3 self-start lg:self-auto">
-              <a href="#write-review" className={btn.cta}>
-                {myReview ? "Edit your review" : "Rate this business"}
-              </a>
-              <ShareButton title={business.name} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className={`${container} pb-8`}>
-        {/* Bento summary: photos, the rating, who rated it, and how to reach the business */}
-        <Reveal as="div" className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:grid-rows-[minmax(12rem,auto)_minmax(12rem,auto)]">
-          <div className={`${tile} col-span-2 bg-brand-wash p-2 lg:row-span-2`}>
-            {imgs.length > 0 ? (
-              <PhotoGallery images={imgs} name={business.name} variant="tile" />
-            ) : (
-              <div className="relative min-h-44 flex-1 overflow-hidden rounded-2xl sm:min-h-56">
-                <BusinessImage name={business.name} category={business.category} />
-              </div>
-            )}
-            <div className="flex flex-wrap items-center justify-between gap-2 px-3 pt-3 pb-1">
-              <p className="text-sm text-muted">
-                {imgs.length === 0 ? (
-                  "No photos yet. You could add the first."
-                ) : (
-                  <Link href={`/businesses/${business.slug}/photos`} className="inline-flex min-h-11 items-center font-semibold text-brand transition-colors duration-200 hover:text-ink">
-                    See all {imgs.length} photo{imgs.length === 1 ? "" : "s"}
-                  </Link>
-                )}
-              </p>
-              <a href="#add-photos" className={btn.smOutline}>
-                <PlusIcon size={16} /> Add photos
-              </a>
-            </div>
-          </div>
-
-          <a href="#reviews-heading" className={`${tile} group justify-between bg-ink p-5 text-white sm:p-7 ${lift}`}>
-            <span className={`${eyebrow} text-white/60`}>Rating</span>
-            <span className={`${type.numeral} mt-5 text-6xl sm:text-7xl`}>{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>
-            <span className="mt-3">
-              <Stars rating={business.avgRating} size={16} onDark />
-              <span className="mt-1 block text-xs text-white/70">
-                {business.reviewCount} verified rating{business.reviewCount === 1 ? "" : "s"}
-              </span>
-            </span>
-          </a>
-
-          <div className={`${tile} justify-between bg-brand p-5 text-white sm:p-7`}>
-            <span className={`${eyebrow} text-white/70`}>Who rated it</span>
-            <span className={`${type.numeral} mt-5 text-6xl sm:text-7xl`}>{reviews.length}</span>
-            <span className="mt-3 flex items-start gap-1.5 text-sm text-white/85">
-              <ShieldCheckIcon size={16} className="mt-0.5 shrink-0" /> Verified reviewers, one review each
-            </span>
-          </div>
-
-          <section className={`${tile} col-span-2 bg-brand-wash p-5 sm:p-7`} aria-labelledby="contact-heading">
-            <h2 id="contact-heading" className={eyebrow}>
-              {business.type === "ONLINE" ? "Website & contact" : "Location & contact"}
-            </h2>
-            {where || business.website || business.phone ? (
-              <ul className="mt-4 grid gap-3 text-[15px] sm:grid-cols-2">
-                {business.address && (
-                  <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-paper text-ink"><LocationIcon size={18} /></span>
-                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="min-w-0 pt-1.5 font-medium text-ink transition-colors duration-200 hover:text-brand">
-                      {where} <span className="text-sm text-brand">· Open in Maps</span>
-                    </a>
-                  </li>
-                )}
-                {business.website && (
-                  <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-paper text-ink"><GlobeIcon size={18} /></span>
-                    <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className="min-w-0 pt-1.5 font-medium break-all text-ink transition-colors duration-200 hover:text-brand">
-                      {business.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
-                    </a>
-                  </li>
-                )}
-                {business.phone && (
-                  <li className="flex items-start gap-3">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-paper text-ink"><PhoneIcon size={18} /></span>
-                    <a href={`tel:${phoneE164 ?? business.phone}`} className="pt-1.5 font-medium text-ink transition-colors duration-200 hover:text-brand">
-                      {phoneE164 ? formatGhanaPhone(phoneE164) : business.phone}
-                    </a>
-                  </li>
-                )}
-              </ul>
-            ) : (
-              <p className="mt-4 text-muted">No contact details yet.</p>
-            )}
-          </section>
-        </Reveal>
-
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
-          {/* About */}
-          <section className={`${card} p-6 lg:col-start-1`} aria-labelledby="about-heading">
-            <h2 id="about-heading" className="font-display text-xl font-bold">About</h2>
-            <p className="mt-3 whitespace-pre-line text-body">{business.description}</p>
-          </section>
-
-          {/* Sidebar: write a review + contact (after About on mobile, right column on desktop) */}
-          <aside className="flex flex-col gap-6 lg:col-start-2 lg:row-span-3 lg:row-start-1">
-            <section id="write-review" className="scroll-mt-24 rounded-2xl border-2 border-ink bg-paper p-6" aria-labelledby="write-heading">
-              <h2 id="write-heading" className="font-display text-xl font-bold">{myReview ? "Your review" : "How did it really go?"}</h2>
-              {!myReview && <p className="mt-1 text-sm text-muted">Rate the business and tell people what mattered.</p>}
-              <div className="mt-4">
-                {step === null && user ? (
-                  isSubmitter ? (
-                    <p className="text-muted">You added this business, so you can&apos;t review it.</p>
-                  ) : (
-                    <ReviewForm
-                      businessId={business.id}
-                      existing={myReview ? { rating: myReview.rating, title: myReview.title, body: myReview.body } : undefined}
-                    />
-                  )
-                ) : (
-                  <VerificationPrompt step={step} slug={business.slug} purpose="review" />
-                )}
-              </div>
-            </section>
-
-            <section id="add-photos" className={`${card} p-6`} aria-labelledby="photos-heading">
-              <h2 id="photos-heading" className="font-display text-xl font-bold">Add photos</h2>
-              <p className="mt-1 mb-4 text-sm text-muted">Been here? Share photos of the place, food, products or service.</p>
-              {myPendingPhotos > 0 && (
-                <p className="mb-4 rounded-xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand" role="status">
-                  You have {myPendingPhotos} photo{myPendingPhotos === 1 ? "" : "s"} awaiting review.
-                </p>
-              )}
-              {step === null && user ? (
-                <PhotoUpload businessId={business.id} />
-              ) : (
-                <VerificationPrompt step={step} slug={business.slug} purpose="photos" />
-              )}
-            </section>
-          </aside>
-
-          {/* Rating breakdown */}
-          <section className="rounded-2xl bg-brand-wash p-6 lg:col-start-1" aria-labelledby="ratings-heading">
-            <h2 id="ratings-heading" className="font-display text-xl font-bold">Rating breakdown</h2>
-            <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
-              <RatingBars dist={dist} total={reviews.length} />
-            </div>
-            <p className="mt-5 flex items-center gap-2 text-sm text-muted">
-              <ShieldCheckIcon size={16} className="text-brand" /> Only verified reviewers can rate. One review per person.
-            </p>
-          </section>
-
-          {/* Reviews */}
-          <section className="lg:col-start-1" aria-labelledby="reviews-heading">
-            <h2 id="reviews-heading" className="font-display text-2xl font-bold">Reviews ({reviews.length})</h2>
-            {reviews.length === 0 ? (
-              <div className="mt-4">
-                <EmptyState title="No reviews yet. You could be first." text="Share a real experience to help the next customer.">
-                  <a href="#write-review" className={btn.cta}>Rate this business</a>
-                </EmptyState>
-              </div>
-            ) : (
-              <div className="mt-4">
-                <ReviewList
-                  reviews={reviews.map((r) => ({
-                    id: r.id,
-                    rating: r.rating,
-                    title: r.title,
-                    body: r.body,
-                    createdAt: r.createdAt,
-                    user: { name: r.user.name },
-                    canReport: Boolean(user?.emailVerified) && user?.id !== r.userId,
-                    isMine: user?.id === r.userId,
-                  }))}
-                />
-              </div>
-            )}
-          </section>
         </div>
       </div>
+
+      <main id="main" tabIndex={-1} className="flex-1 bg-ink">
+        <div className="rounded-t-3xl bg-paper sm:rounded-t-[2.5rem]">
+          <div className={`${container} grid grid-cols-1 gap-x-12 gap-y-8 pt-8 pb-16 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_22.5rem]`}>
+            {/* Name, score line and actions */}
+            <header className="flex flex-col gap-5 sm:flex-row sm:items-start lg:col-start-1">
+              <span className="relative block size-24 shrink-0 overflow-hidden rounded-xl border border-line sm:size-32">
+                <BusinessImage src={imgs[0]} name={business.name} category={business.category} sizes="128px" priority />
+              </span>
+              <div className="min-w-0">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-line px-2 py-0.5 text-xs font-medium text-body">
+                  {business.type === "ONLINE" ? <GlobeIcon size={13} /> : <LocationIcon size={13} />}
+                  {business.type === "ONLINE" ? "Online business" : "Physical location"}
+                  {business.city ? ` · ${business.city}` : ""}
+                </span>
+                <h1 className="mt-2 font-display text-[clamp(1.875rem,6vw,2.5rem)] leading-tight font-extrabold tracking-[-0.02em] break-words">
+                  {business.name}
+                </h1>
+                <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-body">
+                  <a href="#reviews-heading" className="underline underline-offset-4 transition-colors duration-200 hover:text-brand">
+                    Reviews {business.reviewCount}
+                  </a>
+                  <span aria-hidden>•</span>
+                  <Stars rating={business.avgRating} size={18} />
+                  <span className="font-semibold text-ink">{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</span>
+                </p>
+                <Link
+                  href={`/businesses?category=${encodeURIComponent(business.category)}`}
+                  className="mt-1 inline-flex min-h-9 items-center gap-1.5 text-brand transition-colors duration-200 hover:text-ink"
+                >
+                  <CategoryIcon category={business.category} size={16} /> {business.category}
+                </Link>
+                <div id="business-actions" className="mt-3 flex flex-wrap gap-2.5">
+                  <a href="#write-review" className={`${btn.cta} h-11 px-5`}>
+                    <PencilIcon size={16} /> {myReview ? "Edit your review" : "Rate this business"}
+                  </a>
+                  {business.website && (
+                    <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className={btn.pill}>
+                      Visit website <ExternalIcon size={16} />
+                    </a>
+                  )}
+                  <ShareButton title={business.name} />
+                </div>
+              </div>
+            </header>
+
+            {/* Score card and trust notes: right column on desktop, under the header on phones */}
+            <aside className="flex flex-col gap-3 lg:col-start-2 lg:row-span-6 lg:row-start-1" aria-label="Rating summary">
+              <section className="rounded-2xl border border-line" aria-labelledby="score-heading">
+                <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-6 p-6">
+                  <div>
+                    <h2 id="score-heading" className="sr-only">Overall rating</h2>
+                    <p className={`${type.numeral} text-5xl text-ink`}>{business.reviewCount ? business.avgRating.toFixed(1) : "–"}</p>
+                    <p className="mt-1 font-semibold text-ink">{ratingLabel(business.avgRating, business.reviewCount)}</p>
+                    <Stars rating={business.avgRating} size={16} className="mt-1.5" />
+                    <p className="mt-1.5 text-xs text-muted">
+                      {business.reviewCount} verified review{business.reviewCount === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                  <RatingBars dist={dist} total={reviews.length} />
+                </div>
+                <p className="border-t border-line px-6 py-3 text-center text-sm">
+                  <Link href="/#trust-heading" className="inline-flex min-h-9 items-center text-body underline underline-offset-4 transition-colors duration-200 hover:text-brand">
+                    How we keep reviews real
+                  </Link>
+                </p>
+              </section>
+              <TrustNote icon={ShieldCheckIcon} title="Verified reviewers only">
+                Everyone who rated this confirmed their email and phone number.
+              </TrustNote>
+              <TrustNote icon={BadgeCheckIcon} title="One review per person">
+                People can edit their review, but they can&rsquo;t post twice.
+              </TrustNote>
+              <TrustNote icon={FlagIcon} title="Reports get checked">
+                Anyone can report a review. We check every report.
+              </TrustNote>
+            </aside>
+
+            <div className="min-w-0 space-y-10 border-t border-line pt-8 lg:col-start-1">
+              {/* Photos */}
+              <section aria-labelledby="photos-title">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2 id="photos-title" className={type.section}>Photos</h2>
+                  <a href="#add-photos" className={btn.smOutline}>
+                    <PlusIcon size={16} /> Add photos
+                  </a>
+                </div>
+                {imgs.length > 0 ? (
+                  <div className="mt-4">
+                    <PhotoGallery images={imgs} name={business.name} />
+                    <Link href={`/businesses/${business.slug}/photos`} className="mt-2 inline-flex min-h-11 items-center font-semibold text-brand transition-colors duration-200 hover:text-ink">
+                      See all {imgs.length} photo{imgs.length === 1 ? "" : "s"}
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-muted">No photos yet. You could add the first.</p>
+                )}
+              </section>
+
+              {/* Write a review */}
+              <section id="write-review" className="scroll-mt-24 rounded-2xl border border-line p-6 sm:p-8" aria-labelledby="write-heading">
+                <h2 id="write-heading" className={type.section}>{myReview ? "Your review" : "How did it really go?"}</h2>
+                {!myReview && <p className="mt-1 text-muted">Rate the business and tell people what mattered.</p>}
+                <div className="mt-5 max-w-xl">
+                  {step === null && user ? (
+                    isSubmitter ? (
+                      <p className="text-muted">You added this business, so you can&apos;t review it.</p>
+                    ) : (
+                      <ReviewForm
+                        businessId={business.id}
+                        existing={myReview ? { rating: myReview.rating, title: myReview.title, body: myReview.body } : undefined}
+                      />
+                    )
+                  ) : (
+                    <VerificationPrompt step={step} slug={business.slug} purpose="review" />
+                  )}
+                </div>
+              </section>
+
+              {/* Reviews */}
+              <section aria-labelledby="reviews-heading">
+                <h2 id="reviews-heading" className={`${type.section} scroll-mt-24`}>Reviews ({reviews.length})</h2>
+                {reviews.length === 0 ? (
+                  <div className="mt-4">
+                    <EmptyState title="No reviews yet. You could be first." text="Share a real experience to help the next customer.">
+                      <a href="#write-review" className={btn.cta}>Rate this business</a>
+                    </EmptyState>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <ReviewList
+                      reviews={reviews.map((r) => ({
+                        id: r.id,
+                        rating: r.rating,
+                        title: r.title,
+                        body: r.body,
+                        createdAt: r.createdAt,
+                        user: { name: r.user.name },
+                        canReport: Boolean(user?.emailVerified) && user?.id !== r.userId,
+                        isMine: user?.id === r.userId,
+                      }))}
+                    />
+                  </div>
+                )}
+              </section>
+
+              {/* Details, heading on the left (Trustpilot-style) */}
+              <DetailRow id="about-heading" title="About">
+                <p className="whitespace-pre-line text-body">{business.description}</p>
+              </DetailRow>
+
+              <DetailRow id="contact-heading" title="Contact info">
+                {where || business.website || business.phone ? (
+                  <ul className="space-y-2 text-body">
+                    {business.address && (
+                      <li className="flex items-start gap-3">
+                        <LocationIcon size={18} className="mt-0.5 shrink-0" />
+                        <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="min-w-0 underline-offset-4 transition-colors duration-200 hover:text-brand hover:underline">
+                          {where} <span className="text-sm text-brand">· Open in Maps</span>
+                        </a>
+                      </li>
+                    )}
+                    {business.website && (
+                      <li className="flex items-start gap-3">
+                        <GlobeIcon size={18} className="mt-0.5 shrink-0" />
+                        <a href={business.website} target="_blank" rel="noopener noreferrer nofollow" className="min-w-0 break-all underline underline-offset-4 transition-colors duration-200 hover:text-brand">
+                          {business.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
+                        </a>
+                      </li>
+                    )}
+                    {business.phone && (
+                      <li className="flex items-start gap-3">
+                        <PhoneIcon size={18} className="mt-0.5 shrink-0" />
+                        <a href={`tel:${phoneE164 ?? business.phone}`} className="underline-offset-4 transition-colors duration-200 hover:text-brand hover:underline">
+                          {phoneE164 ? formatGhanaPhone(phoneE164) : business.phone}
+                        </a>
+                      </li>
+                    )}
+                  </ul>
+                ) : (
+                  <p className="text-muted">No contact details yet.</p>
+                )}
+              </DetailRow>
+
+              {/* Add photos */}
+              <section id="add-photos" className="scroll-mt-24 rounded-2xl bg-brand-wash p-6 sm:p-8" aria-labelledby="photos-heading">
+                <h2 id="photos-heading" className="text-lg font-bold">Add photos</h2>
+                <p className="mt-1 mb-4 text-sm text-muted">Been here? Share photos of the place, food, products or service.</p>
+                {myPendingPhotos > 0 && (
+                  <p className="mb-4 rounded-xl bg-brand-soft px-4 py-3 text-sm font-medium text-brand" role="status">
+                    You have {myPendingPhotos} photo{myPendingPhotos === 1 ? "" : "s"} awaiting review.
+                  </p>
+                )}
+                {step === null && user ? (
+                  <PhotoUpload businessId={business.id} />
+                ) : (
+                  <VerificationPrompt step={step} slug={business.slug} purpose="photos" />
+                )}
+              </section>
+            </div>
+          </div>
+        </div>
       </main>
       <MobileActionBar watch="business-actions" target="write-review">
         <div className="flex items-center gap-3">
@@ -268,6 +283,29 @@ export default async function BusinessPage({ params }: Props) {
       </MobileActionBar>
       <SiteFooter />
     </>
+  );
+}
+
+function TrustNote({ icon: Icon, title, children }: { icon: (p: { size?: number }) => React.ReactNode; title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-4 rounded-2xl border border-line p-5">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-wash text-brand">
+        <Icon size={18} />
+      </span>
+      <div className="min-w-0 text-sm">
+        <p className="font-semibold text-ink">{title}</p>
+        <p className="mt-0.5 text-muted">{children}</p>
+      </div>
+    </div>
+  );
+}
+
+function DetailRow({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <section className="grid grid-cols-1 gap-3 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8" aria-labelledby={id}>
+      <h2 id={id} className={type.section}>{title}</h2>
+      <div className="min-w-0 sm:pt-1.5">{children}</div>
+    </section>
   );
 }
 
@@ -299,7 +337,7 @@ function VerificationPrompt({
   return (
     <div>
       <p className="text-muted">{c.text}</p>
-      <Link href={c.href} className={`${btn.primary} mt-4 w-full`}>
+      <Link href={c.href} className={`${btn.primary} mt-4 w-full sm:w-auto`}>
         {c.cta}
       </Link>
     </div>

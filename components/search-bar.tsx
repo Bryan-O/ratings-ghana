@@ -32,7 +32,7 @@ export function SearchBar({ q = "", location = "", className = "", size = "md" }
   const term = text.trim().toLowerCase();
   const matches = (term ? ALL.filter((s) => s.label.toLowerCase().includes(term)) : ALL).slice(0, 6);
   const showList = open && matches.length > 0;
-  const h = size === "lg" ? "sm:h-16" : "sm:h-14";
+  const h = size === "lg" ? "sm:h-12" : "sm:h-10";
 
   function choose(s: Suggestion) {
     setOpen(false);
@@ -60,10 +60,9 @@ export function SearchBar({ q = "", location = "", className = "", size = "md" }
     <form
       action="/businesses"
       role="search"
-      className={`relative flex w-full flex-col gap-2 rounded-2xl border-2 border-ink bg-paper p-2 transition-[box-shadow] duration-200 focus-within:ring-4 focus-within:ring-brand/20 sm:flex-row sm:items-center sm:gap-0 ${className}`}
+      className={`relative flex w-full flex-col gap-1 rounded-3xl border border-line-strong bg-paper p-1.5 text-left transition-[border-color,box-shadow] duration-200 hover:border-ink/60 focus-within:border-brand focus-within:ring-4 focus-within:ring-brand/20 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full ${className}`}
     >
-      <div className={`flex h-12 flex-[1.3] items-center gap-2 px-3 ${h}`}>
-        <SearchIcon size={20} className="shrink-0 text-brand" />
+      <div className={`flex h-12 flex-[1.4] items-center gap-2 pr-3 pl-4 ${h}`}>
         <label className="sr-only" htmlFor={`${listId}-q`}>Business name</label>
         <input
           id={`${listId}-q`}
@@ -88,13 +87,13 @@ export function SearchBar({ q = "", location = "", className = "", size = "md" }
           aria-autocomplete="list"
           aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
           autoComplete="off"
-          placeholder="Search waakye, salons, Jumia…"
+          placeholder="Search business or category"
           className="h-full w-full min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted"
         />
       </div>
-      <span aria-hidden className="hidden h-8 w-px bg-line-strong sm:block" />
-      <div className={`flex h-12 flex-1 items-center gap-2 border-t border-line px-3 sm:border-t-0 ${h}`}>
-        <LocationIcon size={20} className="shrink-0 text-brand" />
+      <span aria-hidden className="hidden h-7 w-px bg-line sm:block" />
+      <div className={`flex h-12 flex-1 items-center gap-2 border-t border-line px-4 sm:border-t-0 sm:px-3 ${h}`}>
+        <LocationIcon size={18} className="shrink-0 text-muted" />
         <label className="sr-only" htmlFor={`${listId}-loc`}>Location</label>
         <input
           id={`${listId}-loc`}
@@ -104,15 +103,14 @@ export function SearchBar({ q = "", location = "", className = "", size = "md" }
           className="h-full w-full min-w-0 bg-transparent text-base text-ink outline-none placeholder:text-muted"
         />
       </div>
+      {/* Round button on wider screens (Trustpilot-style); a full-width pill on phones. */}
       <button
         type="submit"
         aria-label="Search"
-        className={`${btn.cta} ${
-          size === "lg" ? "sm:h-12" : "sm:h-10 sm:px-5"
-        }`}
+        className={`${btn.cta} h-12 sm:px-0 ${size === "lg" ? "sm:size-12" : "sm:size-10"}`}
       >
-        <SearchIcon size={18} />
-        <span>Search</span>
+        <SearchIcon size={size === "lg" ? 20 : 18} />
+        <span className="sm:sr-only">Search</span>
       </button>
 
       {showList && (

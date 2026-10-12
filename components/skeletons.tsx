@@ -9,13 +9,13 @@ export function Bone({ className = "" }: { className?: string }) {
 /** Instant stand-in for SiteHeader while a page loads (no data, so it renders immediately). */
 export function HeaderSkeleton() {
   return (
-    <div className="sticky top-0 z-40 border-b border-line bg-paper">
-      <div className={`${container} flex h-16 items-center justify-between`}>
-        <span className="flex items-center gap-2.5 text-ink">
-          <LogoMark />
-          <span className="font-display text-xl font-bold tracking-tight">RatingsGhana</span>
+    <div className="sticky top-0 z-40 bg-ink">
+      <div className={`${container} flex h-16 items-center justify-between lg:h-[4.5rem]`}>
+        <span className="flex items-center gap-2.5 text-white">
+          <LogoMark mono bg="#16161a" />
+          <span className="font-display text-xl font-bold tracking-[-0.01em]">RatingsGhana</span>
         </span>
-        <Bone className="h-10 w-24 lg:w-80" />
+        <span aria-hidden className="block h-10 w-24 animate-pulse rounded-full bg-white/10 lg:w-80" />
       </div>
     </div>
   );
@@ -23,13 +23,11 @@ export function HeaderSkeleton() {
 
 export function BusinessCardSkeleton() {
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl bg-brand-wash p-2">
-      <span className="block aspect-[16/10] animate-pulse rounded-xl bg-line" />
-      <div className="flex flex-col gap-2.5 p-3 pt-4">
-        <Bone className="h-5 w-3/4 bg-line" />
-        <Bone className="h-4 w-1/2 bg-line" />
-        <Bone className="h-4 w-2/3 bg-line" />
-      </div>
+    <div className="flex flex-col gap-3 rounded-xl border border-line p-4">
+      <Bone className="size-16" />
+      <Bone className="h-5 w-3/4" />
+      <Bone className="h-4 w-1/2" />
+      <Bone className="h-4 w-2/3" />
     </div>
   );
 }

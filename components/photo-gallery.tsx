@@ -6,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from "@/components/icons
 
 /**
  * Photos on a business page. Tapping a photo opens it full size (arrow keys to browse, Esc to close).
- * `tile` fits a bento tile: one large photo plus two smaller ones.
+ * `tile` fits a compact block: one large photo plus two smaller ones.
  */
 export function PhotoGallery({ images, name, variant = "wide" }: { images: string[]; name: string; variant?: "wide" | "tile" }) {
   const dialog = useRef<HTMLDialogElement>(null);

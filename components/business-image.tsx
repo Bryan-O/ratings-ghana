@@ -8,6 +8,8 @@ type Props = {
   className?: string;
   sizes?: string;
   priority?: boolean;
+  /** Small logo-style thumbnail: initials only. */
+  compact?: boolean;
 };
 
 // Placeholder tiles: flat brand colours (never gradients), picked per business so a grid isn't monotone.
@@ -28,7 +30,7 @@ function pick(name: string) {
  * A business photo, or a branded placeholder (category icon + initials) until a
  * photo is uploaded. Parent must be `relative` with a set size.
  */
-export function BusinessImage({ src, name, category, className = "", sizes = "(max-width: 1024px) 100vw, 33vw", priority }: Props) {
+export function BusinessImage({ src, name, category, className = "", sizes = "(max-width: 1024px) 100vw, 33vw", priority, compact }: Props) {
   if (src) {
     return <Image src={src} alt={name} fill sizes={sizes} priority={priority} className={`object-cover ${className}`} />;
   }
@@ -45,8 +47,8 @@ export function BusinessImage({ src, name, category, className = "", sizes = "(m
       aria-label={name}
       className={`absolute inset-0 flex flex-col items-center justify-center gap-2 overflow-hidden ${tile.bg} ${tile.fg} ${className}`}
     >
-      {category && <CategoryIcon category={category} size={28} className="relative opacity-80" />}
-      <span className="relative font-display text-3xl font-bold">{initials}</span>
+      {category && !compact && <CategoryIcon category={category} size={28} className="relative opacity-80" />}
+      <span className={`relative font-display font-bold ${compact ? "text-lg" : "text-3xl"}`}>{initials}</span>
     </div>
   );
 }

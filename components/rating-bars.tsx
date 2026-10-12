@@ -41,10 +41,10 @@ export function RatingBars({ dist, total }: { dist: number[]; total: number }) {
                 disabled={n === 0}
                 onClick={() => window.dispatchEvent(new CustomEvent(FILTER_EVENT, { detail: star }))}
                 aria-label={`Show ${n} ${star}-star review${n === 1 ? "" : "s"}`}
-                className="group -mx-2 flex min-h-10 w-[calc(100%+1rem)] cursor-pointer items-center gap-3 rounded-lg px-2 text-sm transition-colors duration-200 hover:bg-paper disabled:cursor-default disabled:hover:bg-transparent"
+                className="group -mx-2 flex min-h-10 w-[calc(100%+1rem)] cursor-pointer items-center gap-3 rounded-lg px-2 text-sm transition-colors duration-200 hover:bg-brand-wash disabled:cursor-default disabled:hover:bg-transparent"
               >
-              <span aria-hidden className="w-12 shrink-0 text-left font-semibold text-ink group-hover:text-brand group-disabled:text-ink">{star} star</span>
-              <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-paper group-hover:bg-coral-soft">
+              <span aria-hidden className="w-12 shrink-0 text-left font-semibold text-ink group-hover:text-brand group-disabled:text-ink">{star}-star</span>
+              <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-brand-wash group-hover:bg-coral-tint">
                 <span
                   className="block h-full origin-left rounded-full bg-star transition-transform duration-700 ease-out motion-reduce:!transform-none"
                   style={{ width: `${pct}%`, transform: `scaleX(${shown ? 1 : 0})`, transitionDelay: `${i * 70}ms` }}

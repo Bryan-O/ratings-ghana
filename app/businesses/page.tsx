@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { BusinessCard, FeaturedBusinessCard } from "@/components/business-card";
+import { BusinessCard } from "@/components/business-card";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryIcon, PlusIcon } from "@/components/icons";
 import { EmptyState } from "@/components/empty-state";
@@ -23,7 +23,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?
 const railClass = "-mx-4 gap-2 px-4 pt-1 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0";
 
 const filterLink = (active: boolean) =>
-  `flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-[15px] font-medium whitespace-nowrap ${press} ${
+  `flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 rounded-full px-4 lg:rounded-lg lg:px-3 py-2 text-[15px] font-medium whitespace-nowrap ${press} ${
     active ? "bg-ink text-white" : "bg-paper text-ink ring-1 ring-line-strong hover:ring-ink lg:bg-transparent lg:ring-0 lg:hover:bg-brand-wash"
   }`;
 
@@ -51,10 +51,6 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
     return s ? `/businesses?${s}` : "/businesses";
   };
 
-  // Bento lead: the first result on page one gets the feature card, labelled by the current order.
-  const featureLabel =
-    page === 1 && items.length > 2 ? ({ popular: "Most reviewed", rating: "Highest rated", newest: "Newest", name: null } as const)[sort] : null;
-
   const title = category ?? (q ? `Results for “${q}”` : "Businesses in Ghana");
 
   return (
@@ -69,7 +65,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
           </span>
         }
       >
-        <SearchBar q={q} location={location} className="max-w-3xl" />
+        <SearchBar q={q} location={location} className="max-w-2xl" />
       </SiteHeader>
 
       <main id="main" tabIndex={-1} className={`${container} flex-1 py-8 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 lg:py-10`}>
@@ -112,18 +108,12 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             </div>
           )}
           {items.length > 0 ? (
-            <Reveal as="ul" className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {items.map((b, i) =>
-                i === 0 && featureLabel ? (
-                  <li key={b.id} className="sm:col-span-2">
-                    <FeaturedBusinessCard business={b} label={featureLabel} />
-                  </li>
-                ) : (
-                  <li key={b.id}>
-                    <BusinessCard business={b} />
-                  </li>
-                ),
-              )}
+            <Reveal as="ul" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((b) => (
+                <li key={b.id}>
+                  <BusinessCard business={b} />
+                </li>
+              ))}
             </Reveal>
           ) : (
             <EmptyState title="Nothing matched that search." text="Try a shorter name, a different spelling, or browse by category. Not listed yet? Add it so others can rate it.">

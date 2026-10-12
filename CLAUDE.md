@@ -26,22 +26,29 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - signal coral `#FF4D5E` (`coral`, `star`, `cta-hover`): CTA hover/press, earned stars, highlights. **Never body text** (3.2:1); error text uses `coral-ink` `#C42338`;
   - deep violet `#3D2C8D` (`brand`): verified badges, links, navigation, focus rings;
   - stars are solid coral when earned and ink outlines at 40% when not. **Never yellow or gold stars.**
-- **Type:** **Plus Jakarta Sans** for everything, via `next/font/google` in `app/layout.tsx` (one variable font). Bold for headings and rating numerals (`font-display font-bold`); regular, medium and semibold for body, labels and controls (`font-sans`). Use sentence case; no all-caps headlines. Body text has a slight `word-spacing` (in `globals.css`) because the font's space is narrow; keep heading tracking no tighter than -0.03em or words run together.
-- **Layout style** (from the ui-ux-pro-max skill, inside the brand): **Exaggerated Minimalism + Bento grid**.
-  - One oversized statement per page (`type.giant` on the home hero, big business names), lots of white space, and section headlines in `type.section`.
-  - Summaries are bento grids of `tile`s with varied spans and big numerals (`type.numeral`): the home "right now" grid, the business page summary (photos, rating, who rated it, contact), and `FeaturedBusinessCard` leading page one of the list.
-  - Headings on ink or violet tiles need an explicit `text-white`, because the base `h1`–`h3` colour is ink.
-- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `panel`, `tile`, `type.*`, `lift`, `eyebrow`, `container`, `chip`). Primary buttons are ink and shift to coral with an ink label on hover/press. Reuse the recipes instead of re-styling controls.
+- **Type:** **Manrope** for everything (the closest free match to Trustpilot's type), via `next/font/google` in `app/layout.tsx` (one variable font). Extra-bold for the hero, page titles and rating numerals (`font-display font-extrabold`); bold for section and card titles; regular, medium and semibold for body, labels and controls (`font-sans`). Use sentence case; no all-caps headlines. Keep heading tracking between 0 and -0.02em.
+- **Layout style:** the arrangement follows **Trustpilot** (fonts and structure only, never its colours or green star boxes):
+  - **Header:** an ink top bar with the logo, a compact search on inner pages (`HeaderSearch`, `xl:` up), plain white links and one coral "Sign up" pill.
+  - **Home** (`app/page.tsx`), in order:
+    - a centred hero on light neutral with flat brand shapes, the headline, and a pill search with a round button;
+    - a "Write a review" prompt on a divider line, then the "What are you looking for?" category icon row;
+    - a coral-soft promo band, then "Best in <category>" rows of four compact cards;
+    - a violet-tint join band with stats, a coral-tint "We're RatingsGhana" band with an inner ink card, and a "Recent reviews" grid.
+  - **Business page:** an ink breadcrumb band, then a white sheet with a rounded top. The main column has the thumbnail, name, "Reviews N • stars score", the category link and pill actions, then photos, the review form, reviews, and two-column "About" / "Contact info" rows. The right column has the score card (numeral, `ratingLabel()` word, stars, 5-star bars) and trust notes.
+  - **Cards** are white with a hairline border: a logo-style thumbnail (`BusinessThumb`), the name, where it is, and stars with "4.7 (15)".
+  - Sections use `type.section` headings with a `seeMore` pill on the right. Buttons are pills (`rounded-full`).
+  - Headings on ink or violet surfaces need an explicit `text-white`, because the base `h1`–`h3` colour is ink.
+- **Shared recipes** live in `components/ui.ts` (`btn.*`, `input`, `textarea`, `label`, `card`, `panel`, `tile`, `type.*`, `seeMore`, `lift`, `eyebrow`, `container`, `chip`). Primary buttons are ink pills and shift to coral with an ink label on hover/press; `btn.pill` is the violet-outlined secondary pill. Reuse the recipes instead of re-styling controls.
 - **Brand components:**
   - `LogoMark`: a speech bubble with a coral star. Never rotate or recolour it. Use `mono` on dark backgrounds, and pass `bg`.
   - `VerifiedBadge`: a violet pill with the fixed wording "Verified reviewer".
   - `EmptyState`: a bubble motif plus one line.
-  - `Stars` / `RatingBadge`.
+  - `Stars` / `RatingBadge`, `Avatar` (reviewer initials).
 - **Icons** are Lucide-style inline SVGs in `components/icons.tsx` (24×24, 2px stroke). Never use emoji as icons.
-- **Layout:** sticky paper top bar (`SiteHeader`, with an optional neutral title band via the `title`/`crumbs`/`subtitle`/children props), ink `SiteFooter`, and the split-screen `AuthCard` (ink panel). Content width is `max-w-7xl`. One clear action per surface.
+- **Layout:** sticky paper top bar (`SiteHeader`, with an optional neutral title band via the `title`/`crumbs`/`subtitle`/children props), ink `SiteFooter`, and the split-screen `AuthCard` (ink panel). Content width is 1200px (`max-w-[75rem]`, the `container` recipe). One clear action per surface.
 - **Interaction:** the platform is meant to feel responsive. Every effect answers a user action. Examples:
   - star pop, confirmation rise/pop, card lift;
-  - search suggestions and the hero review ticker;
+  - search suggestions;
   - rating bars that fill on view and filter the `ReviewList` (star chips, sort, "Show more");
   - list sorting (`SortSelect`, `?sort=`);
   - `ShareButton`, the photo lightbox, the review length guide;

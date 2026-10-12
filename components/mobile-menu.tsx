@@ -29,7 +29,7 @@ export function MobileMenu({ links, signedIn, userLabel }: Props) {
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpenOn(open ? null : pathname)}
-        className="flex size-11 cursor-pointer items-center justify-center rounded-xl text-ink transition-[background-color,scale] duration-200 ease-spring hover:bg-brand-wash active:scale-90"
+        className="flex size-11 cursor-pointer items-center justify-center rounded-full text-white transition-[background-color,scale] duration-200 ease-spring hover:bg-white/10 active:scale-90"
       >
         <span key={String(open)} className="animate-pop">{open ? <CloseIcon /> : <MenuIcon />}</span>
       </button>

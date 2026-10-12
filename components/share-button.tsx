@@ -36,7 +36,7 @@ export function ShareButton({ title, className = "" }: { title: string; classNam
     <button
       type="button"
       onClick={share}
-      className={`${btn.outline} px-5 ${className}`}
+      className={`${btn.pill} ${className}`}
     >
       {copied ? <CheckIcon size={18} className="animate-pop" /> : <ShareIcon size={18} />}
       <span>{copied ? "Link copied" : "Share"}</span>

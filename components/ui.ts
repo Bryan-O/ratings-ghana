@@ -8,7 +8,7 @@
 export const press =
   "transition-[translate,scale,box-shadow,background-color,border-color,color] duration-200 ease-spring active:duration-75 not-disabled:hover:-translate-y-0.5 not-disabled:hover:shadow-[0_10px_22px_-10px_rgb(22_22_26/0.45)] not-disabled:focus-visible:-translate-y-0.5 not-disabled:focus-visible:shadow-[0_10px_22px_-10px_rgb(22_22_26/0.45)] not-disabled:active:translate-y-0 not-disabled:active:scale-[0.96] not-disabled:active:shadow-[0_3px_8px_-4px_rgb(22_22_26/0.4)]";
 
-const base = `relative inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold ${press} disabled:cursor-not-allowed disabled:opacity-60`;
+const base = `relative inline-flex cursor-pointer items-center justify-center gap-2 rounded-full font-semibold ${press} disabled:cursor-not-allowed disabled:opacity-60`;
 
 // Primary: ink fill, paper text; on hover or press the fill shifts to coral and the label to ink.
 // Primary actions also get the tap colour-wash (`ripple`, run by MotionRuntime).
@@ -26,9 +26,15 @@ export const btn = {
   outline: `${base} h-12 border-2 border-ink bg-paper px-6 text-ink hover:bg-ink hover:text-white`,
   /** Outlined, for use on ink/violet backgrounds. */
   outlineOnDark: `${base} h-12 border-2 border-white px-6 text-white hover:bg-white hover:text-ink`,
+  /** Outlined violet pill for secondary actions beside a primary one ("Visit website", "Share"). */
+  pill: `${base} h-11 border border-brand bg-paper px-5 text-brand hover:bg-brand hover:text-white`,
   /** Small variants for dense UI. */
   smPrimary: `${base} h-10 px-4 text-sm ${primaryFill}`,
   smOutline: `${base} h-10 border-2 border-ink bg-paper px-4 text-sm text-ink hover:bg-ink hover:text-white`,
+  /** Small coral pill for the ink top bar. */
+  smCoral: `${base} ripple overflow-hidden h-10 bg-coral px-5 text-sm text-ink hover:bg-white`,
+  /** Small outlined pill on ink. */
+  smOnDark: `${base} h-10 border border-white/60 px-4 text-sm text-white hover:border-white hover:bg-white hover:text-ink`,
   smDanger: `${base} h-10 bg-coral-ink px-4 text-sm text-white hover:bg-ink`,
 };
 
@@ -55,23 +61,27 @@ export const panel = "rounded-2xl bg-brand-wash";
 export const lift =
   "transition-[translate,box-shadow,border-color,background-color] duration-300 ease-spring hover:-translate-y-1 hover:border-ink hover:shadow-[0_18px_36px_-18px_rgb(22_22_26/0.4)] focus-visible:-translate-y-1 focus-visible:shadow-[0_18px_36px_-18px_rgb(22_22_26/0.4)] active:translate-y-0 active:duration-100";
 
-export const container = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8";
+/** Content width matches Trustpilot's 1200px column. */
+export const container = "mx-auto w-full max-w-[75rem] px-4 sm:px-6 lg:px-8";
 
 /**
- * Type scale ("Exaggerated Minimalism" from the ui-ux-pro-max skill, within the brand):
- * one oversized statement per page, tight tracking, lots of space around it.
- * Headlines stay at 700 (two weights per screen), so loudness comes from size and tracking.
+ * Type scale (Trustpilot-style arrangement, docs/brand.md "Layout"): extra-bold display headlines,
+ * bold section and card titles, regular body. Manrope stays readable at 0 to -0.02em tracking.
  */
 export const type = {
-  /** Hero statement. */
-  giant: "font-display font-bold leading-[0.95] tracking-[-0.03em] [word-spacing:0.04em] text-[clamp(2.75rem,10vw,8rem)]",
+  /** Hero headline (centred, one per page). */
+  giant: "font-display font-extrabold leading-[1.1] tracking-[-0.02em] text-[clamp(2rem,5.5vw,3.25rem)]",
   /** Section headline. */
-  section: "font-display font-bold leading-[1.05] tracking-[-0.025em] text-[clamp(2rem,5vw,3.5rem)]",
-  /** Big numerals (ratings, counts) in bento tiles. */
-  numeral: "font-display font-bold leading-none tracking-[-0.03em] tabular-nums",
+  section: "font-display font-bold leading-tight tracking-[-0.01em] text-[1.375rem] sm:text-[1.625rem]",
+  /** Big numerals (ratings, counts). */
+  numeral: "font-display font-extrabold leading-none tracking-[-0.02em] tabular-nums",
 };
 
-/** Bento tile base: generous radius; padding, colour and span are set per tile. */
+/** Small round "See more" pill used at the end of section headers. */
+export const seeMore =
+  `inline-flex h-9 shrink-0 cursor-pointer items-center rounded-full border border-brand px-4 text-sm font-semibold text-brand ${press} hover:bg-brand hover:text-white`;
+
+/** Flat colour block (promo bands, score tiles); padding and colour are set per use. */
 export const tile = "relative flex min-w-0 flex-col overflow-hidden rounded-3xl";
 
 /** Small all-caps label used above groups, as in the brand book (never for headlines). */

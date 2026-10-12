@@ -15,3 +15,13 @@ export function ratingDistribution(ratings: number[]): number[] {
   for (const r of ratings) if (r >= 1 && r <= 5) dist[r - 1]++;
   return dist;
 }
+
+/** Plain-word label shown under a business's score ("Excellent" … "Bad"). */
+export function ratingLabel(avg: number, count: number): string {
+  if (count === 0) return "No rating yet";
+  if (avg >= 4.5) return "Excellent";
+  if (avg >= 3.5) return "Good";
+  if (avg >= 2.5) return "Okay";
+  if (avg >= 1.5) return "Poor";
+  return "Bad";
+}

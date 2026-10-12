@@ -48,8 +48,8 @@ test.describe("with motion", () => {
       .toBe(true);
     expect(await h1.boundingBox()).toEqual(before);
 
-    // Category tiles below the fold reveal once scrolled to.
-    const tiles = page.getByRole("heading", { name: "Browse by category" }).locator("xpath=../..").locator("[data-reveal-group] > *");
+    // Category links below the fold reveal once scrolled to.
+    const tiles = page.getByRole("heading", { name: "What are you looking for?" }).locator("xpath=../..").locator("[data-reveal-group] > *");
     await tiles.first().scrollIntoViewIfNeeded();
     await expect(tiles.first()).toHaveAttribute("data-shown", "");
     await expect(tiles.first()).toHaveCSS("opacity", "1");

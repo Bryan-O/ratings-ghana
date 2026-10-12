@@ -98,8 +98,17 @@ export function getRecentReviews(take: number) {
     take,
     include: {
       user: { select: { name: true } },
-      business: { select: { name: true, slug: true, category: true } },
+      business: { select: { name: true, slug: true, category: true, images: true, type: true, website: true, address: true, city: true } },
     },
+  });
+}
+
+/** Best-rated approved businesses in a category (unreviewed ones last), for the home "Best in …" rows. */
+export function getBestInCategory(category: string, take: number) {
+  return prisma.business.findMany({
+    where: { status: "APPROVED", category },
+    orderBy: [{ avgRating: "desc" }, { reviewCount: "desc" }],
+    take,
   });
 }
 
