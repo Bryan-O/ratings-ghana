@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { NavProgress } from "@/components/nav-progress";
@@ -9,9 +9,9 @@ import { MOTION_BOOT_SCRIPT } from "@/lib/motion";
 import { feedbackEnabled } from "@/lib/features";
 import { getCurrentUser } from "@/lib/session";
 
-// Space Grotesk Bold: headlines, rating numerals. Inter: body, labels, forms, actions.
-const heading = Space_Grotesk({ variable: "--font-heading", subsets: ["latin"], weight: ["500", "700"] });
-const body = Inter({ variable: "--font-body", subsets: ["latin"] });
+// One family for everything: Plus Jakarta Sans (variable, 200–800). Bold for headlines and
+// rating numerals (font-display), regular/medium/semibold for body, labels and controls (font-sans).
+const jakarta = Plus_Jakarta_Sans({ variable: "--font-body", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: { default: "RatingsGhana — honest reviews of businesses in Ghana", template: "%s · RatingsGhana" },
@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const user = feedbackEnabled ? await getCurrentUser() : null;
   return (
     // data-motion is set by the boot script before React hydrates, hence suppressHydrationWarning.
-    <html lang="en" className={`${heading.variable} ${body.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${jakarta.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/*
           A plain inline script on purpose: it is server-rendered into <head> and runs before the body

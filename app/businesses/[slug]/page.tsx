@@ -73,7 +73,7 @@ export default async function BusinessPage({ params }: Props) {
                   {business.type === "ONLINE" ? "Online business" : "Physical location"}
                 </span>
               </div>
-              <h1 className="mt-4 font-display text-[clamp(2.25rem,9vw,4.5rem)] leading-[1.02] font-bold tracking-[-0.035em] break-words">{business.name}</h1>
+              <h1 className="mt-4 font-display text-[clamp(2.25rem,9vw,4.5rem)] leading-[1.05] font-bold tracking-[-0.025em] break-words">{business.name}</h1>
             </div>
             <div id="business-actions" className="flex flex-wrap gap-3 self-start lg:self-auto">
               <a href="#write-review" className={btn.cta}>

@@ -83,7 +83,7 @@ export function FeaturedBusinessCard({ business: b, label }: { business: Busines
         <div className="mt-auto flex items-end justify-between gap-4 pt-2">
           {b.reviewCount > 0 ? (
             <span className="flex items-end gap-3">
-              <span className="font-display text-6xl leading-none font-bold tracking-[-0.04em] tabular-nums">{b.avgRating.toFixed(1)}</span>
+              <span className="font-display text-6xl leading-none font-bold tracking-[-0.03em] tabular-nums">{b.avgRating.toFixed(1)}</span>
               <span className="pb-1">
                 <Stars rating={b.avgRating} size={16} onDark />
                 <span className="mt-1 block text-xs text-white/70">

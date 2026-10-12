@@ -31,8 +31,10 @@ Accessibility rules:
 
 ## Type
 
-- **Space Grotesk 700** (`font-display font-bold`): headlines, hero lines and rating numerals. Display 40/44, H1 32/36, H2 24/30, H3 20/26.
-- **Inter** (`font-sans`): body 16/24, small 14/20, caption 12/16. Use Regular for reading, Medium for controls and SemiBold for labels.
+- **Plus Jakarta Sans** for everything (it replaced the guideline's Space Grotesk + Inter pairing at the owner's request). One variable font, loaded with `next/font/google`.
+  - **Bold (700)** (`font-display font-bold`): headlines, hero lines and rating numerals. Display 40/44, H1 32/36, H2 24/30, H3 20/26.
+  - **Regular, medium, semibold** (`font-sans`): body 16/24, small 14/20, caption 12/16. Use regular for reading, medium for controls and semibold for labels.
+  - **Spacing:** the font's space is narrow, so body text has `word-spacing: 0.035em` and big headings use -0.025 to -0.03em tracking (tighter makes words run together).
 - Use sentence case and never all-caps headlines. Small all-caps labels (`eyebrow`) are allowed above groups.
 - Numbers use tabular figures (set globally).
 
@@ -49,7 +51,7 @@ The mark is a bold speech bubble whose corner resolves into a coral star (`LogoM
 - Use one sharp, geometric five-pointed star everywhere.
 - Earned stars are solid coral; unearned stars are ink outlines at 40%.
 - **Never yellow or gold.**
-- Set the rating numeral in Space Grotesk Bold right beside the row.
+- Set the rating numeral in bold Plus Jakarta Sans right beside the row.
 
 ## Components
 
@@ -61,7 +63,7 @@ The mark is a bold speech bubble whose corner resolves into a coral star (`LogoM
 | Verified badge | Violet pill, white check, the fixed wording "Verified reviewer". | `<VerifiedBadge>` |
 | Rating input | Five large tappable stars on light coral tiles, filling coral left to right. | `components/review-form.tsx` |
 | Form field | Paper, 1px ink at ~30%, 12px radius, violet focus ring that keeps the border. | `input`, `textarea` |
-| Business rating card | Light neutral container, name in Space Grotesk Bold, coral stars + numeral. | `BusinessCard` |
+| Business rating card | Light neutral container, name in bold Plus Jakarta Sans, coral stars + numeral. | `BusinessCard` |
 | Empty state | One speech-bubble motif plus one useful line. | `<EmptyState>` |
 
 **Rule of thumb:** one clear action per surface.
@@ -91,13 +93,13 @@ Privacy and moderation copy must be literal. Never promise something the product
 
 The layout system comes from the ui-ux-pro-max skill, applied inside this brand: **Exaggerated Minimalism + Bento grid**.
 
-- **One loud statement per page.** The home hero headline runs up to about 132px (`type.giant`, tight -0.045em tracking) with generous space around it. Size does the work, because Space Grotesk tops out at 700 and screens use two weights at most.
+- **One loud statement per page.** The home hero headline runs up to about 132px (`type.giant`, -0.03em tracking) with generous space around it. Size does the work, because headlines stay at 700 and screens use two weights at most.
 - **Section headlines** use `type.section` (32–56px).
 - **Bento summaries:**
   - **Home:** a live verified review (2×2), the top-rated business (2×1), a verified-reviews count and a businesses-listed count.
   - **Business page:** photos (2×2), the rating, who rated it, and contact.
   - **List:** the first result on page one is a two-column feature card.
-- **Tiles** are 24px-radius, flat-colour blocks in paper, light neutral, coral tint, ink or violet, with big Space Grotesk numerals. Clickable tiles lift on hover, focus or press.
+- **Tiles** are 24px-radius, flat-colour blocks in paper, light neutral, coral tint, ink or violet, with big bold numerals. Clickable tiles lift on hover, focus or press.
 - The grid collapses from 4 to 2 columns, with stat tiles staying side by side on phones.
 
 ## Motion

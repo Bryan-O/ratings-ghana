@@ -8,7 +8,8 @@
  */
 @theme inline {
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-heading), "Archivo", var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  /* Same family as body; headings differ by weight and tracking only. */
+  --font-display: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 
   /* Deep violet: verified badges, links, navigation, focus, data */
   --color-brand: #3d2c8d;
@@ -207,6 +208,8 @@
     background: var(--color-paper);
     color: var(--color-body);
     font-variant-numeric: tabular-nums;
+    /* Plus Jakarta Sans has a narrow space; open it slightly for readability. */
+    word-spacing: 0.035em;
   }
 
   h1,

@@ -60,15 +60,15 @@ export const container = "mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8";
 /**
  * Type scale ("Exaggerated Minimalism" from the ui-ux-pro-max skill, within the brand):
  * one oversized statement per page, tight tracking, lots of space around it.
- * Space Grotesk tops out at 700, so loudness comes from size, not weight.
+ * Headlines stay at 700 (two weights per screen), so loudness comes from size and tracking.
  */
 export const type = {
   /** Hero statement. */
-  giant: "font-display font-bold leading-[0.92] tracking-[-0.045em] text-[clamp(2.75rem,10.5vw,8.25rem)]",
+  giant: "font-display font-bold leading-[0.95] tracking-[-0.03em] [word-spacing:0.04em] text-[clamp(2.75rem,10vw,8rem)]",
   /** Section headline. */
-  section: "font-display font-bold leading-[1.02] tracking-[-0.035em] text-[clamp(2rem,5vw,3.5rem)]",
+  section: "font-display font-bold leading-[1.05] tracking-[-0.025em] text-[clamp(2rem,5vw,3.5rem)]",
   /** Big numerals (ratings, counts) in bento tiles. */
-  numeral: "font-display font-bold leading-none tracking-[-0.04em] tabular-nums",
+  numeral: "font-display font-bold leading-none tracking-[-0.03em] tabular-nums",
 };
 
 /** Bento tile base: generous radius; padding, colour and span are set per tile. */

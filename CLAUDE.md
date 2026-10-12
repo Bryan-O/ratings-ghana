@@ -26,7 +26,7 @@ The brand follows the **Loud & Clear** guidelines: "Real people. Real opinions. 
   - signal coral `#FF4D5E` (`coral`, `star`, `cta-hover`): CTA hover/press, earned stars, highlights. **Never body text** (3.2:1); error text uses `coral-ink` `#C42338`;
   - deep violet `#3D2C8D` (`brand`): verified badges, links, navigation, focus rings;
   - stars are solid coral when earned and ink outlines at 40% when not. **Never yellow or gold stars.**
-- **Type:** Space Grotesk Bold for headings and rating numerals (`font-display font-bold`), Inter for everything else (`font-sans`), via `next/font/google` in `app/layout.tsx`. Use sentence case; no all-caps headlines.
+- **Type:** **Plus Jakarta Sans** for everything, via `next/font/google` in `app/layout.tsx` (one variable font). Bold for headings and rating numerals (`font-display font-bold`); regular, medium and semibold for body, labels and controls (`font-sans`). Use sentence case; no all-caps headlines. Body text has a slight `word-spacing` (in `globals.css`) because the font's space is narrow; keep heading tracking no tighter than -0.03em or words run together.
 - **Layout style** (from the ui-ux-pro-max skill, inside the brand): **Exaggerated Minimalism + Bento grid**.
   - One oversized statement per page (`type.giant` on the home hero, big business names), lots of white space, and section headlines in `type.section`.
   - Summaries are bento grids of `tile`s with varied spans and big numerals (`type.numeral`): the home "right now" grid, the business page summary (photos, rating, who rated it, contact), and `FeaturedBusinessCard` leading page one of the list.
